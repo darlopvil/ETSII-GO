@@ -12,6 +12,18 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.ETSIIGo">
         <activity
+            android:name=".InformacionActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ItinerarioActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ServiciosActivity"
+            android:exported="false" />
+        <activity
+            android:name=".RecorridoActivity"
+            android:exported="false" />
+        <activity
             android:name=".MainActivity"
             android:exported="true">
             <intent-filter>
