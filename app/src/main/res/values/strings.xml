@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">ETSII-Go</string>
+    <string name="boton_gps_facultad">GPS Facultad</string>
+    <string name="boton_servicios">Servicios</string>
+    <string name="boton_itinerario">Itinerario</string>
+    <string name="boton_info">Información</string>
+</resources>
