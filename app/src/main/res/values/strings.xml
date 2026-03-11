@@ -4,4 +4,9 @@
     <string name="boton_servicios">Servicios</string>
     <string name="boton_itinerario">Itinerario</string>
     <string name="boton_info">Información</string>
+    <string name="titulo_itinerario">Configura tu ruta</string>
+    <string name="campo_origen">Dirección de origen</string>
+    <string name="campo_destino">Dirección de destino</string>
+    <string name="boton_calcular_ruta">Calcular Itinerario</string>
+    <string name="formato_paso">Paso %1$d: %2$s</string> <!-- %1$d: primer valor que es un número entero. %2$s: segundo valor que es texto-->
 </resources>

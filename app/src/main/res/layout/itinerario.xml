@@ -2,9 +2,86 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/main"
+    android:id="@+id/itinerario_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".ItinerarioActivity">
 
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guia_1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.1" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guia_2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.9" />
+
+    <TextView
+        android:id="@+id/texto_titulo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:text="@string/titulo_itinerario"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toStartOf="@+id/guia_2"
+        app:layout_constraintStart_toStartOf="@+id/guia_1"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <EditText
+        android:id="@+id/campo_origen"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:hint="@string/campo_origen"
+        android:inputType="textPostalAddress"
+        app:layout_constraintEnd_toStartOf="@+id/guia_2"
+        app:layout_constraintStart_toStartOf="@+id/guia_1"
+        app:layout_constraintTop_toBottomOf="@id/texto_titulo"/>
+
+    <EditText
+        android:id="@+id/campo_destino"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:hint="@string/campo_destino"
+        android:inputType="textPostalAddress"
+        app:layout_constraintEnd_toStartOf="@+id/guia_2"
+        app:layout_constraintStart_toStartOf="@+id/guia_1"
+        app:layout_constraintTop_toBottomOf="@id/campo_origen"/>
+
+    <Button
+        android:id="@+id/boton_calcular_ruta"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:text="@string/boton_calcular_ruta"
+        app:layout_constraintEnd_toStartOf="@+id/guia_2"
+        app:layout_constraintStart_toStartOf="@+id/guia_1"
+        app:layout_constraintTop_toBottomOf="@+id/campo_destino" />
+    <!-- ATENCIÓN
+     con android:visibility="gone" ocultamos el campo del resultado hasta que los tengamos.-->
+    <ScrollView
+        android:id="@+id/scroll_resultados"
+        android:visibility="gone"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="24dp"
+        android:layout_marginBottom="16dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@id/guia_2"
+        app:layout_constraintStart_toStartOf="@id/guia_1"
+        app:layout_constraintTop_toBottomOf="@id/boton_calcular_ruta">
+
+        <LinearLayout
+            android:id="@+id/resultados_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" />
+    </ScrollView>
 </androidx.constraintlayout.widget.ConstraintLayout>

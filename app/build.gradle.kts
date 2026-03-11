@@ -1,5 +1,12 @@
+import java.util.Properties
 plugins {
     alias(libs.plugins.android.application)
+}
+
+val properties = Properties()
+val localPropertiesFile = rootProject.file("local.properties")
+if (localPropertiesFile.exists()) {
+    properties.load(localPropertiesFile.inputStream())
 }
 
 android {
@@ -18,6 +25,10 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        // AGREGAMOS AQUÍ LA API-KEY
+        val apikey = properties.getProperty("API_KEY_GOOGLE") ?: "CLAVE_NO_ENCONTRADA"
+        buildConfigField("String", "API_KEY_GOOGLE", "\"$apikey\"")
     }
 
     buildTypes {
@@ -33,6 +44,9 @@ android {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
+
+    // ACTIVAMOS LA GENERACIÓN DE LA CLASE BUILDCONFIG
+    buildFeatures { buildConfig = true }
 }
 
 dependencies {
