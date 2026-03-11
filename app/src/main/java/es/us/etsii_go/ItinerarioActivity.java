@@ -125,7 +125,7 @@ public class ItinerarioActivity extends AppCompatActivity {
 
                 // ------------ DEBUG ZONE --------------
                 String jsonCrudo = respuesta.toString();
-                Log.d("ItinerarioApp", "Respuesta de Google (HTTP " + responseCode + "): " + jsonCrudo);
+                logLargo("ItinerarioApp_JSON", "Respuesta HTTP " + responseCode + ": \n" + jsonCrudo);
 
                 // 4.- Parseamos la respuesta y actualizamos la UI SOLO si la respuesta fue exitosa:
                 if (responseCode == 200) {
@@ -187,6 +187,18 @@ public class ItinerarioActivity extends AppCompatActivity {
                             instruccion = navInstruction.optString("instructions", "Caminar");
                         }
 
+                        // ATENCIÓN: Si el SIGUIENTE paso es TRANSIT, quitamos lo de "El destino está..."
+                        if (i < steps.length() - 1) { // Comprobamos que no sea el último paso
+                            JSONObject siguientePaso = steps.getJSONObject(i + 1);
+                            if (siguientePaso.optString("travelMode", "").equals("TRANSIT")) {
+                                // Limpiamos el texto confuso. Ej: "Continúa por Av. Torneo El destino está a la izquierda."
+                                // Nos quedamos solo con la primera parte antes del salto de línea
+                                if (instruccion.contains("\nEl destino")) {
+                                    instruccion = instruccion.substring(0, instruccion.indexOf("\nEl destino"));
+                                    instruccion += "\n📍 Dirígete a la parada";
+                                }
+                            }
+                        }
 
                         // Extraemos la distancia formateada si existe (ej.: "37 m", "6,4 km")
                         String distanciaStr = "";
@@ -276,5 +288,14 @@ public class ItinerarioActivity extends AppCompatActivity {
 
 
         });
+    }
+    // ---------- DEBUG ONLY ---------------------
+    private void logLargo(String tag, String mensaje) {
+        if (mensaje.length() > 3000) {
+            Log.d(tag, mensaje.substring(0, 3000));
+            logLargo(tag, mensaje.substring(3000));
+        } else {
+            Log.d(tag, mensaje);
+        }
     }
 }

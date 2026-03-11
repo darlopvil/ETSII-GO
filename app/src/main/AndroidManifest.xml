@@ -11,8 +11,13 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.ETSIIGo">
+        <!-- android:exported="false"
+            Significa que, por seguridad, ninguna otra app
+            puede abrir esta actividad, solo esta de ETSII-GO
+            Por ello, solo la actividad main está a "true"-->
         <activity
             android:name=".InformacionActivity"
+            android:windowSoftInputMode="stateHidden"
             android:exported="false" />
         <activity
             android:name=".ItinerarioActivity"
