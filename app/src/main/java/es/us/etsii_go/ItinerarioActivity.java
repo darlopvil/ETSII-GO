@@ -24,11 +24,14 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Locale;
 
 public class ItinerarioActivity extends AppCompatActivity {
@@ -39,6 +42,27 @@ public class ItinerarioActivity extends AppCompatActivity {
     private ScrollView scrollResultados;
     private LinearLayout layoutResultados;
     private RadioGroup grupoModoViaje;
+    // Mapa para asociar: Un nombre a una LISTA de paradas (ida y vuelta)
+    // Necesario para:
+    /*
+        El 'step' justo antes de llegar a la parada calcula la distancia ambas paradas
+        de ida y vuelta, y se queda con la más cercana (la parada correcta). Así
+        evitamos coger la parada equivocada.
+     */
+    private HashMap<String, ArrayList<ParadaTussam>> mapaParadasTussam = new HashMap<>();
+    // Clase ParadaTussam para coger todos los datos necesarios:
+    private static class ParadaTussam {
+        String nodo; // la línea
+        double lat; // coordenada latitud de la parada
+        double lon; // coordenada longitud de la parada
+        ParadaTussam(String nodo, double lat, double lon) {
+            this.nodo = nodo;
+            this.lat = lat;
+            this.lon = lon;
+        }
+    }
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -89,6 +113,9 @@ public class ItinerarioActivity extends AppCompatActivity {
             calcularRuta(origen_input, destino_input, modoViajeAPI);
 
         });
+
+        // Llamamos a cargarParadasTussam()
+        cargarParadasTussam();
 
     }
 
@@ -308,6 +335,44 @@ public class ItinerarioActivity extends AppCompatActivity {
                                             String origenName = stops.has("departureStop") ? stops.getJSONObject("departureStop").optString("name", "Origen") : "Origen";
                                             String destinoName = stops.has("arrivalStop") ? stops.getJSONObject("arrivalStop").optString("name", "Destino") : "Destino";
 
+                                            // A. Rescatamos las coordenadas del origen
+                                            double oriLat = 0, oriLon = 0;
+                                            if (stops.has("departureStop") && stops.getJSONObject("departureStop").has("location")) {
+                                                JSONObject loc = stops.getJSONObject("departureStop").getJSONObject("location").getJSONObject("latLng");
+                                                oriLat = loc.optDouble("latitude", 0);
+                                                oriLon = loc.optDouble("longitude", 0);
+                                            }
+
+                                            // B. Rescatamos las coordenadas del destino
+                                            double destLat = 0, destLon = 0;
+                                            if (stops.has("arrivalStop") && stops.getJSONObject("arrivalStop").has("location")) {
+                                                JSONObject loc = stops.getJSONObject("arrivalStop").getJSONObject("location").getJSONObject("latLng");
+                                                destLat = loc.optDouble("latitude", 0);
+                                                destLon = loc.optDouble("longitude", 0);
+                                            }
+
+                                            // C. Extraemos línea
+                                            String lineaBus = "";
+                                            if (step.has("transitDetails")) {
+                                                JSONObject transitDetails = step.getJSONObject("transitDetails");
+                                                if (transitDetails.has("transitLine")) {
+                                                    lineaBus = transitDetails.getJSONObject("transitLine").optString("nameShort", "").toLowerCase();
+                                                }
+                                            }
+
+                                            // D. Buscamos la parada correcta con el desempate geográfico
+                                            String claveOrigen = origenName.toLowerCase() + "_" + lineaBus;
+                                            String numeroOrigen = obtenerNodoMasCercano(claveOrigen, oriLat, oriLon);
+                                            if (numeroOrigen != null) {
+                                                origenName = origenName + " (Parada Nº " + numeroOrigen + ")";
+                                            }
+
+                                            String claveDestino = destinoName.toLowerCase() + "_" + lineaBus;
+                                            String numeroDestino = obtenerNodoMasCercano(claveDestino, destLat, destLon);
+                                            if (numeroDestino != null) {
+                                                destinoName = destinoName + " (Parada Nº " + numeroDestino + ")";
+                                            }
+
                                             String horaSalida = "";
                                             String horaLlegada = "";
 
@@ -369,6 +434,92 @@ public class ItinerarioActivity extends AppCompatActivity {
 
         });
     }
+
+    private void cargarParadasTussam() {
+        try {
+            // Abrimos el CSV guardado en res/raw
+            InputStream is = getResources().openRawResource(R.raw.paradas_tussam);  // Convertimos el raw en un objeto InputStream leíble
+            BufferedReader reader = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8));  // Creamos un buffer de lectura sobre el objeto y con una codificación de lectura
+
+            String line;
+            boolean primeraLinea = true;
+
+            while ((line = reader.readLine()) != null) {
+                // Saltamos la cabecera del archivo (son los nombres de las columnas)
+                if (primeraLinea) {
+                    primeraLinea = false;
+                    continue;
+                }
+
+                // Separamos los campos de cada fila por el delimitador (coma)
+                String[] columnas = line.split(",");
+                if (columnas.length >=7) {  // Medida de seguridad para evitar que la app rebiente si el CSV tiene alguna línea al final
+
+                    try {
+
+
+                        // Extraemos coordenadas X e Y de la parada "en formato TUSSAM"
+                        double x = Double.parseDouble(columnas[0].trim());  // Coordenada X
+                        double y = Double.parseDouble(columnas[1].trim());  // Coordenada Y
+
+                        // Fórmula para convertir las coordenadas Web Mercator a coordenadas GPS:
+                        double lon = (x / 20037508.3427892) * 180.0;
+                        double lat = Math.toDegrees(Math.atan(Math.exp(y / 6378137.0)) * 2.0 - Math.PI / 2.0);
+
+                        String labelLinea = columnas[3].trim().toLowerCase(); // (ej. 03)
+                        String nodo = columnas[5].trim(); // Número de la parada (ej. 879)
+                        String nombre = columnas[6].trim().toLowerCase(); // Nombre de la parada
+
+                        // Creamos la clave compuesta: "nombre_linea"
+                        String claveCompuesta = nombre + "_" + labelLinea;
+
+                        // Si la clave no existe, creamos una nueva lista vacía
+                        if (!mapaParadasTussam.containsKey(claveCompuesta)) {
+                            mapaParadasTussam.put(claveCompuesta, new ArrayList<>());
+                        }
+
+                        // Agregamos esta parada a su lista correspondiente
+                        mapaParadasTussam.get(claveCompuesta).add(new ParadaTussam(nodo, lat, lon));
+
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+            }
+            reader.close();
+            Log.d("ItinerarioApp", "Cargadas " + mapaParadasTussam.size() + " combinaciones de paradas de TUSSAM.");
+
+        } catch (Exception e) {
+            String errorDetallado = e.toString();
+
+            Log.e("ItinerarioApp", "Error al cargar el CSV de las paradas" + errorDetallado);
+
+            e.printStackTrace();
+
+        }
+    }
+
+    // Método que busca qué marquesina de autobús está más cerca de las coordenadas de Google
+    private String obtenerNodoMasCercano(String clave, double targetLat, double targetLon) {
+        // Devolvemos la lista con el par de paradas
+        java.util.ArrayList<ParadaTussam> paradas = mapaParadasTussam.get(clave);
+        if (paradas == null || paradas.isEmpty()) return null;
+
+        ParadaTussam masCercana = null;
+        float minDistancia = Float.MAX_VALUE;
+        float[] resultadosDistancia = new float[1];
+
+        for (ParadaTussam p : paradas) {
+            // Android nos calcula la distancia en metros entre las dos coordenadas GPS
+            android.location.Location.distanceBetween(targetLat, targetLon, p.lat, p.lon, resultadosDistancia);
+            if (resultadosDistancia[0] < minDistancia) {
+                minDistancia = resultadosDistancia[0];
+                masCercana = p;
+            }
+        }
+        return masCercana.nodo;
+    }
+
     // ---------- DEBUG ONLY ---------------------
     private void logLargo(String tag, String mensaje) {
         if (mensaje.length() > 3000) {
