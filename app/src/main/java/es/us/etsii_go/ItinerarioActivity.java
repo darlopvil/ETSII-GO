@@ -8,6 +8,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.RadioGroup;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -28,6 +29,7 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.util.Locale;
 
 public class ItinerarioActivity extends AppCompatActivity {
 
@@ -36,7 +38,7 @@ public class ItinerarioActivity extends AppCompatActivity {
     private Button botonCalcularRuta;
     private ScrollView scrollResultados;
     private LinearLayout layoutResultados;
-
+    private RadioGroup grupoModoViaje;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -54,6 +56,7 @@ public class ItinerarioActivity extends AppCompatActivity {
      botonCalcularRuta = findViewById(R.id.boton_calcular_ruta);
      scrollResultados = findViewById(R.id.scroll_resultados);
      layoutResultados = findViewById(R.id.resultados_layout);
+     grupoModoViaje = findViewById(R.id.grupo_modo_viaje);
 
      // LISTENER DEL BOTÓN
         botonCalcularRuta.setOnClickListener(v -> {
@@ -71,15 +74,26 @@ public class ItinerarioActivity extends AppCompatActivity {
             // Mostramos un mensaje de "Cargando..." para indicar que se está calculando la ruta
             Toast.makeText(this, "Buscando la mejor ruta...", Toast.LENGTH_SHORT).show();
 
+            // Averiguamos el botón que presionó el usuario del RadioButtom
+            String modoViajeAPI = "TRANSIT"; // Opción por defecto
+            int idSeleccionado = grupoModoViaje.getCheckedRadioButtonId();
+
+            if (idSeleccionado == R.id.radio_coche) {
+                modoViajeAPI = "DRIVE";
+            } else if (idSeleccionado == R.id.radio_andar_solo) {
+                modoViajeAPI = "WALK";
+                
+            }
+
             // Llamamos a la API en un hilo secundario
-            calcularRuta(origen_input, destino_input);
+            calcularRuta(origen_input, destino_input, modoViajeAPI);
 
         });
 
     }
 
     // MÉTODOS PERSONALES
-    private void calcularRuta(String origen, String destino) {
+    private void calcularRuta(String origen, String destino, String modoViajeAPI) {
 
         // Creamos un hilo con la petición a la API de Google Routes
         new Thread(() -> {
@@ -98,7 +112,8 @@ public class ItinerarioActivity extends AppCompatActivity {
                 JSONObject body = new JSONObject();
                 body.put("origin", new JSONObject().put("address", origen));
                 body.put("destination", new JSONObject().put("address", destino));
-                body.put("travelMode", "TRANSIT");  // Usar el transporte público si está disponible
+                body.put("travelMode", modoViajeAPI);  // Le pasamos directamente el modo de viaje seleccionado en el RadioButtom
+                body.put("computeAlternativeRoutes", true); // Pedir todas las rutas disponibles
 
                 OutputStream os = connection.getOutputStream(); // "Abrimos la tubería" para enviar los datos a Google
                 os.write(body.toString().getBytes(StandardCharsets.UTF_8));    // Pasamos a bytes los datos del usuario y los mandamos con write()
@@ -137,8 +152,13 @@ public class ItinerarioActivity extends AppCompatActivity {
 
 
             } catch (Exception e) {
-                Log.e("ItinerarioApp", "Error en la conexión API", e);
-                runOnUiThread(() -> Toast.makeText(ItinerarioActivity.this, "Error de conexión", Toast.LENGTH_SHORT).show());
+                String errorDetallado = e.toString();
+
+                Log.e("ItinerarioApp", "Error en la conexión API" + errorDetallado);
+
+                e.printStackTrace();
+
+                runOnUiThread(() -> Toast.makeText(ItinerarioActivity.this, "Error de conexión" + e.getMessage(), Toast.LENGTH_SHORT).show());
             }
         }).start(); // Arrancamos el hilo
 
@@ -154,130 +174,190 @@ public class ItinerarioActivity extends AppCompatActivity {
                 // 2.- Hacemos visible el ScrollView
                 scrollResultados.setVisibility(ScrollView.VISIBLE);
 
-                // 3.- Parseo del JSON
+                // 3.- Parseo del JSON principal
                 JSONObject jsonObject = new JSONObject(jsonResponse);
-                JSONArray rutas = jsonObject.getJSONArray("routes");
+                JSONArray rutas = jsonObject.optJSONArray("routes");
 
-                if (rutas.length() == 0) {
+                if (rutas == null || rutas.length() == 0) {
                     Toast.makeText(this, "No se ha encontrado una ruta disponible", Toast.LENGTH_SHORT).show();
                     return;
                 }
 
-                JSONObject ruta = rutas.getJSONObject(0);
-                JSONArray legs = ruta.getJSONArray("legs");
-                JSONObject leg = legs.getJSONObject(0);
-                JSONArray steps = leg.getJSONArray("steps");
+                // 4.- Iteramos sobre TODAS las rutas disponibles
+                for (int r = 0; r < rutas.length(); r++) {
+                    JSONObject ruta = rutas.getJSONObject(r);
 
-                // 4.- Recorrer los pasos y crear TextViews dinámicos
-                for (int i = 0; i < steps.length(); i++) {
-                    JSONObject step = steps.getJSONObject(i);
+                    // --- A. Extraer datos para el botón cabecera (Duración y Distancia) ---
+                    // La duración la devuelven en segundos (ej. "1800s"), le quitamos esa 's' y pasamos el tiempo a minutos
+                    String duracionStr = ruta.optString("duration", "0s").replace("s","");
+                    int durationMinutos = (int) (Float.parseFloat(duracionStr) / 60);
+                    // La distancia viene en metros, para el trayecto completo hay que usar kilómetros.
+                    int distanciaMetros = ruta.optInt("distanceMeters", 0);
+                    String distanciaKm = String.format(Locale.getDefault(), "%.1f", distanciaMetros / 1000.0);
 
-                    // Extraemos el modo de viaje (ej. WALK, TRANSIT)
-                    // Usamos optString para que no falle si algún dato no existe
-                    // Si no existe el dato, lo indicamos con "Desconocido"
-                    String modoViaje = step.optString("travelMode", "Desconocido");
-                    String textoFinal = "";
+                    String tituloRuta = "📍 Opción " + (r + 1) + " (" + durationMinutos + " min, " + distanciaKm + " km)";
 
-                    /* ------- CASO 1: CAMINANDO ------- */
-                    if (modoViaje.equals("WALK")) {
-                        // Extraemos la instrucción de navegación si existe
-                        String instruccion = "Caminar";
-                        if (step.has("navigationInstruction")) {
-                            JSONObject navInstruction = step.getJSONObject("navigationInstruction");
-                            instruccion = navInstruction.optString("instructions", "Caminar");
-                        }
+                    // --- B. Crear el Botón Desplegable ---
+                    Button botonCabecera = new Button(this);
+                    botonCabecera.setText(tituloRuta);
+                    botonCabecera.setAllCaps(false);    // Evitamos que el texto del botón aparezca en mayúsculas
+                    botonCabecera.setTextSize(16f);
 
-                        // ATENCIÓN: Si el SIGUIENTE paso es TRANSIT, quitamos lo de "El destino está..."
-                        if (i < steps.length() - 1) { // Comprobamos que no sea el último paso
-                            JSONObject siguientePaso = steps.getJSONObject(i + 1);
-                            if (siguientePaso.optString("travelMode", "").equals("TRANSIT")) {
-                                // Limpiamos el texto confuso. Ej: "Continúa por Av. Torneo El destino está a la izquierda."
-                                // Nos quedamos solo con la primera parte antes del salto de línea
-                                if (instruccion.contains("\nEl destino")) {
-                                    instruccion = instruccion.substring(0, instruccion.indexOf("\nEl destino"));
-                                    instruccion += "\n📍 Dirígete a la parada";
-                                }
-                            }
-                        }
+                    // Añadimos margen superior entre los botones
+                    LinearLayout.LayoutParams paramsBoton = new LinearLayout.LayoutParams(
+                            LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+                    paramsBoton.setMargins(0, (r == 0) ? 0: 32, 0,0 );
+                    botonCabecera.setLayoutParams(paramsBoton);
 
-                        // Extraemos la distancia formateada si existe (ej.: "37 m", "6,4 km")
-                        String distanciaStr = "";
-                        if (step.has("localizedValues") && step.getJSONObject("localizedValues").has("distance")) {
-                            distanciaStr = step.getJSONObject("localizedValues").getJSONObject("distance").optString("text", "N/A");
-                        }
-                        textoFinal = "🚶 " + instruccion;
-                        if (!distanciaStr.isEmpty()) {
-                            textoFinal += " (" + distanciaStr + ")";
-                        }
-                    }
+                    // --- C. Crear el contenedor para los pasos de ESTA ruta ---
+                    LinearLayout contenedorPasos = new LinearLayout(this);
+                    contenedorPasos.setOrientation(LinearLayout.VERTICAL);
+                    contenedorPasos.setVisibility(View.GONE);
+                    contenedorPasos.setPadding(32, 16, 32, 16);
 
-                    // --- CASO 2: TRANSPORTE PÚBLICO (Bus, Metro, etc) ---
-                    else if (modoViaje.equals("TRANSIT")) {
-                        if (step.has("transitDetails")) {
-                            JSONObject transit = step.getJSONObject("transitDetails");
-
-                            // 1. Sacamos qué vehículo es y el número de línea (ej. Autobús 03)
-                            String tipoVehiculo = "Transporte";
-                            String numLinea = "";
-                            if (transit.has("transitLine")) {
-                                JSONObject lineaInfo = transit.getJSONObject("transitLine");
-                                numLinea = lineaInfo.optString("nameShort", lineaInfo.optString("name", ""));
-                                if (lineaInfo.has("vehicle") && lineaInfo.getJSONObject("vehicle").has("name")) {
-                                    tipoVehiculo = lineaInfo.getJSONObject("vehicle").getJSONObject("name").optString("text", "Transporte");
-                                }
-                            }
-
-                            textoFinal = "🚌 " + tipoVehiculo + " (Línea " + numLinea + ")\n";
-
-                            // 2. Sacamos paradas y horarios
-                            if (transit.has("stopDetails")) {
-                                JSONObject stops = transit.getJSONObject("stopDetails");
-
-                                String origenName = stops.has("departureStop") ? stops.getJSONObject("departureStop").optString("name", "Origen") : "Origen";
-                                String destinoName = stops.has("arrivalStop") ? stops.getJSONObject("arrivalStop").optString("name", "Destino") : "Destino";
-
-                                String horaSalida = "";
-                                String horaLlegada = "";
-
-                                if (transit.has("localizedValues")) {
-                                    JSONObject locValues = transit.getJSONObject("localizedValues");
-                                    if (locValues.has("departureTime") && locValues.getJSONObject("departureTime").has("time")) {
-                                        horaSalida = locValues.getJSONObject("departureTime").getJSONObject("time").optString("text", "");
-                                    }
-                                    if (locValues.has("arrivalTime") && locValues.getJSONObject("arrivalTime").has("time")) {
-                                        horaLlegada = locValues.getJSONObject("arrivalTime").getJSONObject("time").optString("text", "");
-                                    }
-                                }
-
-                                textoFinal += "🟢 Sube en: " + origenName + " (" + horaSalida + ")\n";
-                                textoFinal += "🔴 Baja en: " + destinoName + " (" + horaLlegada + ")";
-                            }
+                    // --- D. Lógica de Mostrar/Ocultar ---
+                    botonCabecera.setOnClickListener(v -> {
+                        if (contenedorPasos.getVisibility() == View.GONE) {
+                            contenedorPasos.setVisibility(View.VISIBLE);
                         } else {
-                            textoFinal = "🚌 Coger transporte público";
+                            contenedorPasos.setVisibility(View.GONE);
                         }
+                    });
+                    // Añadimos el botón al layout principal ANTES de crear el contenedor de pasos
+                    layoutResultados.addView(botonCabecera);
+
+                    // --- E. Extraer y pintar los pasos dentro del contenedor oculto ---
+                    JSONArray legs = ruta.optJSONArray("legs");
+                    if (legs != null && legs.length() > 0) {
+                        JSONObject leg = legs.getJSONObject(0);
+                        JSONArray steps = leg.optJSONArray("steps");
+
+                        if (steps != null) {
+                            // 4.- Recorrer los pasos y crear TextViews dinámicos
+                            for (int i = 0; i < steps.length(); i++) {
+                                JSONObject step = steps.getJSONObject(i);
+
+                                // Extraemos el modo de viaje (ej. WALK, TRANSIT)
+                                // Usamos optString para que no falle si algún dato no existe
+                                // Si no existe el dato, lo indicamos con "Desconocido"
+                                String modoViaje = step.optString("travelMode", "Desconocido");
+                                String textoFinal = "";
+
+                                /* ------- CASO 1: CAMINANDO O COCHE ------- */
+                                if (modoViaje.equals("WALK") || modoViaje.equals("DRIVE")) {
+                                    // Extraemos la instrucción de navegación si existe
+                                    String instruccion = modoViaje.equals("WALK") ? "Caminar": "Conducir";
+                                    if (step.has("navigationInstruction")) {
+                                        JSONObject navInstruction = step.getJSONObject("navigationInstruction");
+                                        instruccion = navInstruction.optString("instructions", instruccion);
+                                    }
+
+                                    // Limpiamos el texto de destino ".\nVía de uso restringido\n". Esto es por que
+                                    // cuando pasas por calles peatonales, zonas de bajas emisiones o carreteras de peaje.
+                                    instruccion = instruccion.replace(".\nVía de uso restringido\n", ".").replace("\nVía de uso restringido","").replace("Vía de uso restringido","");
+
+                                    // Limpieza de texto si el siguiente paso es TRANSIT (solo útil si se ha seleccionado "Andar")
+                                    if (modoViaje.equals("WALK") && i < steps.length() - 1 ) { // Comprobamos además de que no sea el último paso
+                                        JSONObject siguientePaso = steps.getJSONObject(i + 1);
+                                        if (siguientePaso.optString("travelMode", "").equals("TRANSIT")) {
+                                            // Limpiamos el texto confuso. Ej: "Continúa por Av. Torneo El destino está a la izquierda."
+                                            // Nos quedamos solo con la primera parte antes del salto de línea
+                                            if (instruccion.contains("\nEl destino")) {
+                                                instruccion = instruccion.substring(0, instruccion.indexOf("\nEl destino"));
+                                                instruccion += "\n📍 Dirígete a la parada";
+                                            }
+                                        }
+                                    }
+
+                                    // Extraemos la distancia formateada si existe (ej.: "37 m", "6,4 km")
+                                    String distanciaStr = "";
+                                    if (step.has("localizedValues") && step.getJSONObject("localizedValues").has("distance")) {
+                                        distanciaStr = step.getJSONObject("localizedValues").getJSONObject("distance").optString("text", "N/A");
+                                    }
+
+                                    // Ponemos un emoji distinto según el modo
+                                    String emoji =  modoViaje.equals("WALK") ? "🚶 ": "🚗";
+                                    textoFinal = emoji + " " + instruccion;
+                                    if (!distanciaStr.isEmpty()) {
+                                        textoFinal += " (" + distanciaStr + ")";
+                                    }
+                                }
+
+                                // --- CASO 2: TRANSPORTE PÚBLICO (Bus, Metro, etc) ---
+                                else if (modoViaje.equals("TRANSIT")) {
+                                    if (step.has("transitDetails")) {
+                                        JSONObject transit = step.getJSONObject("transitDetails");
+
+                                        // 1. Sacamos qué vehículo es y el número de línea (ej. Autobús 03)
+                                        String tipoVehiculo = "Transporte";
+                                        String numLinea = "";
+                                        if (transit.has("transitLine")) {
+                                            JSONObject lineaInfo = transit.getJSONObject("transitLine");
+                                            numLinea = lineaInfo.optString("nameShort", lineaInfo.optString("name", ""));
+                                            if (lineaInfo.has("vehicle") && lineaInfo.getJSONObject("vehicle").has("name")) {
+                                                tipoVehiculo = lineaInfo.getJSONObject("vehicle").getJSONObject("name").optString("text", "Transporte");
+                                            }
+                                        }
+
+                                        textoFinal = "🚌 " + tipoVehiculo + " (Línea " + numLinea + ")\n";
+
+                                        // 2. Sacamos paradas y horarios
+                                        if (transit.has("stopDetails")) {
+                                            JSONObject stops = transit.getJSONObject("stopDetails");
+
+                                            String origenName = stops.has("departureStop") ? stops.getJSONObject("departureStop").optString("name", "Origen") : "Origen";
+                                            String destinoName = stops.has("arrivalStop") ? stops.getJSONObject("arrivalStop").optString("name", "Destino") : "Destino";
+
+                                            String horaSalida = "";
+                                            String horaLlegada = "";
+
+                                            if (transit.has("localizedValues")) {
+                                                JSONObject locValues = transit.getJSONObject("localizedValues");
+                                                if (locValues.has("departureTime") && locValues.getJSONObject("departureTime").has("time")) {
+                                                    horaSalida = locValues.getJSONObject("departureTime").getJSONObject("time").optString("text", "");
+                                                }
+                                                if (locValues.has("arrivalTime") && locValues.getJSONObject("arrivalTime").has("time")) {
+                                                    horaLlegada = locValues.getJSONObject("arrivalTime").getJSONObject("time").optString("text", "");
+                                                }
+                                            }
+
+                                            textoFinal += "🟢 Sube en: " + origenName + " (" + horaSalida + ")\n";
+                                            textoFinal += "🔴 Baja en: " + destinoName + " (" + horaLlegada + ")";
+                                        }
+                                    } else {
+                                        textoFinal = "🚌 Coger transporte público";
+                                    }
+                                }
+                                // --- CASO 3: OTROS MODOS (Bici, coche, etc) ---
+                                else {
+                                    textoFinal = "▶️ Paso " + (i + 1) + " [" + modoViaje + "]";
+                                }
+
+                                // II.- Creamos el TextView para este paso
+                                TextView paso = new TextView(this);
+                                paso.setText(textoFinal);
+                                paso.setTextSize(15f);
+                                paso.setPadding(0, 16, 0, 16);
+
+                                // III.- ATENCIÓN: Ahora lo agregamos a "contenedorPasos", NO a layoutResultados
+                                contenedorPasos.addView(paso);
+
+                                // IV. Agregamos una línea separadora
+                                View separador = new View(this);
+                                separador.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 2)); // 2 píxeles de alto
+                                // color del separador
+                                int miColor = ContextCompat.getColor(this, R.color.darker_gray);
+                                separador.setBackgroundColor(miColor);
+
+
+
+                            }
                     }
-                    // --- CASO 3: OTROS MODOS (Bici, coche, etc) ---
-                    else {
-                        textoFinal = "▶️ Paso " + (i + 1) + " [" + modoViaje + "]";
-                    }
 
-                    // II.- Creamos el TextView
-                    TextView paso = new TextView(this);
-                    paso.setText(textoFinal);
-                    paso.setTextSize(16f);
-                    paso.setPadding(0, 24, 0, 24);
 
-                    // III.- Lo agregamos a nuestro LinearLayout en itinerario.xml
-                    layoutResultados.addView(paso);
-
-                    // IV. Agregamos una línea separadora
-                    View separador = new View(this);
-                    separador.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 2)); // 2 píxeles de alto
-                     // color del separador
-                    int miColor = ContextCompat.getColor(this, R.color.darker_gray);
-                    separador.setBackgroundColor(miColor);
-                    // V.- Agregamos el separador
-                    layoutResultados.addView(separador);
+                }
+                    // --- F. Finalmente, añadimos el contenedor de pasos (oculto) al layout principal ---
+                    layoutResultados.addView(contenedorPasos);
 
                 }
             } catch (Exception e) {

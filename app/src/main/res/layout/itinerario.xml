@@ -55,15 +55,51 @@
         app:layout_constraintStart_toStartOf="@+id/guia_1"
         app:layout_constraintTop_toBottomOf="@id/campo_origen"/>
 
+
+    <RadioGroup
+        android:id="@+id/grupo_modo_viaje"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="16dp"
+        app:layout_constraintEnd_toStartOf="@id/guia_2"
+        app:layout_constraintStart_toStartOf="@id/guia_1"
+        app:layout_constraintTop_toBottomOf="@id/campo_destino"
+
+        >
+
+        <RadioButton
+            android:id="@+id/radio_coche"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Coche" />
+
+        <RadioButton
+            android:id="@+id/radio_transporte_publico"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Transporte público"
+            android:checked="true"/>
+
+        <RadioButton
+            android:id="@+id/radio_andar_solo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Andando" />
+    </RadioGroup>
+
     <Button
         android:id="@+id/boton_calcular_ruta"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
+        android:layout_marginTop="24dp"
         android:text="@string/boton_calcular_ruta"
         app:layout_constraintEnd_toStartOf="@+id/guia_2"
         app:layout_constraintStart_toStartOf="@+id/guia_1"
-        app:layout_constraintTop_toBottomOf="@+id/campo_destino" />
+        app:layout_constraintTop_toBottomOf="@+id/grupo_modo_viaje" />
     <!-- ATENCIÓN
      con android:visibility="gone" ocultamos el campo del resultado hasta que los tengamos.-->
     <ScrollView
