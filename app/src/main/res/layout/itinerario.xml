@@ -12,14 +12,14 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        app:layout_constraintGuide_percent="0.1" />
+        app:layout_constraintGuide_percent="0.05" />
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guia_2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        app:layout_constraintGuide_percent="0.9" />
+        app:layout_constraintGuide_percent="0.95" />
 
     <TextView
         android:id="@+id/texto_titulo"
@@ -33,27 +33,76 @@
         app:layout_constraintStart_toStartOf="@+id/guia_1"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <EditText
-        android:id="@+id/campo_origen"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:ems="10"
-        android:hint="@string/campo_origen"
-        android:inputType="textPostalAddress"
-        app:layout_constraintEnd_toStartOf="@+id/guia_2"
-        app:layout_constraintStart_toStartOf="@+id/guia_1"
-        app:layout_constraintTop_toBottomOf="@id/texto_titulo"/>
 
-    <EditText
-        android:id="@+id/campo_destino"
+    <LinearLayout
+        android:id="@+id/layout_origen"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:ems="10"
-        android:hint="@string/campo_destino"
-        android:inputType="textPostalAddress"
+        android:orientation="horizontal"
+        android:layout_marginTop="16dp"
         app:layout_constraintEnd_toStartOf="@+id/guia_2"
         app:layout_constraintStart_toStartOf="@+id/guia_1"
-        app:layout_constraintTop_toBottomOf="@id/campo_origen"/>
+        app:layout_constraintTop_toBottomOf="@id/texto_titulo">
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            app:endIconMode="clear_text">
+
+            <AutoCompleteTextView
+                android:id="@+id/campo_origen"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/campo_origen"
+                android:inputType="textPostalAddress"
+                android:maxLines="1" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <ImageButton
+            android:id="@+id/btn_fav_origen"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="8dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:src="@android:drawable/btn_star_big_off" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/layout_destino"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="8dp"
+        app:layout_constraintEnd_toStartOf="@+id/guia_2"
+        app:layout_constraintStart_toStartOf="@+id/guia_1"
+        app:layout_constraintTop_toBottomOf="@id/layout_origen">
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            app:endIconMode="clear_text">
+
+            <AutoCompleteTextView
+                android:id="@+id/campo_destino"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/campo_destino"
+                android:inputType="textPostalAddress"
+                android:maxLines="1" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <ImageButton
+            android:id="@+id/btn_fav_destino"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="8dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:src="@android:drawable/btn_star_big_off" />
+    </LinearLayout>
 
 
     <RadioGroup
@@ -64,7 +113,7 @@
         android:layout_marginTop="16dp"
         app:layout_constraintEnd_toStartOf="@id/guia_2"
         app:layout_constraintStart_toStartOf="@id/guia_1"
-        app:layout_constraintTop_toBottomOf="@id/campo_destino"
+        app:layout_constraintTop_toBottomOf="@id/layout_destino"
 
         >
 

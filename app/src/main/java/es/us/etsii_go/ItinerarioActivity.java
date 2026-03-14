@@ -1,12 +1,17 @@
 package es.us.etsii_go;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
-import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.RadioGroup;
 import android.widget.ScrollView;
@@ -32,12 +37,18 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Locale;
+import java.util.Set;
 
 public class ItinerarioActivity extends AppCompatActivity {
 
     // VARIABLES GLOBALES
-    private EditText origen, destino;
+    private AutoCompleteTextView origen, destino;
+    private ImageButton botonFavOrigen, botonFavDestino;
+    private SharedPreferences preferencias;
+    private ArrayList<String> listaFavoritos = new ArrayList<>();
+    private ArrayAdapter<String> adapterFavoritos;
     private Button botonCalcularRuta;
     private ScrollView scrollResultados;
     private LinearLayout layoutResultados;
@@ -77,6 +88,8 @@ public class ItinerarioActivity extends AppCompatActivity {
         // INSTANCIAMOS LAS VARIABLES
      origen = findViewById(R.id.campo_origen);
      destino = findViewById(R.id.campo_destino);
+     botonFavOrigen = findViewById(R.id.btn_fav_origen);
+     botonFavDestino = findViewById(R.id.btn_fav_destino);
      botonCalcularRuta = findViewById(R.id.boton_calcular_ruta);
      scrollResultados = findViewById(R.id.scroll_resultados);
      layoutResultados = findViewById(R.id.resultados_layout);
@@ -116,6 +129,9 @@ public class ItinerarioActivity extends AppCompatActivity {
 
         // Llamamos a cargarParadasTussam()
         cargarParadasTussam();
+
+        // Invocamos la lógica de los favoritos:
+        gestionarFavoritos();
 
     }
 
@@ -518,6 +534,122 @@ public class ItinerarioActivity extends AppCompatActivity {
             }
         }
         return masCercana.nodo;
+    }
+
+
+    // Gestión de lugares favoritos:
+    private void gestionarFavoritos() {
+        // 1.- Cargamos los favoritos guardados en el móvil
+        preferencias = getSharedPreferences("MisFavoritos", Context.MODE_PRIVATE);  // MODE_PRIVATE: Ninguna otra app puede leer las preferencias
+        Set<String> setGuardados = preferencias.getStringSet("lugares", new HashSet<>());   //SharedPreferencies NO usa listas, sino Set (genial para evitar lugares repetidos)
+
+        listaFavoritos.clear(); // Útil para evitar que se pierdan favoritos al meterlos y girar la pantalla
+        listaFavoritos.addAll(setGuardados);
+
+        // 2.- Creamos el adaptador para los menús desplegables:
+        // Un adaptador es un "traductor" entre el ArrayList de favoritos y el "AutoCompleteTextView" del XML (no sabe de listas, solo de pintar cosas)
+        adapterFavoritos = new ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line, listaFavoritos);
+        origen.setAdapter(adapterFavoritos);
+        destino.setAdapter(adapterFavoritos);
+
+        // 3.- Hacemos que se despliegue el menú cuando tocas el campo
+        View.OnFocusChangeListener focusListener = (v, hasFocus) -> {
+            if (hasFocus) {
+                AutoCompleteTextView campoTexto = (AutoCompleteTextView) v;
+                campoTexto.showDropDown();
+            }
+        };
+
+        origen.setOnFocusChangeListener(focusListener);
+        destino.setOnFocusChangeListener(focusListener);
+
+        // 4.- Listeners para los botones de las estrellas:
+        botonFavOrigen.setOnClickListener(v -> toggleFavorito(origen, botonFavOrigen));
+        botonFavDestino.setOnClickListener(v -> toggleFavorito(destino, botonFavDestino));
+
+        // 5.- Creamos un "vigilante" que enciende o apaga la estella mientras escribes el lugar:
+        TextWatcher watcher = new TextWatcher() {
+            @Override
+            public void afterTextChanged(Editable editable) {
+                // Cuando el usuario termina de teclear una letra, comprobamos las estrellas
+                actualizarIconoEstrella(origen, botonFavOrigen);
+                actualizarIconoEstrella(destino, botonFavDestino);
+
+            }
+            // Estos métodos no nos sirve, pero es obligatorio mencionarlos
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                    // No necesitamos hacer nada aquí
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                // No necesitamos hacer nada aquí
+            }
+
+
+        };
+
+        origen.addTextChangedListener(watcher);
+        destino.addTextChangedListener(watcher);
+    }
+
+    // Método que verdaderamente "mete en favoritos" un lugar, se le pasa un campo y el botón de la estrella.
+    private void toggleFavorito(AutoCompleteTextView campo, android.widget.ImageButton boton) {
+        String texto = campo.getText().toString().trim();
+
+        // Si el campo está vacío, avisamos y cortamos la ejecución. No podemos guardar "Nada" como favorito
+        if (texto.isEmpty()) {
+            Toast.makeText(this, "Escribe una dirección primero", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        // Si el texto ya está en la lista de favoritos, lo borramos
+        if (listaFavoritos.contains(texto)) {
+            listaFavoritos.remove(texto);
+            Toast.makeText(this, "Eliminado de favoritos", Toast.LENGTH_SHORT).show();
+        }
+        // Si no está en la lista, lo añadimos
+        else {
+            listaFavoritos.add(texto);
+            Toast.makeText(this, "Guardado en favoritos ⭐", Toast.LENGTH_SHORT).show();
+        }
+
+        // Guardamos la nueva lista en la memoria del móvil (haciendo la conversión obligatoria a Set)
+        java.util.HashSet<String> nuevoSetParaGuardar = new java.util.HashSet<>(listaFavoritos);
+        preferencias.edit().putStringSet("lugares", nuevoSetParaGuardar).apply();
+
+        // Nos aseguramos de que, aunque giremos el móvil, aparezca la lista
+        adapterFavoritos.clear();
+        adapterFavoritos.addAll(listaFavoritos);
+        adapterFavoritos.notifyDataSetChanged();
+
+        // Actualizamos el dibujo de la estrella
+        actualizarIconoEstrella(campo, boton);
+    }
+
+    // Actualiza el estado visual de la estrella:
+    /*
+        Si estrella está apagada:
+                    el valor que el user está escribiendo en un campo NO existe en la lista de favoritos.
+        Si estrella está encendida:
+                    el valor que el user está escribiendo en un campo SÍ existe en la lista de favoritos.
+     */
+    private void actualizarIconoEstrella(AutoCompleteTextView campo, android.widget.ImageButton boton) {
+        String texto = campo.getText().toString().trim();
+
+        // Si el campo está vacío, la estrella se apaga
+        if (texto.isEmpty()) {
+            boton.setImageResource(android.R.drawable.btn_star_big_off);
+        }
+        // Si lo que hay escrito coincide con un favorito, la estrella se enciende
+        else if (listaFavoritos.contains(texto)) {
+            boton.setImageResource(android.R.drawable.btn_star_big_on);
+        }
+        // En cualquier otro caso (texto nuevo no guardado), la estrella se apaga
+        else {
+            boton.setImageResource(android.R.drawable.btn_star_big_off);
+        }
     }
 
     // ---------- DEBUG ONLY ---------------------
