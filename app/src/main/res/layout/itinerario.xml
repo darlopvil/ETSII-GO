@@ -60,23 +60,42 @@
         </com.google.android.material.textfield.TextInputLayout>
 
         <ImageButton
-            android:id="@+id/btn_lista_origen"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
+            android:id="@+id/btn_gps_origen"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
             android:layout_gravity="center_vertical"
             android:layout_marginStart="4dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:src="@android:drawable/ic_menu_mylocation" />
+
+        <ImageButton
+            android:id="@+id/btn_lista_origen"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_gravity="center_vertical"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:src="@android:drawable/ic_menu_myplaces" />
 
         <ImageButton
             android:id="@+id/btn_fav_origen"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
             android:layout_gravity="center_vertical"
-            android:layout_marginStart="4dp"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:src="@android:drawable/btn_star_big_off" />
     </LinearLayout>
+
+    <ImageButton
+        android:id="@+id/btn_intercambiar"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginEnd="8dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:src="@android:drawable/ic_popup_sync"
+        android:rotation="90"
+        app:layout_constraintEnd_toStartOf="@+id/guia_2"
+        app:layout_constraintTop_toBottomOf="@id/layout_origen"
+        app:layout_constraintBottom_toTopOf="@id/layout_destino" />
 
     <LinearLayout
         android:id="@+id/layout_destino"
@@ -105,8 +124,8 @@
 
         <ImageButton
             android:id="@+id/btn_lista_destino"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
             android:layout_gravity="center_vertical"
             android:layout_marginStart="4dp"
             android:background="?attr/selectableItemBackgroundBorderless"
@@ -114,10 +133,9 @@
 
         <ImageButton
             android:id="@+id/btn_fav_destino"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
             android:layout_gravity="center_vertical"
-            android:layout_marginStart="4dp"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:src="@android:drawable/btn_star_big_off" />
     </LinearLayout>

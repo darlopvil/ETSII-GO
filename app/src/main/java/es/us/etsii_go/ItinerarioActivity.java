@@ -1,7 +1,10 @@
 package es.us.etsii_go;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
+import android.location.LocationManager;
 import android.media.Image;
 import android.os.Bundle;
 import android.text.Editable;
@@ -50,7 +53,12 @@ public class ItinerarioActivity extends AppCompatActivity {
 
     // VARIABLES GLOBALES
     private EditText origen, destino;
-    private ImageButton botonFavOrigen, botonFavDestino, botonListaOrigen, botonListaDestino;
+    private ImageButton botonFavOrigen, botonFavDestino, botonListaOrigen, botonListaDestino, botonGpsOrigen, botonIntercambiar;
+    // Variables para controlar el GPS
+    private double latitudGPS = 0.0;
+    private double longitudGPS = 0.0;
+    private boolean origenEsGPS = false;    // centinela por si el usuario ha introducido una dirección como coordenada GPS
+    private boolean destinoEsGPS = false;   // centinela por si el usuario ha introducido una dirección como coordenada GPS
 
     // Persistencia de datos con SharedPreferences:
     /*
@@ -115,6 +123,8 @@ public class ItinerarioActivity extends AppCompatActivity {
      scrollResultados = findViewById(R.id.scroll_resultados);
      layoutResultados = findViewById(R.id.resultados_layout);
      grupoModoViaje = findViewById(R.id.grupo_modo_viaje);
+     botonGpsOrigen = findViewById(R.id.btn_gps_origen);
+     botonIntercambiar = findViewById(R.id.btn_intercambiar);
 
      // LISTENER DEL BOTÓN
         botonCalcularRuta.setOnClickListener(v -> {
@@ -148,6 +158,24 @@ public class ItinerarioActivity extends AppCompatActivity {
 
         });
 
+        // LISTENER de Intercambiar origen y destino:
+        botonIntercambiar.setOnClickListener(v -> {
+            // 1.- Primero intercambiamos las banderas si se trata de coordendas GPS (Evitar Condición de Carrera)
+            boolean tempGPS = origenEsGPS;
+            origenEsGPS = destinoEsGPS;
+            destinoEsGPS = tempGPS;
+
+            // 2.- Intercambiamos los textos
+            String tempTexto = origen.getText().toString();
+            origen.setText(destino.getText().toString());
+            destino.setText(tempTexto);
+
+            // ATENCIÓN: Las estrellas se actualizarán solas gracias al "watcher"
+        });
+
+        // LISTENER del Botón GPS:
+        botonGpsOrigen.setOnClickListener(v -> obtenerUbicacionGPS());
+
         // Llamamos a cargarParadasTussam()
         cargarParadasTussam();
 
@@ -174,8 +202,30 @@ public class ItinerarioActivity extends AppCompatActivity {
 
                 // 2.- Construimos el JSON de la petición
                 JSONObject body = new JSONObject();
-                body.put("origin", new JSONObject().put("address", origen));
-                body.put("destination", new JSONObject().put("address", destino));
+                // ORIGEN: Determinar si es texto o coordenadas GPS
+                JSONObject origenJSON = new JSONObject();
+                if (origenEsGPS && origen.contains("ubicación")) {    // Si es GPS
+                    JSONObject latLng = new JSONObject();
+                    latLng.put("latitude", latitudGPS);
+                    latLng.put("longitude", longitudGPS);
+                    origenJSON.put("location", new JSONObject().put("latLng", latLng));
+                } else {    // Si es texto normal
+                    origenJSON.put("address", origen);
+                }
+                body.put("origin", origenJSON);
+
+                // DESTINO: Determinar si es texto o coordenadas GPS (Por si el usuario le dio al botón de intercambiar)
+                JSONObject destinoJSON = new JSONObject();
+                if (destinoEsGPS && destino.contains("ubicación")) {  // Si es GPS
+                    JSONObject latLng = new JSONObject();
+                    latLng.put("latitude", latitudGPS);
+                    latLng.put("longitude", longitudGPS);
+                    destinoJSON.put("location", new JSONObject().put("latLng", latLng));
+                } else {    // Si es texto normal
+                    destinoJSON.put("address", destino);
+                }
+                body.put("destination", destinoJSON);
+
                 body.put("travelMode", modoViajeAPI);  // Le pasamos directamente el modo de viaje seleccionado en el RadioButtom
                 body.put("computeAlternativeRoutes", true); // Pedir todas las rutas disponibles
 
@@ -183,12 +233,12 @@ public class ItinerarioActivity extends AppCompatActivity {
                 os.write(body.toString().getBytes(StandardCharsets.UTF_8));    // Pasamos a bytes los datos del usuario y los mandamos con write()
                 os.close(); // Cerramos la tubería. Google ya puede procesar la solicitud
 
-                // 3.- Leemos la respuesta (si es exitosa o el error sino)
+                // 3.- Leemos la respuesta (si es exitosa o el error si no)
                 int responseCode = connection.getResponseCode();
                 BufferedReader br;
 
                 if (responseCode >= 200 && responseCode <= 229) {
-                    // Respuesta existosa, leemos el InputStream normalmente:
+                    // Respuesta exitosa, leemos el InputStream normalmente:
                     br = new BufferedReader(new InputStreamReader(connection.getInputStream()));
                 } else {
                     // Hubo un error, leemos el ErrorStream:
@@ -591,6 +641,10 @@ public class ItinerarioActivity extends AppCompatActivity {
             public void afterTextChanged(Editable editable) {
                 actualizarIconoEstrella(origen, botonFavOrigen);
                 actualizarIconoEstrella(destino, botonFavDestino);
+
+                // GPS: Si el usuario altera el texto y ya no pone "Mi ubicación", desactivamos el GPS
+                if (!origen.getText().toString().contains("ubicación")) origenEsGPS = false;
+                if (!destino.getText().toString().contains("ubicación")) destinoEsGPS = false;
             }
 
             @Override
@@ -615,6 +669,12 @@ public class ItinerarioActivity extends AppCompatActivity {
         // Si el campo está vacío, avisamos y cortamos la ejecución. No podemos guardar "Nada" como favorito
         if (texto.isEmpty()) {
             Toast.makeText(this, "Escribe una dirección primero", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        // Si el campo es una ubicación GPS
+        if (texto.contains("ubicación")) {
+            Toast.makeText(this, "No puedes guardar el GPS como favorito. ¡Usa el botón de la diana!", Toast.LENGTH_LONG).show();
             return;
         }
 
@@ -721,7 +781,39 @@ public class ItinerarioActivity extends AppCompatActivity {
 
     }
 
+    private void obtenerUbicacionGPS() {
+        // 1.- Comprobamos si el usuario nos ha dado permiso de ubicación
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // Si no lo tiene, se lo pedimos:
+            requestPermissions(new String[]{
+                    Manifest.permission.ACCESS_FINE_LOCATION
+            }, 100);
+            return;
+        }
 
+        // 2.- Si hay permiso, encendemos el Localizador de Android
+        android.location.LocationManager locationManager = (android.location.LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        try {
+            // Pedimos la última ubicación conocida
+            android.location.Location location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+            if (location == null) { // Si falla, probamos a detectar la localización por antenas WiFi/datos móviles
+                location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+            }
+
+            if (location != null) { // Pero si tenemos coordenadas, proseguimos:
+                latitudGPS = location.getLatitude();
+                longitudGPS = location.getLongitude();
+                origenEsGPS = true; // Activamos la bandera
+                origen.setText("📍 Mi ubicación actual");
+                Toast.makeText(this, "Ubicación encontrada", Toast.LENGTH_SHORT).show();
+
+            } else {
+                Toast.makeText(this, "No se pudo obtener la ubicación. Activa el GPS.", Toast.LENGTH_SHORT).show();
+            }
+        } catch (SecurityException e) {
+            e.printStackTrace();
+        }
+    }
 
     // ---------- DEBUG ONLY ---------------------
     private void logLargo(String tag, String mensaje) {
