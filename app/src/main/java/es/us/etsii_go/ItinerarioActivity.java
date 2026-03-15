@@ -399,13 +399,13 @@ public class ItinerarioActivity extends AppCompatActivity {
 
                                             // D. Buscamos la parada correcta con el desempate geográfico
                                             String claveOrigen = origenName.toLowerCase() + "_" + lineaBus;
-                                            String numeroOrigen = obtenerNodoMasCercano(claveOrigen, oriLat, oriLon);
+                                            String numeroOrigen = obtenerNodoMasCercano(lineaBus, oriLat, oriLon);
                                             if (numeroOrigen != null) {
                                                 origenName = origenName + " (Parada Nº " + numeroOrigen + ")";
                                             }
 
-                                            String claveDestino = destinoName.toLowerCase() + "_" + lineaBus;
-                                            String numeroDestino = obtenerNodoMasCercano(claveDestino, destLat, destLon);
+                                          //  String claveDestino = destinoName.toLowerCase() + "_" + lineaBus;
+                                            String numeroDestino = obtenerNodoMasCercano(lineaBus, destLat, destLon);
                                             if (numeroDestino != null) {
                                                 destinoName = destinoName + " (Parada Nº " + numeroDestino + ")";
                                             }
@@ -505,18 +505,18 @@ public class ItinerarioActivity extends AppCompatActivity {
 
                         String labelLinea = columnas[3].trim().toLowerCase(); // (ej. 03)
                         String nodo = columnas[5].trim(); // Número de la parada (ej. 879)
-                        String nombre = columnas[6].trim().toLowerCase(); // Nombre de la parada
+                       // String nombre = columnas[6].trim().toLowerCase(); // Nombre de la parada
 
-                        // Creamos la clave compuesta: "nombre_linea"
-                        String claveCompuesta = nombre + "_" + labelLinea;
+                        // La clave es solo el número de la línea (ej. "03")
+                        String claveSoloLinea = labelLinea;
 
                         // Si la clave no existe, creamos una nueva lista vacía
-                        if (!mapaParadasTussam.containsKey(claveCompuesta)) {
-                            mapaParadasTussam.put(claveCompuesta, new ArrayList<>());
+                        if (!mapaParadasTussam.containsKey(claveSoloLinea)) {
+                            mapaParadasTussam.put(claveSoloLinea, new ArrayList<>());
                         }
 
                         // Agregamos esta parada a su lista correspondiente
-                        mapaParadasTussam.get(claveCompuesta).add(new ParadaTussam(nodo, lat, lon));
+                        mapaParadasTussam.get(claveSoloLinea).add(new ParadaTussam(nodo, lat, lon));
 
                     } catch (Exception e) {
                         throw new RuntimeException(e);

@@ -58,6 +58,7 @@
                 android:inputType="textPostalAddress"
                 android:maxLines="1" />
         </com.google.android.material.textfield.TextInputLayout>
+
         <ImageButton
             android:id="@+id/btn_lista_origen"
             android:layout_width="48dp"
@@ -65,7 +66,7 @@
             android:layout_gravity="center_vertical"
             android:layout_marginStart="4dp"
             android:background="?attr/selectableItemBackgroundBorderless"
-            android:src="@android:drawable/ic_menu_recent_history" />
+            android:src="@android:drawable/ic_menu_myplaces" />
 
         <ImageButton
             android:id="@+id/btn_fav_origen"
@@ -101,6 +102,7 @@
                 android:inputType="textPostalAddress"
                 android:maxLines="1" />
         </com.google.android.material.textfield.TextInputLayout>
+
         <ImageButton
             android:id="@+id/btn_lista_destino"
             android:layout_width="48dp"
@@ -108,7 +110,7 @@
             android:layout_gravity="center_vertical"
             android:layout_marginStart="4dp"
             android:background="?attr/selectableItemBackgroundBorderless"
-            android:src="@android:drawable/ic_menu_recent_history" />
+            android:src="@android:drawable/ic_menu_myplaces" />
 
         <ImageButton
             android:id="@+id/btn_fav_destino"
