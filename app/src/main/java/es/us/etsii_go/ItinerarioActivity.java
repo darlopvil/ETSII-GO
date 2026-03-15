@@ -77,7 +77,24 @@ public class ItinerarioActivity extends AppCompatActivity {
     </map>
      */
     private SharedPreferences preferencias;
-    private ArrayList<String> listaFavoritos = new ArrayList<>();
+    private ArrayList<Favorito> listaFavoritos = new ArrayList<>();
+
+    // Clase Favorito para almacenar toda la información sobre los lugares favoritos:
+    private static class Favorito {
+        String alias;   // El nombre que le pone el usuario a un lugar (ej. "Casa")
+        String direccion;   // La dirección real a texto o "Mi ubicación actual" si es con coordenadas GPS
+        boolean esGps;
+        double lat;
+        double lon;
+
+        Favorito(String alias, String direccion, boolean esGps, double lat, double lon) {
+            this.alias = alias;
+            this.direccion = direccion;
+            this.esGps = esGps;
+            this.lat = lat;
+            this.lon = lon;
+        }
+    }
     private Button botonCalcularRuta;
     private ScrollView scrollResultados;
     private LinearLayout layoutResultados;
@@ -204,27 +221,59 @@ public class ItinerarioActivity extends AppCompatActivity {
 
                 // 2.- Construimos el JSON de la petición
                 JSONObject body = new JSONObject();
-                // ORIGEN: Determinar si es texto o coordenadas GPS
+                // ---- ORIGEN ----
                 JSONObject origenJSON = new JSONObject();
+                Favorito favOrigen = buscarFavoritoPorAlias(origen);
+
+                    // Caso 1: GPS normal (El usuario acaba de darle a la diana, aparece el texto ""📍 Mi ubicación actual")
                 if (origenEsGPS && origen.contains("ubicación")) {    // Si es GPS
                     JSONObject latLng = new JSONObject();
                     latLng.put("latitude", latitudGPS);
                     latLng.put("longitude", longitudGPS);
                     origenJSON.put("location", new JSONObject().put("latLng", latLng));
-                } else {    // Si es texto normal
-                    origenJSON.put("address", origen);
+
+                    // Caso 2: GPS favorito (El usuario ha seleccionado "Casa" de la lista de favoritos
+                } else if (favOrigen != null && favOrigen.esGps){
+                    JSONObject latLng = new JSONObject();
+                    latLng.put("latitude", favOrigen.lat);
+                    latLng.put("longitude", favOrigen.lon);
+                    origenJSON.put("location", new JSONObject().put("latLng", latLng));
+
+                    // Caso 3: Texto normal o Favorito de texto renombrado (ej. "Uni" -> "Av. Reina Mercedes")
+                    // Si es favorito mandamos su dirección real oculta, si no, mandamos lo que haya escrito.
+                } else {
+                    String textoAEnviar;
+                   if (favOrigen != null) {
+                       textoAEnviar = favOrigen.direccion;
+                   } else {
+                       textoAEnviar = origen;
+                   }
+                   origenJSON.put("address", textoAEnviar);
                 }
                 body.put("origin", origenJSON);
 
-                // DESTINO: Determinar si es texto o coordenadas GPS (Por si el usuario le dio al botón de intercambiar)
+                // ---- DESTINO ----
                 JSONObject destinoJSON = new JSONObject();
+                Favorito favDestino = buscarFavoritoPorAlias(destino);
+
                 if (destinoEsGPS && destino.contains("ubicación")) {  // Si es GPS
                     JSONObject latLng = new JSONObject();
                     latLng.put("latitude", latitudGPS);
                     latLng.put("longitude", longitudGPS);
                     destinoJSON.put("location", new JSONObject().put("latLng", latLng));
-                } else {    // Si es texto normal
-                    destinoJSON.put("address", destino);
+                } else if (favDestino != null && favDestino.esGps) {
+                    JSONObject latLng = new JSONObject();
+                    latLng.put("latitude", favDestino.lat);
+                    latLng.put("longitude", favDestino.lon);
+                    destinoJSON.put("location", new JSONObject().put("latLng", latLng));
+                } else {
+                    String textoAEnviar;
+                    if (favDestino != null) {
+                        textoAEnviar = favDestino.direccion;
+                    } else {
+                        textoAEnviar = destino;
+                    }
+                    destinoJSON.put("address", textoAEnviar);
                 }
                 body.put("destination", destinoJSON);
 
@@ -614,27 +663,25 @@ public class ItinerarioActivity extends AppCompatActivity {
     private void gestionarFavoritos() {
         // 1.- Cargamos los favoritos guardados en el móvil
         preferencias = getSharedPreferences("MisFavoritos", Context.MODE_PRIVATE);  // MODE_PRIVATE: Ninguna otra app puede leer las preferencias
-        Set<String> setGuardados = preferencias.getStringSet("lugares", new HashSet<>());   //SharedPreferencies NO usa listas, sino Set (genial para evitar lugares repetidos)
+        cargarFavoritosDesdeMemoria();
 
-        listaFavoritos.clear(); // Útil para evitar que se pierdan favoritos al meterlos y girar la pantalla
-        listaFavoritos.addAll(setGuardados);
 
         // 2.- Listeners para guardar/quitar favorito (la estrella)
        botonFavOrigen.setOnClickListener(v -> {
-           toggleFavorito(origen, botonFavOrigen);
+           toggleFavorito(origen, botonFavOrigen, true);
        });
 
        botonFavDestino.setOnClickListener(v -> {
-           toggleFavorito(destino, botonFavDestino);
+           toggleFavorito(destino, botonFavDestino, false);
        });
 
         // 3.- Listeners para abrir la lista de favoritos
         botonListaOrigen.setOnClickListener(v -> {
-            mostrarDialogoFavoritos(origen, botonFavOrigen);
+            mostrarDialogoFavoritos(origen, botonFavOrigen, true);
         });
 
         botonListaDestino.setOnClickListener(v -> {
-            mostrarDialogoFavoritos(destino, botonFavDestino);
+            mostrarDialogoFavoritos(destino, botonFavDestino, false);
         });
 
         // 4.- Configuramos el "vigilante" para que la estrella se encienda al escribir
@@ -665,38 +712,67 @@ public class ItinerarioActivity extends AppCompatActivity {
     }
 
     // Método que verdaderamente "mete en favoritos" un lugar, se le pasa un campo y el botón de la estrella.
-    private void toggleFavorito(EditText campo, android.widget.ImageButton boton) {
+    private void toggleFavorito(EditText campo, android.widget.ImageButton boton, boolean esCampoOrigen) {
         String texto = campo.getText().toString().trim();
 
         // Si el campo está vacío, avisamos y cortamos la ejecución. No podemos guardar "Nada" como favorito
         if (texto.isEmpty()) {
-            Toast.makeText(this, "Escribe una dirección primero", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Escribe o detecta una dirección primero", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        // Si el campo es una ubicación GPS
-        if (texto.contains("ubicación")) {
-            Toast.makeText(this, "No puedes guardar el GPS como favorito. ¡Usa el botón de la diana!", Toast.LENGTH_LONG).show();
-            return;
+        // 1.- Buscamos si ya existe en la lista para borrarlo
+        for (int i = 0; i < listaFavoritos.size(); i ++) {
+            if (listaFavoritos.get(i).alias.equals(texto) || listaFavoritos.get(i).direccion.equals(texto)) {
+                listaFavoritos.remove(i);
+                guardarFavoritosEnMemoria();
+                actualizarIconoEstrella(campo, boton);
+                Toast.makeText(this, "Favorito eliminado 🗑️", Toast.LENGTH_SHORT).show();
+                return;
+            }
         }
 
-        // Si el texto ya está en la lista de favoritos, lo borramos
-        if (listaFavoritos.contains(texto)) {
-            listaFavoritos.remove(texto);
-            Toast.makeText(this, "Eliminado de favoritos", Toast.LENGTH_SHORT).show();
+        // 2.- Si NO existe, lo añadimos
+        boolean esGps;
+        double lat, lon;
+
+        // Preguntamos primero si las coordenadas introducidas están en el campo origen o destino:
+        if (esCampoOrigen) {    // SI están en el CAMPO ORIGEN, activamos bandera de origen y guardamos coordenadas
+            esGps = origenEsGPS;
+            lat = latitudGPS;
+            lon = longitudGPS;
+        } else {    // SI están en el CAMPO DESTINO, activamos la bandera de destino y las guardamos coordenadas
+            esGps = destinoEsGPS;
+            lat = latitudGPS;
+            lon = longitudGPS;
         }
-        // Si no está en la lista, lo añadimos
-        else {
-            listaFavoritos.add(texto);
+
+        if (esGps) {     // Si se trata de una coordenada
+            // Obligamos al usuario a ponerle un nombre (ej. "Gimnasio")
+            // De esta manera, evitamos que en otro sitio distinto al de las coordenadas guardadas, se piense que son sus coordenadas reales (de su nuevo sitio).
+            EditText input = new EditText(this);
+            input.setHint("Ej. Casa, Trabajo, Gimnasio...");
+            new AlertDialog.Builder(this)
+                    .setTitle("Ponle un nombre a esta ubicación")
+                    .setMessage("Vas a guardar tus coordenadas actuales. ¿Qué nombre le ponemos?")
+                    .setView(input)
+                    .setPositiveButton("Guardar", (dialog, which) -> {
+                        String alias = input.getText().toString().trim();
+                        if (!alias.isEmpty()) {
+                            listaFavoritos.add(new Favorito(alias, texto, true, lat, lon));
+                            campo.setText(alias);   // Ponemos el nombre corto en el campo
+                            actualizarIconoEstrella(campo, boton);
+                            Toast.makeText(this, "Coordenadas guardadas ⭐", Toast.LENGTH_SHORT).show();
+                        }
+                    }).setNegativeButton("Cancelar", null).show();
+        } else {
+            // Si es texto normal, lo guardamos directamente, usando la calle como Alias por defecto
+            listaFavoritos.add(new Favorito(texto, texto, false, 0,0));
+            guardarFavoritosEnMemoria();
+            actualizarIconoEstrella(campo, boton);
             Toast.makeText(this, "Guardado en favoritos ⭐", Toast.LENGTH_SHORT).show();
         }
 
-        // Guardamos la nueva lista en la memoria del móvil (haciendo la conversión obligatoria a Set)
-        java.util.HashSet<String> nuevoSetParaGuardar = new java.util.HashSet<>(listaFavoritos);
-        preferencias.edit().putStringSet("lugares", nuevoSetParaGuardar).apply();
-
-        // Actualizamos el dibujo de la estrella
-        actualizarIconoEstrella(campo, boton);
     }
 
     // Actualiza el estado visual de la estrella:
@@ -706,24 +782,36 @@ public class ItinerarioActivity extends AppCompatActivity {
         Si estrella está encendida:
                     el valor que el user está escribiendo en un campo SÍ existe en la lista de favoritos.
      */
+
+    private Favorito buscarFavoritoPorAlias(String alias) {
+        for (Favorito f : listaFavoritos) {
+            if (f.alias.equals(alias)) {
+                return f; // Hemos encontrado el favorito con el alias con que lo guardó el usuario
+            }
+        }
+
+        return null;    // No está en favoritos, es texto normal
+    }
     private void actualizarIconoEstrella(EditText campo, android.widget.ImageButton boton) {
         String texto = campo.getText().toString().trim();
+        boolean encontrado = false;
 
-        // Si el campo está vacío, la estrella se apaga
-        if (texto.isEmpty()) {
-            boton.setImageResource(android.R.drawable.btn_star_big_off);
+        // Comprobamos si el texto escrito coincide con algún Alias o Dirección de nuestros favoritos
+        for (Favorito f: listaFavoritos) {
+            if (f.alias.equals(texto) || f.direccion.equals(texto)){
+                encontrado = true;
+                break;
+            }
         }
-        // Si lo que hay escrito coincide con un favorito, la estrella se enciende
-        else if (listaFavoritos.contains(texto)) {
+
+        if (encontrado) {
             boton.setImageResource(android.R.drawable.btn_star_big_on);
-        }
-        // En cualquier otro caso (texto nuevo no guardado), la estrella se apaga
-        else {
+        } else {
             boton.setImageResource(android.R.drawable.btn_star_big_off);
         }
     }
 
-    private void mostrarDialogoFavoritos(EditText campoDestino, ImageButton botonEstrella) {
+    private void mostrarDialogoFavoritos(EditText campo, ImageButton botonEstrella, boolean esCampoOrigen) {
         if (listaFavoritos.isEmpty()) {
             Toast.makeText(this, "Aún no tienes favoritos guardados", Toast.LENGTH_SHORT).show();
             return; // Corta la ejecución de este método, no sigue leyendo las líneas de abajo. Es como un break; pero para los if-else
@@ -731,9 +819,6 @@ public class ItinerarioActivity extends AppCompatActivity {
 
         // Creamos una lista de Android de toda la vida (ListView)
         ListView listView = new ListView(this);
-        // ArrayAdapter hace de traductor entre el listView visual y los elementos de la lista escrita en Java. listView no sabe de Java.
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, listaFavoritos);
-        listView.setAdapter(adapter);
 
         // Creamos la ventana emergente
         AlertDialog dialogo = new AlertDialog.Builder(this)
@@ -743,43 +828,82 @@ public class ItinerarioActivity extends AppCompatActivity {
                 .setNegativeButton("Cerrar", null)
                 .create();
 
+        // Creamos el adaptador personalizado (layout + lápiz)
+        ArrayAdapter<Favorito> adapter = new ArrayAdapter<Favorito>(this, R.layout.item_favorito, listaFavoritos) {
+            public View getView(int position, View convertView, android.view.ViewGroup parent) {
+                if (convertView == null) {
+                    convertView = getLayoutInflater().inflate(R.layout.item_favorito, parent, false);
+                }
+
+                Favorito fav = getItem(position);
+                TextView textoAlias = convertView.findViewById(R.id.texto_alias_favorito);
+                ImageButton botonEditar = convertView.findViewById(R.id.btn_editar_favorito);
+
+                textoAlias.setText(fav.alias);
+
+                // ACCIÓN DEL LÁPIZ: Editar el nombre del favorito
+                botonEditar.setOnClickListener(v -> {
+                    EditText inputEditar = new EditText(getContext());
+                    inputEditar.setText(fav.alias);
+                    new AlertDialog.Builder(getContext())
+                            .setTitle("Renombrar Favorito")
+                            .setView(inputEditar)
+                            .setPositiveButton("Guardar", (d, w) -> {
+                                fav.alias = inputEditar.getText().toString().trim();
+                                guardarFavoritosEnMemoria();
+                                notifyDataSetChanged(); // Refresca la lista de los favoritos
+                                actualizarIconoEstrella(origen, botonFavOrigen);
+                                actualizarIconoEstrella(destino, botonFavDestino);
+                            }).setNegativeButton("Cancelar", null).show();
+                });
+
+                return convertView;
+            }
+        };
+
+        listView.setAdapter(adapter);
+
+
         // ACCIÓN 1: Click corto -> Elegir un favorito de la lista y ponerlo en el EditText
         listView.setOnItemClickListener((adapterView, view, i, l) -> {
-            String seleccionado = listaFavoritos.get(i);
-            campoDestino.setText(seleccionado); // Rellena el texto
-            dialogo.dismiss(); // Cierra el menú
+            Favorito seleccionado = listaFavoritos.get(i);
+            campo.setText(seleccionado.alias); // Rellena el texto
+
+            // Si el favorito era GPS, recargamos sus coordenadas en las variables globales
+            if (esCampoOrigen) {
+                origenEsGPS = seleccionado.esGps;
+                if (origenEsGPS) {
+                    latitudGPS = seleccionado.lat;
+                    longitudGPS = seleccionado.lon;
+                }
+            } else {
+                destinoEsGPS = seleccionado.esGps;
+                if (destinoEsGPS) {
+                    latitudGPS = seleccionado.lat;
+                    longitudGPS = seleccionado.lon;
+                }
+            }
+                dialogo.dismiss();  // Cerramos
         });
 
         // ACCIÓN 2: Click largo -> Borrar el favorito seleccionado
-        listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-            @Override
-            public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
-                // Borramos el elemento seleccionado de la lista
-                listaFavoritos.remove(i);
+        listView.setOnItemLongClickListener((adapterView, view, i, l) -> {
+            listaFavoritos.remove(i);   // Borramos el favorito seleccionado de la lista
+            guardarFavoritosEnMemoria();
+            adapter.notifyDataSetChanged(); // Avisamos a la ventana emergente para que se refresque:
+            actualizarIconoEstrella(origen, botonFavOrigen);
+            actualizarIconoEstrella(destino, botonFavDestino);
+            Toast.makeText(ItinerarioActivity.this, "Favorito eliminado 🗑️", Toast.LENGTH_SHORT).show();
 
-                // Guardamos la nueva lista en la "memoria"
-                HashSet<String> nuevoSet = new HashSet<>(listaFavoritos);
-                preferencias.edit().putStringSet("lugares", nuevoSet).apply();
+            if (listaFavoritos.isEmpty()) {
+                dialogo.dismiss(); // Cerramos
 
-                // Avisamos a la ventana emergente para que se refresque:
-                adapter.notifyDataSetChanged();
-
-                // Actualizamos las estrellas por si teníamos ese lugar escrito
-                actualizarIconoEstrella(origen, botonFavOrigen);
-                actualizarIconoEstrella(destino, botonFavDestino);
-
-                Toast.makeText(ItinerarioActivity.this, "Favorito eliminado \uD83D\uDDD1\uFE0F", Toast.LENGTH_SHORT).show();
-
-                // Cerramos la ventana si borramos el último favorito que existe en la listview
-                if (listaFavoritos.isEmpty()) {
-                    dialogo.dismiss();
-                }
-
-                return true;    // Medida de seguridad: Le decimos a Android que nosotros gestionamos lo que sucede con el click largo, él no hace nada más.
             }
-        });
 
+            return true;    // Medida de seguridad: Le decimos a Android que nosotros gestionamos lo que sucede con el click largo, él no hace nada más.
+        });
         dialogo.show();
+
 
     }
 
@@ -816,6 +940,49 @@ public class ItinerarioActivity extends AppCompatActivity {
                     }
                 });
     }
+
+    // --- MÉTODOS DE CONVERSIÓN A JSON (FAVORITOS) ---
+    private void guardarFavoritosEnMemoria() {
+        try {
+            JSONArray jsonArray = new JSONArray();
+            for (Favorito f: listaFavoritos) {
+                JSONObject obj = new JSONObject();
+                obj.put("alias", f.alias);
+                obj.put("direccion", f.direccion);
+                obj.put("esGps", f.esGps);
+                obj.put("lat", f.lat);
+                obj.put("lon", f.lon);
+                jsonArray.put(obj);
+
+            }
+
+            preferencias.edit().putString("favoritos_json", jsonArray.toString()).apply();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void cargarFavoritosDesdeMemoria() {
+        listaFavoritos.clear();
+        String jsonString = preferencias.getString("favoritos_json", "[]");
+        try {
+            JSONArray jsonArray = new JSONArray(jsonString);    // ATENCIÓN: Si no se le pasa el jsonString, la lista de favoritos se destruye cada vez que ingresamos en la actividad
+            for (int i = 0; i < jsonArray.length(); i++) {
+                JSONObject obj = jsonArray.getJSONObject(i);
+                listaFavoritos.add(new Favorito(
+                        obj.getString("alias"),
+                        obj.getString("direccion"),
+                        obj.getBoolean("esGps"),
+                        obj.getDouble("lat"),
+                        obj.getDouble("lon")
+                ));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
+
 
     // ---------- DEBUG ONLY ---------------------
     private void logLargo(String tag, String mensaje) {

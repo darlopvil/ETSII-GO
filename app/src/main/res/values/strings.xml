@@ -11,5 +11,6 @@
     <string name="radio_coche">Coche</string>
     <string name="radio_transporte_publico">Transporte público</string>
     <string name="radio_andando">Andando</string>
+    <string name="texto_lugar_favorito">Nombre del Favorito</string>
 
 </resources>
