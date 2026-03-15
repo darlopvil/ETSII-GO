@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.LocationManager;
-import android.media.Image;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -14,7 +13,6 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -48,6 +46,10 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
+
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.Priority;
 
 public class ItinerarioActivity extends AppCompatActivity {
 
@@ -791,28 +793,28 @@ public class ItinerarioActivity extends AppCompatActivity {
             return;
         }
 
-        // 2.- Si hay permiso, encendemos el Localizador de Android
-        android.location.LocationManager locationManager = (android.location.LocationManager) getSystemService(Context.LOCATION_SERVICE);
-        try {
-            // Pedimos la última ubicación conocida
-            android.location.Location location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-            if (location == null) { // Si falla, probamos a detectar la localización por antenas WiFi/datos móviles
-                location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-            }
+        Toast.makeText(this, "Buscando su ubicación. Espere, por favor...", Toast.LENGTH_SHORT).show();
 
-            if (location != null) { // Pero si tenemos coordenadas, proseguimos:
-                latitudGPS = location.getLatitude();
-                longitudGPS = location.getLongitude();
-                origenEsGPS = true; // Activamos la bandera
-                origen.setText("📍 Mi ubicación actual");
-                Toast.makeText(this, "Ubicación encontrada", Toast.LENGTH_SHORT).show();
+        // 1.- Instanciamos el cliente de Google:
+        FusedLocationProviderClient fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
 
-            } else {
-                Toast.makeText(this, "No se pudo obtener la ubicación. Activa el GPS.", Toast.LENGTH_SHORT).show();
-            }
-        } catch (SecurityException e) {
-            e.printStackTrace();
-        }
+        // 2. Pedimos la ubicación actual (getCurrentLocation ignora el historial y fuerza una lectura nueva)
+        // Usamos PRIORITY_HIGH_ACCURACY para decirle a Google que queremos la máxima precisión (GPS + WiFi + Bluetooth)
+        fusedLocationProviderClient.getCurrentLocation(Priority.PRIORITY_HIGH_ACCURACY, null)
+                .addOnSuccessListener(this, location -> {
+                    // Cogemos las coordenadas y activamos el centinela
+                    if (location != null) {
+                        latitudGPS = location.getLatitude();
+                        longitudGPS = location.getLongitude();
+                        origenEsGPS = true;
+
+                        // Actualizamos la caja de texto
+                        origen.setText("📍 Mi ubicación actual");
+                        Toast.makeText(ItinerarioActivity.this, "¡Ubicación exacta encontrada!", Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(ItinerarioActivity.this, "Asegúrate de tener el GPS encendido en los ajustes", Toast.LENGTH_SHORT).show();
+                    }
+                });
     }
 
     // ---------- DEBUG ONLY ---------------------
