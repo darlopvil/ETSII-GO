@@ -8,5 +8,8 @@
     <string name="campo_origen">Dirección de origen</string>
     <string name="campo_destino">Dirección de destino</string>
     <string name="boton_calcular_ruta">Calcular Itinerario</string>
+    <string name="radio_coche">Coche</string>
+    <string name="radio_transporte_publico">Transporte público</string>
+    <string name="radio_andando">Andando</string>
 
 </resources>

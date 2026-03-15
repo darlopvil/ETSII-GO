@@ -2,23 +2,28 @@ package es.us.etsii_go;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.media.Image;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.RadioGroup;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.Insets;
@@ -44,11 +49,25 @@ import java.util.Set;
 public class ItinerarioActivity extends AppCompatActivity {
 
     // VARIABLES GLOBALES
-    private AutoCompleteTextView origen, destino;
-    private ImageButton botonFavOrigen, botonFavDestino;
+    private EditText origen, destino;
+    private ImageButton botonFavOrigen, botonFavDestino, botonListaOrigen, botonListaDestino;
+
+    // Persistencia de datos con SharedPreferences:
+    /*
+        Es un archivo XML que se oculta al usuario de Android, pero que es
+        muy rápido de consultar. Por lo que ofrece persistencia de datos y rapidez de lectura
+        a la par que seguridad. Funciona como un map con pares de clave-valor. Ejemplo sencillo:
+        <?xml version='1.0' encoding='utf-8' standalone='yes' ?>
+    <map>
+        <set name="lugares">
+            <string>Plaza de Armas</string>
+            <string>Hospital Virgen del Rocío</string>
+            <string>ETSII</string>
+        </set>
+    </map>
+     */
     private SharedPreferences preferencias;
     private ArrayList<String> listaFavoritos = new ArrayList<>();
-    private ArrayAdapter<String> adapterFavoritos;
     private Button botonCalcularRuta;
     private ScrollView scrollResultados;
     private LinearLayout layoutResultados;
@@ -90,6 +109,8 @@ public class ItinerarioActivity extends AppCompatActivity {
      destino = findViewById(R.id.campo_destino);
      botonFavOrigen = findViewById(R.id.btn_fav_origen);
      botonFavDestino = findViewById(R.id.btn_fav_destino);
+     botonListaOrigen = findViewById(R.id.btn_lista_origen);
+     botonListaDestino = findViewById(R.id.btn_lista_destino);
      botonCalcularRuta = findViewById(R.id.boton_calcular_ruta);
      scrollResultados = findViewById(R.id.scroll_resultados);
      layoutResultados = findViewById(R.id.resultados_layout);
@@ -546,56 +567,49 @@ public class ItinerarioActivity extends AppCompatActivity {
         listaFavoritos.clear(); // Útil para evitar que se pierdan favoritos al meterlos y girar la pantalla
         listaFavoritos.addAll(setGuardados);
 
-        // 2.- Creamos el adaptador para los menús desplegables:
-        // Un adaptador es un "traductor" entre el ArrayList de favoritos y el "AutoCompleteTextView" del XML (no sabe de listas, solo de pintar cosas)
-        adapterFavoritos = new ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line, listaFavoritos);
-        origen.setAdapter(adapterFavoritos);
-        destino.setAdapter(adapterFavoritos);
+        // 2.- Listeners para guardar/quitar favorito (la estrella)
+       botonFavOrigen.setOnClickListener(v -> {
+           toggleFavorito(origen, botonFavOrigen);
+       });
 
-        // 3.- Hacemos que se despliegue el menú cuando tocas el campo
-        View.OnFocusChangeListener focusListener = (v, hasFocus) -> {
-            if (hasFocus) {
-                AutoCompleteTextView campoTexto = (AutoCompleteTextView) v;
-                campoTexto.showDropDown();
-            }
-        };
+       botonFavDestino.setOnClickListener(v -> {
+           toggleFavorito(destino, botonFavDestino);
+       });
 
-        origen.setOnFocusChangeListener(focusListener);
-        destino.setOnFocusChangeListener(focusListener);
+        // 3.- Listeners para abrir la lista de favoritos
+        botonListaOrigen.setOnClickListener(v -> {
+            mostrarDialogoFavoritos(origen, botonFavOrigen);
+        });
 
-        // 4.- Listeners para los botones de las estrellas:
-        botonFavOrigen.setOnClickListener(v -> toggleFavorito(origen, botonFavOrigen));
-        botonFavDestino.setOnClickListener(v -> toggleFavorito(destino, botonFavDestino));
+        botonListaDestino.setOnClickListener(v -> {
+            mostrarDialogoFavoritos(destino, botonFavDestino);
+        });
 
-        // 5.- Creamos un "vigilante" que enciende o apaga la estella mientras escribes el lugar:
+        // 4.- Configuramos el "vigilante" para que la estrella se encienda al escribir
         TextWatcher watcher = new TextWatcher() {
             @Override
             public void afterTextChanged(Editable editable) {
-                // Cuando el usuario termina de teclear una letra, comprobamos las estrellas
                 actualizarIconoEstrella(origen, botonFavOrigen);
                 actualizarIconoEstrella(destino, botonFavDestino);
-
             }
-            // Estos métodos no nos sirve, pero es obligatorio mencionarlos
+
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                    // No necesitamos hacer nada aquí
+                // no es necesario
             }
 
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                // No necesitamos hacer nada aquí
+                // no es necesario
             }
-
-
         };
-
         origen.addTextChangedListener(watcher);
         destino.addTextChangedListener(watcher);
+
     }
 
     // Método que verdaderamente "mete en favoritos" un lugar, se le pasa un campo y el botón de la estrella.
-    private void toggleFavorito(AutoCompleteTextView campo, android.widget.ImageButton boton) {
+    private void toggleFavorito(EditText campo, android.widget.ImageButton boton) {
         String texto = campo.getText().toString().trim();
 
         // Si el campo está vacío, avisamos y cortamos la ejecución. No podemos guardar "Nada" como favorito
@@ -619,11 +633,6 @@ public class ItinerarioActivity extends AppCompatActivity {
         java.util.HashSet<String> nuevoSetParaGuardar = new java.util.HashSet<>(listaFavoritos);
         preferencias.edit().putStringSet("lugares", nuevoSetParaGuardar).apply();
 
-        // Nos aseguramos de que, aunque giremos el móvil, aparezca la lista
-        adapterFavoritos.clear();
-        adapterFavoritos.addAll(listaFavoritos);
-        adapterFavoritos.notifyDataSetChanged();
-
         // Actualizamos el dibujo de la estrella
         actualizarIconoEstrella(campo, boton);
     }
@@ -635,7 +644,7 @@ public class ItinerarioActivity extends AppCompatActivity {
         Si estrella está encendida:
                     el valor que el user está escribiendo en un campo SÍ existe en la lista de favoritos.
      */
-    private void actualizarIconoEstrella(AutoCompleteTextView campo, android.widget.ImageButton boton) {
+    private void actualizarIconoEstrella(EditText campo, android.widget.ImageButton boton) {
         String texto = campo.getText().toString().trim();
 
         // Si el campo está vacío, la estrella se apaga
@@ -651,6 +660,68 @@ public class ItinerarioActivity extends AppCompatActivity {
             boton.setImageResource(android.R.drawable.btn_star_big_off);
         }
     }
+
+    private void mostrarDialogoFavoritos(EditText campoDestino, ImageButton botonEstrella) {
+        if (listaFavoritos.isEmpty()) {
+            Toast.makeText(this, "Aún no tienes favoritos guardados", Toast.LENGTH_SHORT).show();
+            return; // Corta la ejecución de este método, no sigue leyendo las líneas de abajo. Es como un break; pero para los if-else
+        }
+
+        // Creamos una lista de Android de toda la vida (ListView)
+        ListView listView = new ListView(this);
+        // ArrayAdapter hace de traductor entre el listView visual y los elementos de la lista escrita en Java. listView no sabe de Java.
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, listaFavoritos);
+        listView.setAdapter(adapter);
+
+        // Creamos la ventana emergente
+        AlertDialog dialogo = new AlertDialog.Builder(this)
+                .setTitle("Mis Favoritos")
+                .setMessage("Toca para elegir.\nMantén pulsado para borrar.")
+                .setView(listView)
+                .setNegativeButton("Cerrar", null)
+                .create();
+
+        // ACCIÓN 1: Click corto -> Elegir un favorito de la lista y ponerlo en el EditText
+        listView.setOnItemClickListener((adapterView, view, i, l) -> {
+            String seleccionado = listaFavoritos.get(i);
+            campoDestino.setText(seleccionado); // Rellena el texto
+            dialogo.dismiss(); // Cierra el menú
+        });
+
+        // ACCIÓN 2: Click largo -> Borrar el favorito seleccionado
+        listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
+                // Borramos el elemento seleccionado de la lista
+                listaFavoritos.remove(i);
+
+                // Guardamos la nueva lista en la "memoria"
+                HashSet<String> nuevoSet = new HashSet<>(listaFavoritos);
+                preferencias.edit().putStringSet("lugares", nuevoSet).apply();
+
+                // Avisamos a la ventana emergente para que se refresque:
+                adapter.notifyDataSetChanged();
+
+                // Actualizamos las estrellas por si teníamos ese lugar escrito
+                actualizarIconoEstrella(origen, botonFavOrigen);
+                actualizarIconoEstrella(destino, botonFavDestino);
+
+                Toast.makeText(ItinerarioActivity.this, "Favorito eliminado \uD83D\uDDD1\uFE0F", Toast.LENGTH_SHORT).show();
+
+                // Cerramos la ventana si borramos el último favorito que existe en la listview
+                if (listaFavoritos.isEmpty()) {
+                    dialogo.dismiss();
+                }
+
+                return true;    // Medida de seguridad: Le decimos a Android que nosotros gestionamos lo que sucede con el click largo, él no hace nada más.
+            }
+        });
+
+        dialogo.show();
+
+    }
+
+
 
     // ---------- DEBUG ONLY ---------------------
     private void logLargo(String tag, String mensaje) {

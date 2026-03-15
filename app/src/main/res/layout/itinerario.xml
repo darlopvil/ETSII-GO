@@ -50,7 +50,7 @@
             android:layout_weight="1"
             app:endIconMode="clear_text">
 
-            <AutoCompleteTextView
+            <EditText
                 android:id="@+id/campo_origen"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -58,13 +58,21 @@
                 android:inputType="textPostalAddress"
                 android:maxLines="1" />
         </com.google.android.material.textfield.TextInputLayout>
+        <ImageButton
+            android:id="@+id/btn_lista_origen"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="4dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:src="@android:drawable/ic_menu_recent_history" />
 
         <ImageButton
             android:id="@+id/btn_fav_origen"
             android:layout_width="48dp"
             android:layout_height="48dp"
             android:layout_gravity="center_vertical"
-            android:layout_marginStart="8dp"
+            android:layout_marginStart="4dp"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:src="@android:drawable/btn_star_big_off" />
     </LinearLayout>
@@ -85,7 +93,7 @@
             android:layout_weight="1"
             app:endIconMode="clear_text">
 
-            <AutoCompleteTextView
+            <EditText
                 android:id="@+id/campo_destino"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -93,13 +101,21 @@
                 android:inputType="textPostalAddress"
                 android:maxLines="1" />
         </com.google.android.material.textfield.TextInputLayout>
+        <ImageButton
+            android:id="@+id/btn_lista_destino"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="4dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:src="@android:drawable/ic_menu_recent_history" />
 
         <ImageButton
             android:id="@+id/btn_fav_destino"
             android:layout_width="48dp"
             android:layout_height="48dp"
             android:layout_gravity="center_vertical"
-            android:layout_marginStart="8dp"
+            android:layout_marginStart="4dp"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:src="@android:drawable/btn_star_big_off" />
     </LinearLayout>
@@ -122,14 +138,14 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Coche" />
+            android:text="@string/radio_coche" />
 
         <RadioButton
             android:id="@+id/radio_transporte_publico"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Transporte público"
+            android:text="@string/radio_transporte_publico"
             android:checked="true"/>
 
         <RadioButton
@@ -137,7 +153,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Andando" />
+            android:text="@string/radio_andando" />
     </RadioGroup>
 
     <Button
