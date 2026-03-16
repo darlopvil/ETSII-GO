@@ -12,7 +12,7 @@
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:textSize="16sp"
-        android:textColor="#000000"
+        android:textColor="?android:attr/textColorPrimary"
         android:text="@string/texto_lugar_favorito" />
     <!-- Con la propiedad android:focusable="false"
         Le decimos a Android que el botón del lápiz NO

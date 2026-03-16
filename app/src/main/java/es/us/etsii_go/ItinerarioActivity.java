@@ -55,7 +55,7 @@ public class ItinerarioActivity extends AppCompatActivity {
 
     // VARIABLES GLOBALES
     private EditText origen, destino;
-    private ImageButton botonFavOrigen, botonFavDestino, botonListaOrigen, botonListaDestino, botonGpsOrigen, botonIntercambiar;
+    private ImageButton botonFavOrigen, botonFavDestino, botonListaOrigen, botonListaDestino, botonGpsOrigen, botonGpsDestino, botonIntercambiar;
     // Variables para controlar el GPS
     private double latitudGPS = 0.0;
     private double longitudGPS = 0.0;
@@ -143,6 +143,7 @@ public class ItinerarioActivity extends AppCompatActivity {
      layoutResultados = findViewById(R.id.resultados_layout);
      grupoModoViaje = findViewById(R.id.grupo_modo_viaje);
      botonGpsOrigen = findViewById(R.id.btn_gps_origen);
+     botonGpsDestino = findViewById(R.id.btn_gps_destino);
      botonIntercambiar = findViewById(R.id.btn_intercambiar);
 
      // LISTENER DEL BOTÓN
@@ -192,8 +193,9 @@ public class ItinerarioActivity extends AppCompatActivity {
             // ATENCIÓN: Las estrellas se actualizarán solas gracias al "watcher"
         });
 
-        // LISTENER del Botón GPS:
-        botonGpsOrigen.setOnClickListener(v -> obtenerUbicacionGPS());
+        // LISTENERS botones Diana del GPS:
+        botonGpsOrigen.setOnClickListener(v -> obtenerUbicacionGPS(true));
+        botonGpsDestino.setOnClickListener(v -> obtenerUbicacionGPS(false));
 
         // Llamamos a cargarParadasTussam()
         cargarParadasTussam();
@@ -828,7 +830,7 @@ public class ItinerarioActivity extends AppCompatActivity {
                 .setNegativeButton("Cerrar", null)
                 .create();
 
-        // Creamos el adaptador personalizado (layout + lápiz)
+        // Creamos un adaptador personalizado para separar los items de la listview del botón de editar
         ArrayAdapter<Favorito> adapter = new ArrayAdapter<Favorito>(this, R.layout.item_favorito, listaFavoritos) {
             public View getView(int position, View convertView, android.view.ViewGroup parent) {
                 if (convertView == null) {
@@ -857,58 +859,61 @@ public class ItinerarioActivity extends AppCompatActivity {
                             }).setNegativeButton("Cancelar", null).show();
                 });
 
-                return convertView;
+                // ACCIÓN 1: Click corto -> Elegir un favorito de la lista y ponerlo en el EditText
+                convertView.setOnClickListener(view -> {
+                    campo.setText(fav.alias);
+
+                    // Si el favorito era una coordenada GPS, recargamos sus coordenadas en las variables globales
+                    if (esCampoOrigen) {    // Comprobamos si el usuario ha seleccionado el fav para el campo origen
+                        origenEsGPS = fav.esGps;
+                        if (origenEsGPS) {  // Preguntamos si el fav es una coordenada y nos guardamos sus valores
+                            latitudGPS = fav.lat;
+                            longitudGPS = fav.lon;
+                        }
+                    } else {    // Comprobamos si el usuario ha seleccionado el fav para el campo destino
+                        destinoEsGPS = fav.esGps;
+                        if (destinoEsGPS) { // Preguntamos si el fav es una coordenada y nos guardamos sus valores
+                            latitudGPS = fav.lat;
+                            longitudGPS = fav.lon;
+                        }
+                    }
+
+                    dialogo.dismiss();  // Cerramos la ventana
+                });
+
+                // ACCIÓN 2: Click largo -> Borrar el favorito seleccionado
+                convertView.setOnLongClickListener(view -> {
+                    listaFavoritos.remove(position);
+                    guardarFavoritosEnMemoria();
+                    notifyDataSetChanged(); // Refrescamos la lsita de favoritos
+                    actualizarIconoEstrella(origen, botonFavOrigen);
+                    actualizarIconoEstrella(destino, botonFavDestino);
+
+                    Toast.makeText(ItinerarioActivity.this, "Favorito eliminado 🗑️", Toast.LENGTH_SHORT).show();
+
+                    // Si borramos el único favorito que existe en la listview, cerramos automáticamente la ventana AlertDialog
+                    if (listaFavoritos.isEmpty()) {
+                        dialogo.dismiss();
+                    }
+                    return true;     // Medida de seguridad: Le decimos a Android que nosotros gestionamos lo que sucede con el click largo, él no hace nada más.
+                });
+
+
+                return convertView; // Devolvemos la fila montada
             }
         };
 
         listView.setAdapter(adapter);
 
-
-        // ACCIÓN 1: Click corto -> Elegir un favorito de la lista y ponerlo en el EditText
-        listView.setOnItemClickListener((adapterView, view, i, l) -> {
-            Favorito seleccionado = listaFavoritos.get(i);
-            campo.setText(seleccionado.alias); // Rellena el texto
-
-            // Si el favorito era GPS, recargamos sus coordenadas en las variables globales
-            if (esCampoOrigen) {
-                origenEsGPS = seleccionado.esGps;
-                if (origenEsGPS) {
-                    latitudGPS = seleccionado.lat;
-                    longitudGPS = seleccionado.lon;
-                }
-            } else {
-                destinoEsGPS = seleccionado.esGps;
-                if (destinoEsGPS) {
-                    latitudGPS = seleccionado.lat;
-                    longitudGPS = seleccionado.lon;
-                }
-            }
-                dialogo.dismiss();  // Cerramos
-        });
-
-        // ACCIÓN 2: Click largo -> Borrar el favorito seleccionado
-        listView.setOnItemLongClickListener((adapterView, view, i, l) -> {
-            listaFavoritos.remove(i);   // Borramos el favorito seleccionado de la lista
-            guardarFavoritosEnMemoria();
-            adapter.notifyDataSetChanged(); // Avisamos a la ventana emergente para que se refresque:
-            actualizarIconoEstrella(origen, botonFavOrigen);
-            actualizarIconoEstrella(destino, botonFavDestino);
-            Toast.makeText(ItinerarioActivity.this, "Favorito eliminado 🗑️", Toast.LENGTH_SHORT).show();
-
-            if (listaFavoritos.isEmpty()) {
-                dialogo.dismiss(); // Cerramos
-
-            }
-
-            return true;    // Medida de seguridad: Le decimos a Android que nosotros gestionamos lo que sucede con el click largo, él no hace nada más.
-        });
         dialogo.show();
-
 
     }
 
-    private void obtenerUbicacionGPS() {
-        // 1.- Comprobamos si el usuario nos ha dado permiso de ubicación
+    // Método para obtener la ubicación GPS al pulsar el icono de la diana:
+    // Le pasamos TRUE por parámetro al método si se pulsó la diana de ORIGEN, FALSE si se pulsó la de DESTINO
+    private void obtenerUbicacionGPS(boolean esParaOrigen) {
+
+        // 0.- Comprobamos si el usuario nos ha dado permiso de ubicación
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             // Si no lo tiene, se lo pedimos:
             requestPermissions(new String[]{
@@ -930,10 +935,16 @@ public class ItinerarioActivity extends AppCompatActivity {
                     if (location != null) {
                         latitudGPS = location.getLatitude();
                         longitudGPS = location.getLongitude();
-                        origenEsGPS = true;
 
-                        // Actualizamos la caja de texto
-                        origen.setText("📍 Mi ubicación actual");
+                        // Decidimos a qué campo se lo asignamos
+                        if (esParaOrigen) {
+                            origenEsGPS = true;
+                            origen.setText("📍 Mi ubicación actual");     // Actualizamos la caja de texto
+                        } else {
+                            destinoEsGPS = true;
+                            destino.setText("📍 Mi ubicación actual");    // Actualizamos la caja de texto
+                        }
+
                         Toast.makeText(ItinerarioActivity.this, "¡Ubicación exacta encontrada!", Toast.LENGTH_SHORT).show();
                     } else {
                         Toast.makeText(ItinerarioActivity.this, "Asegúrate de tener el GPS encendido en los ajustes", Toast.LENGTH_SHORT).show();
