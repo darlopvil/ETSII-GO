@@ -4,6 +4,7 @@ import android.Manifest;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.text.Editable;
@@ -119,6 +120,8 @@ public class ItinerarioActivity extends AppCompatActivity {
         }
     }
 
+    // Freno para el TextWatcher: Evitamos bucle infinito al comprobar el texto y comparar con los favoritos
+    private boolean modificandoTextoAutomatico = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -690,12 +693,38 @@ public class ItinerarioActivity extends AppCompatActivity {
         TextWatcher watcher = new TextWatcher() {
             @Override
             public void afterTextChanged(Editable editable) {
-                actualizarIconoEstrella(origen, botonFavOrigen);
-                actualizarIconoEstrella(destino, botonFavDestino);
+                // Si la app está cambiando el texto "automáticamente", NOS PARAMOS. ¡Salimos de este método!
+                if (modificandoTextoAutomatico) {
+                    return;
+                }
+                modificandoTextoAutomatico = true;  // Si no, entonces entramos y cerramos el paso detrás nuestro. ¡Podemos hacer comprobaciones!
 
-                // GPS: Si el usuario altera el texto y ya no pone "Mi ubicación", desactivamos el GPS
+                // ---- COMPROBAMOS ORIGEN ----
+                Favorito favOrigen = actualizarIconoEstrella(origen, botonFavOrigen, true);
+
+                // Si encontramos un favorito y el campo NO tiene un Alias, lo cambiamos.
+                if (favOrigen != null && !origen.getText().toString().trim().equals(favOrigen.alias)) {
+                    origen.setText(favOrigen.alias);
+                    origen.setSelection(favOrigen.alias.length());  // Ponemos el cursor parpadeando al final de la palabra
+                    Toast.makeText(ItinerarioActivity.this, "📍 Detectado: Ubicación guardada como '"+ favOrigen.alias + "'", Toast.LENGTH_SHORT ).show();
+                }
+
+                // ---- COMPROBAMOS DESTINO ----
+                Favorito favDestino = actualizarIconoEstrella(destino, botonFavDestino, false);
+
+                // Si encontramos un favorito y el campo NO tiene un Alias, lo cambiamos.
+                if (favDestino != null && !destino.getText().toString().trim().equals(favDestino.alias)) {
+                    destino.setText(favDestino.alias);
+                    destino.setSelection(favDestino.alias.length());  // Ponemos el cursor parpadeando al final de la palabra
+                    Toast.makeText(ItinerarioActivity.this, "📍 Detectado: Ubicación guardada como '"+ favDestino.alias + "'", Toast.LENGTH_SHORT ).show();
+                }
+
+
+                // GPS: Si el usuario altera el texto y ya no aparece el texto por defecto con la palabra "ubicación", desactivamos el GPS
                 if (!origen.getText().toString().contains("ubicación")) origenEsGPS = false;
                 if (!destino.getText().toString().contains("ubicación")) destinoEsGPS = false;
+
+                modificandoTextoAutomatico = false; // Ya hemos terminado de hacer las comprobaciones, abrimos el paso.
             }
 
             @Override
@@ -728,7 +757,7 @@ public class ItinerarioActivity extends AppCompatActivity {
             if (listaFavoritos.get(i).alias.equals(texto) || listaFavoritos.get(i).direccion.equals(texto)) {
                 listaFavoritos.remove(i);
                 guardarFavoritosEnMemoria();
-                actualizarIconoEstrella(campo, boton);
+                actualizarIconoEstrella(campo, boton, esCampoOrigen);
                 Toast.makeText(this, "Favorito eliminado 🗑️", Toast.LENGTH_SHORT).show();
                 return;
             }
@@ -762,8 +791,9 @@ public class ItinerarioActivity extends AppCompatActivity {
                         String alias = input.getText().toString().trim();
                         if (!alias.isEmpty()) {
                             listaFavoritos.add(new Favorito(alias, texto, true, lat, lon));
+                            guardarFavoritosEnMemoria();
                             campo.setText(alias);   // Ponemos el nombre corto en el campo
-                            actualizarIconoEstrella(campo, boton);
+                            actualizarIconoEstrella(campo, boton, esCampoOrigen);
                             Toast.makeText(this, "Coordenadas guardadas ⭐", Toast.LENGTH_SHORT).show();
                         }
                     }).setNegativeButton("Cancelar", null).show();
@@ -771,7 +801,7 @@ public class ItinerarioActivity extends AppCompatActivity {
             // Si es texto normal, lo guardamos directamente, usando la calle como Alias por defecto
             listaFavoritos.add(new Favorito(texto, texto, false, 0,0));
             guardarFavoritosEnMemoria();
-            actualizarIconoEstrella(campo, boton);
+            actualizarIconoEstrella(campo, boton, esCampoOrigen);
             Toast.makeText(this, "Guardado en favoritos ⭐", Toast.LENGTH_SHORT).show();
         }
 
@@ -794,23 +824,47 @@ public class ItinerarioActivity extends AppCompatActivity {
 
         return null;    // No está en favoritos, es texto normal
     }
-    private void actualizarIconoEstrella(EditText campo, android.widget.ImageButton boton) {
+    private Favorito actualizarIconoEstrella(EditText campo, android.widget.ImageButton boton, boolean esCampoOrigen) {
         String texto = campo.getText().toString().trim();
-        boolean encontrado = false;
+        Favorito encontrado = null;
 
         // Comprobamos si el texto escrito coincide con algún Alias o Dirección de nuestros favoritos
         for (Favorito f: listaFavoritos) {
-            if (f.alias.equals(texto) || f.direccion.equals(texto)){
-                encontrado = true;
+            // 1.- Coincidencia por Alias (ej. el usuario escribió "Casa" a mano)
+            if (f.alias.equals(texto)){
+                encontrado = f;
                 break;
+            }
+
+            // 2. Coincidencia por Dirección o GPS
+            if (f.direccion.equals(texto)) {
+                if (f.esGps) {
+                    // Si se ha presionado la Diana, comprobamos si físicamente estamos a menos de 100 metros de ese favorito.
+                    // EVITAMOS QUE: Si tienes guardado "Casa" y pulsas el GPS en la Universidad, no se confundirán.
+                    float[] distancia = new float[1];
+                    Location.distanceBetween(latitudGPS, longitudGPS, f.lat, f.lon, distancia);
+
+                    if (distancia[0] <= 100.0) {    // Si la ubicación GPS introducida al pinchar en la diana está a 100 metros del favorito
+                        encontrado = f; // Hemos encontrado el favorito guardado
+                        break;
+
+                    }
+
+                } else { // Si no se ha presionado la Diana, es texto manual (ej. "Avenida Reina Mercedes)
+                    encontrado = f;
+                    break;
+
+                }
             }
         }
 
-        if (encontrado) {
+        if (encontrado != null) {   // Si es una favorito, encendemos la estrella
             boton.setImageResource(android.R.drawable.btn_star_big_on);
-        } else {
+        } else {    // En caso contrario, la mantenemos apagada
             boton.setImageResource(android.R.drawable.btn_star_big_off);
         }
+
+        return encontrado; // Devolvemos el Favorito encontrado para que el TextWatcher pueda leer su nombre y pintarlo.
     }
 
     private void mostrarDialogoFavoritos(EditText campo, ImageButton botonEstrella, boolean esCampoOrigen) {
@@ -854,8 +908,8 @@ public class ItinerarioActivity extends AppCompatActivity {
                                 fav.alias = inputEditar.getText().toString().trim();
                                 guardarFavoritosEnMemoria();
                                 notifyDataSetChanged(); // Refresca la lista de los favoritos
-                                actualizarIconoEstrella(origen, botonFavOrigen);
-                                actualizarIconoEstrella(destino, botonFavDestino);
+                                actualizarIconoEstrella(origen, botonFavOrigen, esCampoOrigen);
+                                actualizarIconoEstrella(destino, botonFavDestino, esCampoOrigen);
                             }).setNegativeButton("Cancelar", null).show();
                 });
 
@@ -886,8 +940,8 @@ public class ItinerarioActivity extends AppCompatActivity {
                     listaFavoritos.remove(position);
                     guardarFavoritosEnMemoria();
                     notifyDataSetChanged(); // Refrescamos la lsita de favoritos
-                    actualizarIconoEstrella(origen, botonFavOrigen);
-                    actualizarIconoEstrella(destino, botonFavDestino);
+                    actualizarIconoEstrella(origen, botonFavOrigen, esCampoOrigen);
+                    actualizarIconoEstrella(destino, botonFavDestino, esCampoOrigen);
 
                     Toast.makeText(ItinerarioActivity.this, "Favorito eliminado 🗑️", Toast.LENGTH_SHORT).show();
 
