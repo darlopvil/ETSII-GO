@@ -1,28 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/item_favorito_layout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:gravity="center_vertical"
     android:orientation="horizontal"
-    android:padding="16dp"
-    android:gravity="center_vertical">
+    android:padding="16dp">
 
     <TextView
         android:id="@+id/texto_alias_favorito"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:textSize="16sp"
+        android:text="@string/texto_lugar_favorito"
         android:textColor="?android:attr/textColorPrimary"
-        android:text="@string/texto_lugar_favorito" />
+        android:textSize="16sp" />
     <!-- Con la propiedad android:focusable="false"
         Le decimos a Android que el botón del lápiz NO
         robe el foco de cada fila de la lista de favoritos.
         Si no que se limite a su ImageButton.-->
     <ImageButton
         android:id="@+id/btn_editar_favorito"
-        android:focusable="false"
         android:layout_width="32dp"
         android:layout_height="32dp"
         android:background="?attr/selectableItemBackgroundBorderless"
+        android:focusable="false"
         android:src="@android:drawable/ic_menu_edit" />
 </LinearLayout>

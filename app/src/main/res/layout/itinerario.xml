@@ -25,7 +25,7 @@
         android:id="@+id/texto_titulo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
+        android:layout_marginTop="16dp"
         android:text="@string/titulo_itinerario"
         android:textSize="20sp"
         android:textStyle="bold"

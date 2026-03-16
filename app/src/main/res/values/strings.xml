@@ -12,5 +12,14 @@
     <string name="radio_transporte_publico">Transporte público</string>
     <string name="radio_andando">Andando</string>
     <string name="texto_lugar_favorito">Nombre del Favorito</string>
+    <string name="texto_info_titulo">Información de la App</string>
+    <string name="texto_titulo_equipo">👨‍💻 Equipo Desarrollador</string>
+    <string name="texto_integrantes">\Desarrollado por: \n> Joaquín Ramón Pérez Rogerío\n> Jiana Lin\n> Darío López Villegas\n\n---- Grupo 15 ---- \n\nCódigo fuente disponible en GitHub.</string>
+    <string name="texto_titulo_asig">🎓 Información Académica</string>
+    <string name="texto_asig_datos">Asignatura: Computación Móvil\nCurso: 2025-2026\nEscuela Técnica Superior de Ingeniería Informática (ETSII)\nUniversidad de Sevilla</string>
+    <string name="texto_recursos_titulo">🔌 APIs Consumidas y Recursos Utilizados</string>
+    <string name="texto_recursos_datos">• Google Routes API v2: Cálculo avanzado de rutas, distancias y tiempos de viaje.\n• Fused Location Provider Client: Geolocalización de alta precisión usando GPS, WiFi y Bluetooth.\n• ParadasTussam.csv: Dataset sobre las paradas de los autobuses de la TUSSAM de la Gerencia de Urbanismo y Medio Ambiente del Ayuntamiento de Sevilla</string>
+    <string name="texto_permisos_titulo">🛡️ Permisos del Sistema Requeridos</string>
+    <string name="texto_permisos_datos">• INTERNET: Requerido para conectar con los servidores de Google y descargar las rutas.\n• ACCESS_FINE_LOCATION: Requerido para usar el hardware del dispositivo (Antena GPS) y ubicar al usuario con precisión.</string>
 
 </resources>
