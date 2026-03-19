@@ -5,14 +5,12 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Location;
-import android.location.LocationManager;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -43,10 +41,9 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Locale;
-import java.util.Set;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
@@ -123,6 +120,29 @@ public class ItinerarioActivity extends AppCompatActivity {
     // Freno para el TextWatcher: Evitamos bucle infinito al comprobar el texto y comparar con los favoritos
     private boolean modificandoTextoAutomatico = false;
 
+    /* * AUTOCOMPLETADO: LANZADORES DE GOOGLE PLACES
+     * En Android moderno, usamos ActivityResultLauncher para abrir una pantalla
+     * y quedarnos esperando su resultado.
+     * Estos "vigilantes" se despiertan cuando la pantalla de búsqueda de Google se cierra.
+     * Comprueban si todo ha ido bien (RESULT_OK) y, si es así, extraen la dirección
+     * seleccionada por el usuario y la pegan en la caja de texto (origen o destino).
+     */
+    private final androidx.activity.result.ActivityResultLauncher<android.content.Intent> launcherAutocompleteOrigen =
+            registerForActivityResult(new androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult(), result -> {
+                if (result.getResultCode() == RESULT_OK && result.getData() != null) {
+                    com.google.android.libraries.places.api.model.Place place = com.google.android.libraries.places.widget.Autocomplete.getPlaceFromIntent(result.getData());
+                    origen.setText(place.getAddress()); // Escribimos la calle en tu campo origen
+                }
+            });
+
+    private final androidx.activity.result.ActivityResultLauncher<android.content.Intent> launcherAutocompleteDestino =
+            registerForActivityResult(new androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult(), result -> {
+                if (result.getResultCode() == RESULT_OK && result.getData() != null) {
+                    com.google.android.libraries.places.api.model.Place place = com.google.android.libraries.places.widget.Autocomplete.getPlaceFromIntent(result.getData());
+                    destino.setText(place.getAddress()); // Escribimos la calle en tu campo destino
+                }
+            });
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -148,6 +168,29 @@ public class ItinerarioActivity extends AppCompatActivity {
      botonGpsOrigen = findViewById(R.id.btn_gps_origen);
      botonGpsDestino = findViewById(R.id.btn_gps_destino);
      botonIntercambiar = findViewById(R.id.btn_intercambiar);
+
+        /*
+         * AUTOCOMPLETADO: INICIALIZACIÓN DE LA API DE PLACES
+         * Antes de usar el buscador de calles, tenemos que "despertar" a la librería
+         * y autenticarnos con nuestra API Key. Si no hacemos esto, la app crasheará
+         * al intentar abrir la ventana de autocompletado.
+         */
+        if (!com.google.android.libraries.places.api.Places.isInitialized()) {
+            com.google.android.libraries.places.api.Places.initialize(getApplicationContext(), BuildConfig.API_KEY_GOOGLE);
+        }
+
+        /*
+         * AUTOCOMPLETADO: CONFIGURACIÓN DE LAS CAJAS DE TEXTO (ORIGEN Y DESTINO)
+         * Desactivamos el teclado nativo de Android (setFocusable(false)) para que
+         * el usuario no pueda escribir a mano. En su lugar, al tocar la caja,
+         * abrimos la ventana superpuesta (OVERLAY) del buscador oficial de Google.
+         */
+        origen.setFocusable(false); // Evita que se abra el teclado nativo
+        origen.setOnClickListener(v -> abrirBuscadorGoogle(launcherAutocompleteOrigen));
+
+        destino.setFocusable(false);
+        destino.setOnClickListener(v -> abrirBuscadorGoogle(launcherAutocompleteDestino));
+
 
      // LISTENER DEL BOTÓN
         botonCalcularRuta.setOnClickListener(v -> {
@@ -1047,6 +1090,32 @@ public class ItinerarioActivity extends AppCompatActivity {
         }
 
     }
+
+    /**
+     * Método encargado de configurar y abrir la pantalla predictiva de Google.
+     * Google se encarga internamente de gestionar los "Tokens de Sesión" para
+     * no cobrarnos por cada letra tecleada, sino solo por la búsqueda final.
+     */
+    private void abrirBuscadorGoogle(androidx.activity.result.ActivityResultLauncher<android.content.Intent> launcher) {
+        // 1. Elegimos qué datos queremos que nos devuelva Google.
+        // Solo pedimos ID, Nombre y Dirección para ahorrar costes (no pedimos fotos ni horarios).
+        java.util.List<com.google.android.libraries.places.api.model.Place.Field> fields = java.util.Arrays.asList(
+                com.google.android.libraries.places.api.model.Place.Field.ID,
+                com.google.android.libraries.places.api.model.Place.Field.NAME,
+                com.google.android.libraries.places.api.model.Place.Field.ADDRESS
+        );
+
+        // 2. Construimos la ventana (Intent) en modo OVERLAY (semitransparente por encima de la app)
+        // y limitamos las búsquedas exclusivamente a España ("ES") para mayor precisión.
+        android.content.Intent intent = new com.google.android.libraries.places.widget.Autocomplete.IntentBuilder(
+                com.google.android.libraries.places.widget.model.AutocompleteActivityMode.OVERLAY, fields)
+                .setCountries(Collections.singletonList("ES"))  // Restringir los resultados a dentro de España. setCountries() pide una lista, creamos una de un solo elemento
+                .build(this);
+
+        // 3. Lanzamos la pantalla
+        launcher.launch(intent);
+    }
+
 
 
     // ---------- DEBUG ONLY ---------------------
