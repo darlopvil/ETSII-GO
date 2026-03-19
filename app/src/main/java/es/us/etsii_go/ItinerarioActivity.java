@@ -953,6 +953,10 @@ public class ItinerarioActivity extends AppCompatActivity {
                 botonEditar.setOnClickListener(v -> {
                     EditText inputEditar = new EditText(getContext());
                     inputEditar.setText(fav.alias);
+
+                    // 1. Nos guardamos el nombre viejo antes de cambiarlo
+                    String aliasAntiguo = fav.alias;
+
                     new AlertDialog.Builder(getContext())
                             .setTitle("Renombrar Favorito")
                             .setView(inputEditar)
@@ -962,6 +966,14 @@ public class ItinerarioActivity extends AppCompatActivity {
                                 notifyDataSetChanged(); // Refresca la lista de los favoritos
                                 actualizarIconoEstrella(origen, botonFavOrigen, esCampoOrigen);
                                 actualizarIconoEstrella(destino, botonFavDestino, esCampoOrigen);
+
+                                // 2. COMPROBACIÓN NUEVA: Si el campo de texto tenía el nombre viejo o la dirección, lo actualizamos al nuevo
+                                String textoActualCampo = campo.getText().toString().trim();
+                                if (textoActualCampo.equals(aliasAntiguo) || textoActualCampo.equals(fav.direccion)) {
+                                    campo.setText(fav.alias);
+                                    campo.setSelection(fav.alias.length()); // Ponemos el cursor al final
+                                }
+
                             }).setNegativeButton("Cancelar", null).show();
                 });
 
