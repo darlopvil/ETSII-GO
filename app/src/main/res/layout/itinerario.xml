@@ -166,6 +166,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:textSize="30sp"
             android:text="@string/radio_coche" />
 
         <RadioButton
@@ -173,6 +174,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:textSize="30sp"
             android:text="@string/radio_transporte_publico"
             android:checked="true"/>
 
@@ -181,7 +183,16 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:textSize="30sp"
             android:text="@string/radio_andando" />
+
+        <RadioButton
+            android:id="@+id/radio_bici"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textSize="30sp"
+            android:text="@string/radio_bici" />
     </RadioGroup>
 
     <Button

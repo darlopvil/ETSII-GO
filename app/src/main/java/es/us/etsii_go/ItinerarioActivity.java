@@ -217,6 +217,8 @@ public class ItinerarioActivity extends AppCompatActivity {
             } else if (idSeleccionado == R.id.radio_andar_solo) {
                 modoViajeAPI = "WALK";
                 
+            } else if (idSeleccionado == R.id.radio_bici) {
+                modoViajeAPI = "BICYCLE";
             }
 
             // Llamamos a la API en un hilo secundario
@@ -456,10 +458,14 @@ public class ItinerarioActivity extends AppCompatActivity {
                                 String modoViaje = step.optString("travelMode", "Desconocido");
                                 String textoFinal = "";
 
-                                /* ------- CASO 1: CAMINANDO O COCHE ------- */
-                                if (modoViaje.equals("WALK") || modoViaje.equals("DRIVE")) {
+                                /* ------- CASO 1: CAMINANDO, COCHE, BICICLETA ------- */
+                                if (modoViaje.equals("WALK") || modoViaje.equals("DRIVE") || modoViaje.equals("BICYCLE")) {
                                     // Extraemos la instrucción de navegación si existe
-                                    String instruccion = modoViaje.equals("WALK") ? "Caminar": "Conducir";
+                                    String instruccion = "Avanzar";
+                                    if (modoViaje.equals("WALK")) instruccion = "Caminar";
+                                    else if (modoViaje.equals("DRIVE")) instruccion = "Conducir";
+                                    else if (modoViaje.equals("BICYCLE")) instruccion = "Pedalear";
+
                                     if (step.has("navigationInstruction")) {
                                         JSONObject navInstruction = step.getJSONObject("navigationInstruction");
                                         instruccion = navInstruction.optString("instructions", instruccion);
@@ -489,7 +495,10 @@ public class ItinerarioActivity extends AppCompatActivity {
                                     }
 
                                     // Ponemos un emoji distinto según el modo
-                                    String emoji =  modoViaje.equals("WALK") ? "🚶 ": "🚗";
+                                    String emoji = "🚲"; // Por defecto, si entra por BICYCLE será este
+                                    if (modoViaje.equals("WALK")) emoji = "🚶 ";
+                                    else if (modoViaje.equals("DRIVE")) emoji = "🚗";
+
                                     textoFinal = emoji + " " + instruccion;
                                     if (!distanciaStr.isEmpty()) {
                                         textoFinal += " (" + distanciaStr + ")";
