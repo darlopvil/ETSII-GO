@@ -4,14 +4,7 @@
         <!-- Customize your dark theme here. -->
         <!-- <item name="colorPrimary">@color/my_dark_primary</item> -->
     </style>
-    <style name="MiDialogPersonalizado" parent="Theme.MaterialComponents.DayNight.Dialog.Alert">
-        <item name="android:background">#1C1B1F</item>
-        <item name="android:windowBackground">@android:color/transparent</item>
 
-        <item name="colorPrimary">#D2AAFF</item>
-
-        <item name="android:textColorPrimary">#FFFFFF</item>
-
-        <item name="materialAlertDialogTheme">@style/MiDialogPersonalizado</item>
-    </style>
+    <color name="fondo_mapa">#949494</color>
+    <color name="color_cabecera">#1C1B1F</color>
 </resources>

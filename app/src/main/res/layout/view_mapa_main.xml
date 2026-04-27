@@ -4,7 +4,8 @@
     android:id="@+id/rootLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#808080">
+    android:background="@color/fondo_mapa"
+    >
 
     <es.us.etsii_go.horariogps.mapa.MapaView
         android:layout_width="match_parent"

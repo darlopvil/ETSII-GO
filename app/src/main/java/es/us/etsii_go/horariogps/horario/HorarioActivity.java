@@ -153,7 +153,7 @@ public class HorarioActivity extends AppCompatActivity implements HorarioAdapter
         String[] horas = {"8:30 - 10:20","10:40 - 12:30","12:40 - 14:30","15:30 - 17:20","17:40 - 19:30","19:40 - 21:30"};
         for (String hora : horas) {
             for (int id = 0; id < string_dias.length; id++) {
-                lista.add(new CeldaHorario(id,string_dias[id], hora , "", Color.parseColor("#9E2E2D2D")));
+                lista.add(new CeldaHorario(id,string_dias[id], hora , "", Color.TRANSPARENT));
             }
         }
 
@@ -402,7 +402,7 @@ public class HorarioActivity extends AppCompatActivity implements HorarioAdapter
         });
 
         // BOTONES DE BORRAR, CANCELAR Y GUARDAR
-        new MaterialAlertDialogBuilder(this,R.style.MiDialogPersonalizado)
+        new MaterialAlertDialogBuilder(this)
                 .setTitle(R.string.editar)
                 .setView(dialogoView)
 
