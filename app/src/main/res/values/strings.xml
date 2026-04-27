@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">ETSII-Go</string>
-    <string name="boton_gps_facultad">GPS Facultad</string>
+    <string name="boton_gps_facultad">GPS / Horario Facultad</string>
     <string name="boton_servicios">Servicios</string>
     <string name="boton_itinerario">Itinerario</string>
     <string name="boton_info">Información</string>
@@ -22,4 +22,34 @@
     <string name="texto_permisos_titulo">🛡️ Permisos del Sistema Requeridos</string>
     <string name="texto_permisos_datos"><![CDATA[• <b>INTERNET:</b> Requerido para conectar con los servidores de Google y descargar las rutas.<br>• <b>ACCESS_FINE_LOCATION:</b> Permite usar el hardware del GPS para obtener tu ubicación exacta.<br>• <b>ACCESS_COARSE_LOCATION:</b> Permite triangular tu ubicación aproximada usando antenas de telefonía y Wi-Fi para un posicionamiento más rápido y con menor consumo de batería.]]></string>
     <string name="radio_bici">🚲</string>
+    <string-array name="categorias_array">
+        <item>Comer barato</item>
+        <item>Estudiar</item>
+        <item>Comprar básico</item>
+        <item>Vida universitaria</item>
+    </string-array>
+
+    <string name="dia_lunes">Lunes</string>
+    <string name="dia_martes">Martes</string>
+    <string name="dia_miercoles">Miercoles</string>
+    <string name="dia_jueves">Jueves</string>
+    <string name="dia_viernes">Viernes</string>
+    <string name="aula_no_asignada">Aula no asignada</string>
+    <string name="selecciona_un_aula_primero">Selecciona un aula primero</string>
+    <string name="navegando_a_detalles_de">"Navegando a detalles de: "</string>
+    <string name="colores_usados">Colores usados</string>
+    <string name="cerrar">Cerrar</string>
+    <string name="editar">Editar:</string>
+    <string name="guardar">Guardar</string>
+    <string name="cancelar">Cancelar</string>
+    <string name="borrar">Borrar</string>
+    <string name="confirmar_borrado">¿Confirmar borrado?</string>
+    <string name="contenido_eliminado">Contenido eliminado</string>
+    <string name="seleccionar_aula">Seleccionar Aula:</string>
+    <string name="aula_seleccionada">"Aula seleccionada: "</string>
+    <string name="modulo_todos">Módulo: Todos</string>
+    <string name="planta_todas">Planta: Todas</string>
+    <string name="modulo">Módulo </string>
+    <string name="detalles_aula">Módulo %1$s, Planta %2$d</string>
+
 </resources>

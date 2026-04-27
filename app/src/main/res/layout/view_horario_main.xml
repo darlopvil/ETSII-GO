@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:clipChildren="false"
+    android:clipToPadding="false"
+    android:background="#FFFFFF"
+    >
+
+    <LinearLayout
+        android:id="@+id/arribalayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingTop="40dp"
+        android:paddingBottom="10dp"
+        android:paddingStart="16dp"
+        android:background="#FFFFFF"
+        android:elevation="8dp"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:id="@+id/textoHorario"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Horario"
+            android:textColor="#000000"
+            android:textSize="22sp"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+    <com.otaliastudios.zoom.ZoomLayout
+        android:id="@+id/zoomLayout"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:hasClickableChildren="true"
+
+        android:overScrollMode="never"
+        app:alignment="top|left"
+        app:transformation="none"
+        app:maxZoom="1.5"
+        app:minZoom="0.45"
+        android:clipChildren="false"
+        android:clipToPadding="false"
+
+        android:background="#FFFFFF"
+
+        app:overScrollHorizontal="false"
+        app:overScrollVertical="false"
+
+        app:layout_constraintTop_toBottomOf="@id/containerDays"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="@id/containerHours"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerHorario"
+
+            android:layout_width="750dp"
+            android:layout_height="900dp"
+            android:clipChildren="false"
+            android:clipToPadding="false"
+
+
+            android:overScrollMode="never" />
+
+    </com.otaliastudios.zoom.ZoomLayout>
+
+    <HorizontalScrollView
+        android:id="@+id/containerDays"
+        android:layout_width="0dp"
+        android:layout_height="50dp"
+        android:layout_gravity="start"
+        android:scrollbars="none"
+        android:background="#FFFFFF"
+        android:clipChildren="false"
+        android:clipToPadding="false"
+        android:focusable="false"
+        android:clickable="false"
+        android:focusableInTouchMode="false"
+
+        android:fillViewport="true"
+
+
+        app:layout_constraintStart_toEndOf="@id/esquina"
+        app:layout_constraintTop_toBottomOf="@id/arribalayout"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <LinearLayout
+            android:id="@+id/headerDays"
+            android:clipChildren="false"
+            android:clipToPadding="false"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
+        </LinearLayout>
+    </HorizontalScrollView>
+
+    <ScrollView
+        android:id="@+id/containerHours"
+        android:layout_width="80dp"
+        android:layout_height="0dp"
+        android:scrollbars="none"
+        android:background="#FFFFFF"
+        android:layout_gravity="start"
+        android:clipChildren="false"
+        android:clipToPadding="false"
+        android:focusable="false"
+        android:clickable="false"
+        android:focusableInTouchMode="false"
+
+        android:fillViewport="true"
+
+        app:layout_constraintTop_toBottomOf="@id/esquina"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <LinearLayout
+            android:id="@+id/headerHours"
+            android:clipChildren="false"
+            android:clipToPadding="false"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+        </LinearLayout>
+    </ScrollView>
+
+    <TextView
+        android:id="@+id/esquina"
+        android:layout_width="80dp"
+        android:layout_height="50dp"
+        android:background="#FFFFFF"
+        android:gravity="center"
+        android:clipChildren="false"
+        android:clipToPadding="false"
+        android:text="Hora"
+        android:textStyle="bold"
+
+        app:layout_constraintTop_toBottomOf="@id/arribalayout"
+        app:layout_constraintStart_toStartOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

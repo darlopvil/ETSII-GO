@@ -9,6 +9,8 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import es.us.etsii_go.horariogps.horario.HorarioActivity;
+
 public class MainActivity extends AppCompatActivity {
 
     @Override
@@ -31,7 +33,7 @@ public class MainActivity extends AppCompatActivity {
 
         // 1.- Botón "GPS Facultad"
         findViewById(R.id.boton_gps_facultad).setOnClickListener(v -> {
-            Intent intent_gps = new Intent(this, RecorridoActivity.class);
+            Intent intent_gps = new Intent(this, HorarioActivity.class);
             startActivity(intent_gps);
         });
 

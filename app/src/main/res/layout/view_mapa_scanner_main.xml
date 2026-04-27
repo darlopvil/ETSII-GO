@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:background="#F5F5F5">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Herramienta de Calibración"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:textColor="#333333"
+        android:layout_marginBottom="8dp"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Ponte en un punto del mapa y pulsa Escanear para generar el bloque JSON."
+        android:textSize="14sp"
+        android:layout_marginBottom="16dp"/>
+
+    <Button
+        android:id="@+id/btnScan"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Escanear Wi-Fi"
+        android:backgroundTint="#2196F3"
+        android:textColor="#FFFFFF"
+        android:layout_marginBottom="16dp"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Resultado JSON:"
+        android:textStyle="bold"
+        android:textSize="12sp"
+        android:textColor="#666666"/>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:background="#FFFFFF"
+        android:padding="8dp"
+        android:layout_marginTop="4dp">
+
+        <TextView
+            android:id="@+id/jsonOutput"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="{}"
+            android:fontFamily="monospace"
+            android:textSize="12sp"
+            android:textColor="#2E7D32"
+            android:textIsSelectable="true" />
+    </ScrollView>
+
+</LinearLayout>

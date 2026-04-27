@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/contenedor_celda"
+    android:layout_width="150dp"
+    android:layout_height="150dp"
+
+    android:orientation="vertical"
+    android:padding="8dp">
+
+    <TextView
+        android:id="@+id/textHora"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="8:00"
+        android:textColor="#EBEBEB"
+
+        android:textSize="16sp" />
+
+    <TextView
+        android:id="@+id/textAsignatura"
+        android:layout_width="match_parent"
+        android:layout_height="78dp"
+        android:gravity="center"
+        android:text="CM"
+
+        android:textAppearance="@style/TextAppearance.AppCompat.Large"
+        android:textColor="#EBEBEB" />
+
+    <TextView
+        android:id="@+id/textAula"
+        android:layout_width="match_parent"
+        android:layout_height="30dp"
+        android:gravity="center"
+        android:text="A1.37"
+        android:textColor="#EBEBEB" />
+
+</LinearLayout>
+
+

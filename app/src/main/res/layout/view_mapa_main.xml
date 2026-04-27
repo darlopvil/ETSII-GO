@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/rootLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <es.us.etsii_go.horariogps.mapa.MapaView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/mapaView"
+        android:background="@android:color/transparent"
+        app:tileBackgroundColor="@android:color/transparent"
+         />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/btnGoToScanner"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginEnd="7dp"
+        android:layout_marginBottom="67dp"
+        android:contentDescription="Calibrar"
+        android:src="@android:drawable/ic_menu_edit"
+        app:backgroundTint="#2196F3"
+        app:tint="#FFFFFF" />
+
+    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+        android:id="@+id/btn_escaneo_il"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginStart="2dp"
+        android:layout_marginBottom="71dp"
+        android:text="Escaneo Ilimitado"
+        android:textColor="#FFFFFF"
+        app:backgroundTint="#008577"
+        app:iconTint="#FFFFFF" />
+
+    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+        android:id="@+id/btn_ubicacion"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="139dp"
+        android:text="Buscar mi ubicación"
+        android:textColor="#FFFFFF"
+        app:backgroundTint="#2196F3"
+        app:icon="@android:drawable/ic_menu_mylocation"
+        app:iconTint="#FFFFFF" />
+
+</RelativeLayout>

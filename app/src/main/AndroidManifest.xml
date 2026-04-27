@@ -4,6 +4,11 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
+    <uses-permission android:name="android.permission.NEARBY_WIFI_DEVICES"/>
+
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -28,8 +33,22 @@
             android:name=".ServiciosActivity"
             android:exported="false" />
         <activity
-            android:name=".RecorridoActivity"
+            android:name=".ServiciosInfoActivity"
             android:exported="false" />
+
+        <activity
+            android:name=".ServiciosLugaresActivity"
+            android:exported="false" />
+        <activity
+            android:name=".horariogps.horario.HorarioActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".horariogps.mapa.MapaActivity"
+            android:exported="false" />
+
+        <activity android:name=".horariogps.mapa.escaneo.ScannerActivity"
+            />
         <activity
             android:name=".MainActivity"
             android:exported="true">

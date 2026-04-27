@@ -60,4 +60,27 @@ dependencies {
     androidTestImplementation(libs.espresso.core)
     implementation("com.google.android.gms:play-services-location:21.2.0")
     implementation("com.google.android.libraries.places:places:3.3.0")
+    implementation("com.squareup.retrofit2:retrofit:2.11.0")
+    implementation("com.squareup.retrofit2:converter-gson:2.11.0")
+
+    // ----- GPS y HORARIO
+
+    // Para poder hacer zoom en el horario
+    implementation(libs.zoomlayout)
+    implementation(libs.recyclerview)
+    implementation(libs.play.services.location)
+
+    // Para la base de datos
+    implementation("androidx.room:room-runtime:2.6.1")
+    annotationProcessor("androidx.room:room-compiler:2.6.1")
+    annotationProcessor("org.jetbrains.kotlinx:kotlinx-metadata-jvm:0.9.0")
+
+    // Para el selector de color
+    implementation("com.github.yukuku:ambilwarna:2.0.1")
+
+    // Para leer archivos json
+    implementation("com.google.code.gson:gson:2.10.1")
+
+    // En vez del pdf, se ve con mejor calidad
+    implementation("com.davemorrissey.labs:subsampling-scale-image-view-androidx:3.10.0")
 }

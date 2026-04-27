@@ -1,26 +1,46 @@
 package es.us.etsii_go;
 
+import android.content.Intent;
 import android.os.Bundle;
-
-import androidx.activity.EdgeToEdge;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.Spinner;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 
 public class ServiciosActivity extends AppCompatActivity {
+
+    private Spinner spinnerCategorias;
+    private Button btnBuscar;
+    private Button btnInformacion;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        EdgeToEdge.enable(this);
         setContentView(R.layout.servicios);
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.itinerario_layout), (v, insets) -> {
-            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
-            return insets;
+
+        spinnerCategorias = findViewById(R.id.spinnerCategorias);
+        btnBuscar = findViewById(R.id.btnBuscar);
+        btnInformacion = findViewById(R.id.btnInformacion);
+
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
+                this,
+                R.array.categorias_array,
+                android.R.layout.simple_spinner_item
+        );
+
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinnerCategorias.setAdapter(adapter);
+
+        btnBuscar.setOnClickListener(v -> {
+            String categoriaSeleccionada = spinnerCategorias.getSelectedItem().toString();
+            Intent intent = new Intent(this, ServiciosLugaresActivity.class);
+            intent.putExtra("categoria", categoriaSeleccionada);
+            startActivity(intent);
         });
 
-        // TODO
+        btnInformacion.setOnClickListener(v -> {
+            Intent intent = new Intent(this, ServiciosInfoActivity.class);
+            startActivity(intent);
+        });
     }
 }
