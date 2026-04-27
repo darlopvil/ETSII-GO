@@ -4,7 +4,7 @@
     android:id="@+id/contenedor_celda"
     android:layout_width="150dp"
     android:layout_height="150dp"
-
+    android:background="#982E2D2D"
     android:orientation="vertical"
     android:padding="8dp">
 
@@ -14,7 +14,7 @@
         android:layout_height="wrap_content"
         android:gravity="center"
         android:text="8:00"
-        android:textColor="#EBEBEB"
+        android:textColor="#545454"
 
         android:textSize="16sp" />
 
@@ -26,7 +26,7 @@
         android:text="CM"
 
         android:textAppearance="@style/TextAppearance.AppCompat.Large"
-        android:textColor="#EBEBEB" />
+        android:textColor="#000000" />
 
     <TextView
         android:id="@+id/textAula"
@@ -34,7 +34,7 @@
         android:layout_height="30dp"
         android:gravity="center"
         android:text="A1.37"
-        android:textColor="#EBEBEB" />
+        android:textColor="#000000" />
 
 </LinearLayout>
 

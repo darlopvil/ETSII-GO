@@ -41,6 +41,10 @@ import es.us.etsii_go.horariogps.horario.db.AppDatabase;
 import es.us.etsii_go.horariogps.horario.models.Aula;
 import es.us.etsii_go.horariogps.horario.models.CeldaHorario;
 import es.us.etsii_go.horariogps.mapa.MapaActivity;
+
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.otaliastudios.zoom.ZoomEngine;
 import com.otaliastudios.zoom.ZoomLayout;
 
@@ -51,6 +55,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
+import es.us.etsii_go.horariogps.mapa.escaneo.ScannerActivity;
 import yuku.ambilwarna.AmbilWarnaDialog;
 
 public class HorarioActivity extends AppCompatActivity implements HorarioAdapter.OnHorarioActionListener{
@@ -73,7 +78,7 @@ public class HorarioActivity extends AppCompatActivity implements HorarioAdapter
 
         // Esto lo pongo porque el mapa se me ponia oscuro cuando tenia el modo oscuro
         // de mi movil, con esto le obligo a que no funcione el modo noche.
-        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+        //AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
 
         EdgeToEdge.enable(this);
 
@@ -118,6 +123,12 @@ public class HorarioActivity extends AppCompatActivity implements HorarioAdapter
         crearCabeceras();
 
         setupZoomEngine();
+
+        ExtendedFloatingActionButton btnMapaDirecto = findViewById(R.id.btnIrMapaDirecto);
+        btnMapaDirecto.setOnClickListener(v -> {
+            Intent intent = new Intent(this,MapaActivity.class);
+            startActivity(intent);
+        });
     }
 
     private void cargarDatos() {
@@ -142,7 +153,7 @@ public class HorarioActivity extends AppCompatActivity implements HorarioAdapter
         String[] horas = {"8:30 - 10:20","10:40 - 12:30","12:40 - 14:30","15:30 - 17:20","17:40 - 19:30","19:40 - 21:30"};
         for (String hora : horas) {
             for (int id = 0; id < string_dias.length; id++) {
-                lista.add(new CeldaHorario(id,string_dias[id], hora , "", Color.WHITE));
+                lista.add(new CeldaHorario(id,string_dias[id], hora , "", Color.parseColor("#9E2E2D2D")));
             }
         }
 
@@ -391,9 +402,10 @@ public class HorarioActivity extends AppCompatActivity implements HorarioAdapter
         });
 
         // BOTONES DE BORRAR, CANCELAR Y GUARDAR
-        new AlertDialog.Builder(this)
+        new MaterialAlertDialogBuilder(this,R.style.MiDialogPersonalizado)
                 .setTitle(R.string.editar)
                 .setView(dialogoView)
+
                 .setPositiveButton(R.string.guardar, (dialog, which) -> {
                     celdaActual.setContenido(editContenido.getText().toString());
                     celdaActual.setAula(textAula.getText().toString());
@@ -441,6 +453,7 @@ public class HorarioActivity extends AppCompatActivity implements HorarioAdapter
                             .show();
                 })
                 .show();
+
     }
 
     private void mostrarDialogoBuscador(Context context, CeldaHorario celdaActual, TextView targetTextView) {
@@ -475,7 +488,7 @@ public class HorarioActivity extends AppCompatActivity implements HorarioAdapter
 
             targetTextView.setText(aula.nombre);
             targetTextView.setTypeface(null, Typeface.BOLD);
-            targetTextView.setTextColor(Color.BLACK);
+            targetTextView.setTextColor(Color.WHITE);
             celdaActual.setAula(aula.nombre);
             dialog.dismiss();
         });

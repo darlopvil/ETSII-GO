@@ -1,12 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:background="#1C1B1F">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
+        android:background="#1C1B1F"
         android:padding="24dp">
 
         <TextView
@@ -15,7 +17,7 @@
             android:text="Asignatura:"
             android:textStyle="bold"
             android:textSize="14sp"
-            android:textColor="@android:color/black"
+            android:textColor="#A4A4A4"
             android:gravity="center_horizontal"/>
 
         <EditText
@@ -23,6 +25,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textSize="18sp"
+            android:textColor="#FFFFFF"
             android:layout_marginBottom="16dp"
             android:minHeight="48dp" />
 
@@ -30,15 +33,17 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Aula:"
+            android:textColor="#A4A4A4"
+
             android:textSize="14sp"
-            android:textStyle="bold"
-            android:textColor="@android:color/black" />
+            android:textStyle="bold" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
             android:gravity="center_vertical"
+            android:background="#1C1B1F"
             android:orientation="horizontal">
 
             <TextView
@@ -48,7 +53,7 @@
                 android:layout_weight="1"
                 android:background="@drawable/gpshorario_borde_texto"
                 android:gravity="center"
-                android:textColor="#000000"
+                android:textColor="#FFFFFF"
                 android:textAlignment="center"
                 android:textSize="14sp" />
 
@@ -59,8 +64,8 @@
                 android:backgroundTint="#527D95"
                 android:paddingStart="16dp"
                 android:text="Seleccionar aula"
+                android:textColor="#000000"
                 android:textAllCaps="false"
-                android:textColor="#FBFBFB"
                 android:textSize="14sp" />
 
         </LinearLayout>
@@ -69,9 +74,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Color:"
+            android:textColor="#A4A4A4"
             android:textSize="14sp"
-            android:textStyle="bold"
-            android:textColor="@android:color/black" />
+            android:textStyle="bold" />
 
         <LinearLayout
             android:id="@+id/layout_selector_color"
@@ -101,7 +106,7 @@
                 android:backgroundTint="#90A4AE"
                 android:paddingStart="16dp"
                 android:text="Elegir Color"
-                android:textColor="@android:color/white"
+                android:textColor="#000000"
                 android:textSize="12sp" />
 
             <Button
@@ -112,7 +117,7 @@
                 android:backgroundTint="#90A4AE"
                 android:text="Colores Recientes"
                 android:paddingStart="16dp"
-                android:textColor="@android:color/white"
+                android:textColor="#000000"
                 android:textSize="12sp" />
         </LinearLayout>
 
@@ -135,7 +140,7 @@
                 android:layout_height="match_parent"
                 android:backgroundTint="#81AFAA"
                 android:text="Ver aula en el mapa"
-                android:textColor="@android:color/white"
+                android:textColor="#000000"
                 android:textSize="14sp"
                 android:textStyle="bold" />
 

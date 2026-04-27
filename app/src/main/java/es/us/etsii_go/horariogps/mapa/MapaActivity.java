@@ -123,7 +123,12 @@ public class MapaActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+
+
+        // Esto pone el modo noche:
+        //AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+
+
         setContentView(R.layout.view_mapa_main);
 
         checkAndRequestPermissions();
@@ -156,8 +161,13 @@ public class MapaActivity extends AppCompatActivity {
 
         // 2. Obtener datos del Intent
         String nombreAula = getIntent().getStringExtra("nombre_aula");
-        colorPuntoAula = getIntent().getIntExtra("color_celda", Color.GRAY);
-        aulaSeleccionada = RepositorioAulas.getAulaPorNombre(this, nombreAula);
+        colorPuntoAula = getIntent().getIntExtra("color_celda", Color.parseColor("#808080"));
+
+        if (nombreAula != null) {
+            aulaSeleccionada = RepositorioAulas.getAulaPorNombre(this, nombreAula);
+        } else {
+            aulaSeleccionada = new Aula("","",0,0,0);
+        }
 
         // 3. Cargar el mapa
         loadMapFromAssets("mapa.pdf");
@@ -230,6 +240,7 @@ public class MapaActivity extends AppCompatActivity {
             page.render(bitmap, null, null, PdfRenderer.Page.RENDER_MODE_FOR_DISPLAY);
 
             // Cargar en el mapaView (SubsamplingScaleImageView)
+
             mapaView.setImage(ImageSource.bitmap(bitmap));
 
             // --- CONFIGURACIÓN DE ZOOM ---

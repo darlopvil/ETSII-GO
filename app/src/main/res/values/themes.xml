@@ -6,4 +6,21 @@
     </style>
 
     <style name="Theme.ETSIIGo" parent="Base.Theme.ETSIIGo" />
+
+    <style name="MiDialogPersonalizado" parent="Theme.MaterialComponents.DayNight.Dialog.Alert">
+        <item name="android:background">#1C1B1F</item>
+
+        <item name="android:windowBackground">@android:color/transparent</item>
+
+        <item name="android:textColorPrimary">#FFFFFF</item>
+
+        <item name="buttonBarPositiveButtonStyle">@style/BotonDialogo</item>
+        <item name="buttonBarNegativeButtonStyle">@style/BotonDialogo</item>
+        <item name="buttonBarNeutralButtonStyle">@style/BotonDialogo</item>
+    </style>
+
+    <style name="BotonDialogo" parent="Widget.MaterialComponents.Button.TextButton">
+        <item name="android:textColor">#D2AAFF</item>
+        <item name="rippleColor">#337A3AD5</item>
+    </style>
 </resources>
