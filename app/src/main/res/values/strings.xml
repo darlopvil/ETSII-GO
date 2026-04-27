@@ -51,5 +51,13 @@
     <string name="planta_todas">Planta: Todas</string>
     <string name="modulo">Módulo </string>
     <string name="detalles_aula">Módulo %1$s, Planta %2$d</string>
+    <string name="aula">Aula:</string>
+    <string name="color">Color:</string>
+    <string name="elegir_color">Elegir Color</string>
+    <string name="colores_recientes">Colores Recientes</string>
+    <string name="ver_aula_en_el_mapa">Ver aula en el mapa</string>
+    <string name="buscar_aula_por_nombre">Buscar aula por nombre...</string>
+    <string name="m_dulo">Módulo</string>
+    <string name="planta">Planta</string>
 
 </resources>

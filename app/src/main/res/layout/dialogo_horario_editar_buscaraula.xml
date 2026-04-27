@@ -9,7 +9,7 @@
         android:id="@+id/etBuscador"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Buscar aula por nombre..."
+        android:hint="@string/buscar_aula_por_nombre"
         android:inputType="text" />
 
     <LinearLayout
@@ -22,14 +22,14 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Módulo" />
+            android:text="@string/m_dulo" />
 
         <TextView
             android:id="@+id/textView3"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Planta" />
+            android:text="@string/planta" />
     </LinearLayout>
 
     <LinearLayout
