@@ -59,5 +59,8 @@
     <string name="buscar_aula_por_nombre">Buscar aula por nombre...</string>
     <string name="m_dulo">Módulo</string>
     <string name="planta">Planta</string>
+    <string name="asignatura">Asignatura:</string>
+    <string name="horario">Horario</string>
+    <string name="ir_al_mapa">Ir al mapa</string>
 
 </resources>
