@@ -2,16 +2,18 @@ package es.us.etsii_go;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.Spinner;
+
 import androidx.appcompat.app.AppCompatActivity;
 
 public class ServiciosActivity extends AppCompatActivity {
 
     private Spinner spinnerCategorias;
     private Button btnBuscar;
-    private Button btnInformacion;
+    private View btnInformacion;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,13 +35,14 @@ public class ServiciosActivity extends AppCompatActivity {
 
         btnBuscar.setOnClickListener(v -> {
             String categoriaSeleccionada = spinnerCategorias.getSelectedItem().toString();
-            Intent intent = new Intent(this, ServiciosLugaresActivity.class);
+
+            Intent intent = new Intent(ServiciosActivity.this, ServiciosLugaresActivity.class);
             intent.putExtra("categoria", categoriaSeleccionada);
             startActivity(intent);
         });
 
         btnInformacion.setOnClickListener(v -> {
-            Intent intent = new Intent(this, ServiciosInfoActivity.class);
+            Intent intent = new Intent(ServiciosActivity.this, ServiciosInfoActivity.class);
             startActivity(intent);
         });
     }

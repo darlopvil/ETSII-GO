@@ -1,31 +1,223 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:gravity="center"
-    android:padding="16dp"
-    tools:context=".ServiciosActivity">
+    android:background="#FAF8FF">
 
-    <Button
-        android:id="@+id/btnInformacion"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Información" />
+        android:orientation="vertical"
+        android:padding="24dp">
 
-    <Spinner
-        android:id="@+id/spinnerCategorias"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp" />
+        <!-- TÍTULO -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Información y Búsqueda"
+            android:textSize="28sp"
+            android:textStyle="bold"
+            android:textColor="#111827"
+            android:gravity="center"
+            android:layout_marginTop="20dp"/>
 
-    <Button
-        android:id="@+id/btnBuscar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:text="Buscar" />
+        <!-- SUBTÍTULO -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Consulta noticias, avisos y recursos útiles de la ETSII."
+            android:textSize="16sp"
+            android:textColor="#6B7280"
+            android:gravity="center"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="24dp"/>
 
-</LinearLayout>
+        <!-- CARD INFORMACIÓN -->
+        <LinearLayout
+            android:id="@+id/btnInformacion"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="18dp"
+            android:background="@drawable/card_background"
+            android:elevation="6dp"
+            android:layout_marginBottom="20dp">
+
+            <!-- ICONO -->
+            <TextView
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:background="@drawable/icon_circle"
+                android:gravity="center"
+                android:text="📄"
+                android:textSize="24sp"/>
+
+            <!-- TEXTO -->
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:layout_marginStart="16dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Información"
+                    android:textStyle="bold"
+                    android:textSize="20sp"
+                    android:textColor="#111827"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Consulta noticias, avisos y recursos útiles para ti."
+                    android:textColor="#6B7280"
+                    android:textSize="14sp"
+                    android:layout_marginTop="4dp"/>
+            </LinearLayout>
+
+            <!-- FLECHA -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="›"
+                android:textSize="28sp"
+                android:textColor="#7C3AED"/>
+        </LinearLayout>
+
+        <!-- CARD BUSCAR -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="22dp"
+            android:background="@drawable/card_background"
+            android:elevation="6dp"
+            android:layout_marginBottom="20dp">
+
+            <!-- HEADER -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+
+                <!-- ICONO -->
+                <TextView
+                    android:layout_width="60dp"
+                    android:layout_height="60dp"
+                    android:background="@drawable/icon_circle"
+                    android:gravity="center"
+                    android:text="⌕"
+                    android:textSize="26sp"/>
+
+                <!-- TEXTOS -->
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:layout_marginStart="16dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Buscar"
+                        android:textSize="22sp"
+                        android:textStyle="bold"
+                        android:textColor="#111827"/>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Encuentra lo que necesitas de forma rápida."
+                        android:textSize="14sp"
+                        android:textColor="#6B7280"
+                        android:layout_marginTop="4dp"/>
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- DIVISOR -->
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="#E5E0F2"
+                android:layout_marginVertical="18dp"/>
+
+            <!-- LABEL -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Selecciona una categoría"
+                android:textColor="#6B46C1"
+                android:textStyle="bold"
+                android:layout_marginBottom="6dp"/>
+
+            <!-- SPINNER -->
+            <Spinner
+                android:id="@+id/spinnerCategorias"
+                android:layout_width="match_parent"
+                android:layout_height="54dp"
+                android:background="@drawable/input_background"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"/>
+
+            <!-- BOTÓN -->
+            <Button
+                android:id="@+id/btnBuscar"
+                android:layout_width="match_parent"
+                android:layout_height="58dp"
+                android:layout_marginTop="18dp"
+                android:text="⌕   Buscar"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:textColor="@android:color/white"
+                android:background="@drawable/button_background"/>
+        </LinearLayout>
+
+        <!-- CONSEJO -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="18dp"
+            android:background="@drawable/card_background"
+            android:elevation="4dp">
+
+            <TextView
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:background="@drawable/icon_circle"
+                android:gravity="center"
+                android:text="💡"
+                android:textSize="22sp"/>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:layout_marginStart="12dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Consejo"
+                    android:textColor="#6B46C1"
+                    android:textStyle="bold"
+                    android:textSize="16sp"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Puedes buscar por palabras clave como: becas, horarios, convocatorias, eventos, entre otros."
+                    android:textColor="#4B5563"
+                    android:textSize="14sp"
+                    android:layout_marginTop="4dp"/>
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</ScrollView>

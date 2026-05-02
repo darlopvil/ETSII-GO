@@ -1,0 +1,66 @@
+<resources>
+    <string name="app_name">ETSII-Go</string>
+    <string name="boton_gps_facultad"> 导航 / 课程表</string>
+    <string name="boton_servicios">服务</string>
+    <string name="boton_itinerario">路况</string>
+    <string name="boton_info">信息</string>
+    <string name="titulo_itinerario">配置路线</string>
+    <string name="campo_origen">起点</string>
+    <string name="campo_destino">终点</string>
+    <string name="boton_calcular_ruta">计算路线</string>
+    <string name="radio_coche">🚗</string>
+    <string name="radio_transporte_publico">🚌</string>
+    <string name="radio_andando">🚶</string>
+    <string name="texto_lugar_favorito">收藏地点名称</string>
+    <string name="texto_info_titulo">软件信息</string>
+    <string name="texto_titulo_equipo">👨‍💻 团队</string>
+    <string name="texto_integrantes"><![CDATA[开发者:<br>• Joaquín Ramón Pérez Rogerio<br>• Jiana Lin<br>• Darío López Villegas<br><br>---- 第15组 ----<br><br>源代码可在 <a href="https://github.com/darlopvil/ETSII-GO.git">我们 GitHub 仓库获取</a>.]]></string>
+    <string name="texto_titulo_asig">🎓 学术信息</string>
+    <string name="texto_asig_datos"><![CDATA[• 课程: Computación Móvil<br>• 学年: 2025–2026<br>• <a href="https://www.informatica.us.es">塞维利亚大学高等计算机工程学院 (ETSII)</a><br>• <a href="https://www.us.es">塞维利亚大学<a/>]]></string>
+    <string name="texto_recursos_titulo">🔌 使用的 API 与资源</string>
+    <string name="texto_recursos_datos"><![CDATA[• <b><a href="https://developers.google.com/maps/documentation/routes/compute-route-over">Google Routes API v2</a></b>: 用于高级路线，距离和行程计算时间.\n<br><br>• <b><a href="https://developers.google.com/maps/documentation/places/android-sdk">Google Places API (自动补全)</a>:</b>智能预测搜索，支持地址自动补全与精准验证.<br><br>• <b><a href="https://developers.google.com/location-context/fused-location-provider">FusedLocationProviderClient</a></b>: 使用GPS, WiFi 和蓝牙实现高精度定位.\n<br><br>• <b><a href="https://cda-idesevilla.opendata.arcgis.com/datasets/ideSEVILLA::tussam-paradas/explore?showTable=true">ParadasTussam.csv</a></b>: 塞维利亚市政府城市规划与环境部门提供的TUSSAM公交站点数据集]]></string>
+    <string name="texto_permisos_titulo">🛡️ 系统所需权限</string>
+    <string name="texto_permisos_datos"><![CDATA[• <b>INTERNET:</b> 用于链接Google服务器并下载路线数据.<br>• <b>ACCESS_FINE_LOCATION:</b> 允许使用GPS获取精确位置.<br>• <b>ACCESS_COARSE_LOCATION:</b>  允许通过移动基站和WiFi获取大致位置， 以实现更快且更省电力的定位.]]></string>
+    <string name="radio_bici">🚲</string>
+    <string-array name="categorias_array">
+        <item>Comer barato</item>
+        <item>Estudiar</item>
+        <item>Comprar básico</item>
+        <item>Vida universitaria</item>
+    </string-array>
+
+    <string name="dia_lunes">周一</string>
+    <string name="dia_martes">周二</string>
+    <string name="dia_miercoles">周三</string>
+    <string name="dia_jueves">周四</string>
+    <string name="dia_viernes">周五</string>
+    <string name="aula_no_asignada">未分配教室</string>
+    <string name="selecciona_un_aula_primero">请先选择教室</string>
+    <string name="navegando_a_detalles_de">正在查看详情:</string>
+    <string name="colores_usados">已使用颜色</string>
+    <string name="cerrar">关闭</string>
+    <string name="editar">编辑:</string>
+    <string name="guardar">保存</string>
+    <string name="cancelar">取消</string>
+    <string name="borrar">删除</string>
+    <string name="confirmar_borrado">确认删除?</string>
+    <string name="contenido_eliminado">内容已删除</string>
+    <string name="seleccionar_aula">选择教室:</string>
+    <string name="aula_seleccionada">"已选择教室: "</string>
+    <string name="modulo_todos">模块: 全部</string>
+    <string name="planta_todas">楼层: 全部</string>
+    <string name="modulo">模块 </string>
+    <string name="detalles_aula">模块 %1$s, 楼层 %2$d</string>
+    <string name="aula">教室:</string>
+    <string name="color">颜色:</string>
+    <string name="elegir_color">选择颜色</string>
+    <string name="colores_recientes">最近使用的颜色</string>
+    <string name="ver_aula_en_el_mapa">在地图中查看教室</string>
+    <string name="buscar_aula_por_nombre">按名称搜索教室...</string>
+    <string name="m_dulo">模块</string>
+    <string name="planta">楼层</string>
+    <string name="asignatura">课程:</string>
+    <string name="horario">课程表</string>
+    <string name="ir_al_mapa">前往地图</string>
+
+</resources>
