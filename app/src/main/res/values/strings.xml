@@ -119,4 +119,25 @@
     <string name="texto_coger_transporte">🚌 Coger transporte público</string>
     <string name="texto_paso_generico">▶️ Paso %1$d [%2$s]</string>
 
+
+
+    <!-- ====== GPS: Nuevos textos que habia olvidado y que hay que traducir ====== -->
+    <string name="permiso_necesario">Permiso necesario</string>
+    <string name="permisos_ubicacion">Has desactivado los permisos de ubicación de forma permanente. Para ver tu ubicación el mapa, actívalos en los ajustes de la aplicación.</string>
+    <string name="ir_a_ajustes">Ir a Ajustes</string>
+    <string name="ubicacion_necesaria">Ubicación necesaria</string>
+    <string name="mensaje_ubicacion">Para mostrarte dónde estás en el mapa y guiarte a tu aula, necesitamos acceder a tu ubicación.</string>
+    <string name="entendido">Entendido</string>
+    <string name="ahora_no">Ahora no</string>
+    <string name="funcionalidad_limitada_sin_gps">Funcionalidad limitada sin GPS</string>
+    <string name="gps_listo_para_usarse">GPS listo para usarse</string>
+    <string name="tu_dispositivo_no_soporta_los_ajustes_de_ubicaci_n">Tu dispositivo no soporta los ajustes de ubicación</string>
+    <string name="wi_fi_necesario">Wi-Fi Necesario</string>
+    <string name="mensaje_wifi">Para poder calcular tu posición exacta dentro del edificio, necesitamos escanear las redes Wi-Fi cercanas. ¿Quieres activarlo ahora?</string>
+    <string name="activar">Activar</string>
+    <string name="activando_wi_fi">Activando Wi-Fi...</string>
+    <string name="el_wi_fi_sigue_desactivado">El Wi-Fi sigue desactivado</string>
+    <string name="escaneo_ilimitado">Escaneo Ilimitado</string>
+    <string name="buscar_mi_ubicaci_n">Buscar mi ubicación</string>
+
 </resources>

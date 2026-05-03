@@ -2,7 +2,7 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    >
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -53,7 +53,6 @@
                 android:layout_weight="1"
                 android:background="@drawable/gpshorario_borde_texto"
                 android:gravity="center"
-
                 android:textAlignment="center"
                 android:textSize="14sp" />
 
@@ -61,10 +60,11 @@
                 android:id="@+id/seleccion_aula"
                 android:layout_width="230dp"
                 android:layout_height="wrap_content"
-                android:backgroundTint="#527D95"
+                android:background="@drawable/fondo_degradado_botones"
                 android:paddingStart="16dp"
+                android:textColor="#FFFFFF"
                 android:text="@string/seleccionar_aula"
-
+                app:backgroundTint="@null"
                 android:textAllCaps="false"
                 android:textSize="14sp" />
 
@@ -99,11 +99,11 @@
 
             <Button
                 android:id="@+id/btn_cambiar_color"
-                android:layout_width="130dp"
+                android:layout_width="100dp"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="8dp"
                 android:layout_weight="1"
-                android:backgroundTint="#90A4AE"
+                android:backgroundTint="#8E72E8"
                 android:paddingStart="16dp"
                 android:text="@string/elegir_color"
 
@@ -111,12 +111,12 @@
 
             <Button
                 android:id="@+id/btn_colores_recientes"
-                android:layout_width="130dp"
+                android:layout_width="100dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:backgroundTint="#90A4AE"
-                android:text="@string/colores_recientes"
+                android:backgroundTint="#8E72E8"
                 android:paddingStart="16dp"
+                android:text="@string/colores_recientes"
 
                 android:textSize="12sp" />
         </LinearLayout>
@@ -138,8 +138,10 @@
                 android:id="@+id/btn_ir_mapa"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:backgroundTint="#81AFAA"
+                android:background="@drawable/fondo_degradado_botones"
+                android:textColor="#FFFFFF"
                 android:text="@string/ver_aula_en_el_mapa"
+                app:backgroundTint="@null"
 
                 android:textSize="14sp"
                 android:textStyle="bold" />

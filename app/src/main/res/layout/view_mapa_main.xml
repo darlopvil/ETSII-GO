@@ -36,9 +36,10 @@
         android:layout_alignParentBottom="true"
         android:layout_marginStart="2dp"
         android:layout_marginBottom="71dp"
-        android:text="Escaneo Ilimitado"
+        android:text="@string/escaneo_ilimitado"
         android:textColor="#FFFFFF"
-        app:backgroundTint="#008577"
+        android:backgroundTint="#8E72E8"
+        app:backgroundTint="@null"
         app:iconTint="#FFFFFF" />
 
     <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
@@ -47,7 +48,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_marginBottom="139dp"
-        android:text="Buscar mi ubicación"
+        android:text="@string/buscar_mi_ubicaci_n"
         android:textColor="#FFFFFF"
         app:backgroundTint="#2196F3"
         app:icon="@android:drawable/ic_menu_mylocation"

@@ -7,4 +7,5 @@
 
     <color name="fondo_mapa">#949494</color>
     <color name="color_cabecera">#1C1B1F</color>
+    <color name="color_textos_cambiados">#F4F4F4</color>
 </resources>
