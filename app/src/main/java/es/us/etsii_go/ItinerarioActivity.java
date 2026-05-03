@@ -1203,14 +1203,19 @@ public class ItinerarioActivity extends AppCompatActivity {
      * sabe leer; con la lectura en katakana al menos puede pronunciarlos y
      * reconocer el tipo de vía.
      *
+     * IMPORTANTE: Usamos (?<![a-zA-Z]) en lugar de \b porque Android usa el motor
+     * de regex ICU, que trata los caracteres CJK (hiragana, katakana, kanji) como
+     * letras Unicode. Eso hace que \b NO matchee entre un hiragana y una letra
+     * latina (ICU dice "ambos son letras, no hay límite"). En cambio,
+     * (?<![a-zA-Z]) es explícito: "no me preceda una letra ASCII", y funciona
+     * igual al inicio de cadena (no hay nada que sea ASCII), después de un
+     * espacio (espacio no es ASCII letter) y después de un hiragana/kanji
+     * (tampoco es ASCII letter).
+     *
      * Las formas más largas se sustituyen ANTES que las cortas para evitar
      * colisiones (p. ej., "Avda. " antes que "Av. ", "Avenida " antes que "Av ",
-     * "Calle " antes que "C. "). El \\b del regex es un word boundary, que en este
-     * contexto significa "carácter no alfanumérico latino o inicio de cadena", lo
-     * cual encaja perfectamente cuando la abreviatura va después de hiragana/kanji.
-     *
-     * El caso especial "Av " (sin punto) seguido de mayúscula recoge nombres de
-     * paradas TUSSAM como "Av De La Palmera Hospital".
+     * "Calle " antes que "C. "). El caso especial "Av " (sin punto) seguido de
+     * mayúscula recoge nombres de paradas TUSSAM como "Av De La Palmera Hospital".
      */
     private String traducirAbreviaturas(String texto) {
         if (texto == null) return null;
@@ -1219,33 +1224,32 @@ public class ItinerarioActivity extends AppCompatActivity {
         return texto
                 // ===== Avenida =====
                 // Palabra completa primero, luego abreviaturas de larga a corta
-                .replaceAll("\\bAvenida ", "アベニーダ ")
-                .replaceAll("\\bAvda\\. ", "アベニーダ ")
-                .replaceAll("\\bAv\\. ", "アベニーダ ")
-                .replaceAll("\\bAv (?=[A-Z])", "アベニーダ ")  // sin punto, ej. paradas TUSSAM
+                .replaceAll("(?<![a-zA-Z])Avenida ", "アベニーダ ")
+                .replaceAll("(?<![a-zA-Z])Avda\\. ", "アベニーダ ")
+                .replaceAll("(?<![a-zA-Z])Av\\. ", "アベニーダ ")
+                .replaceAll("(?<![a-zA-Z])Av (?=[A-Z])", "アベニーダ ")  // sin punto, ej. paradas TUSSAM
                 // ===== Calle =====
-                .replaceAll("\\bCalle ", "カジェ ")
-                .replaceAll("\\bCl\\. ", "カジェ ")           // variante con L minúscula
-                .replaceAll("\\bC\\. ", "カジェ ")
-                .replaceAll("\\bC.", "カジェ ")
+                .replaceAll("(?<![a-zA-Z])Calle ", "カジェ ")
+                .replaceAll("(?<![a-zA-Z])Cl\\. ", "カジェ ")           // variante con L minúscula
+                .replaceAll("(?<![a-zA-Z])C\\. ", "カジェ ")
                 // ===== Plaza =====
-                .replaceAll("\\bPlaza ", "プラサ ")
-                .replaceAll("\\bPlza\\. ", "プラサ ")
-                .replaceAll("\\bPza\\. ", "プラサ ")
-                .replaceAll("\\bPl\\. ", "プラサ ")
+                .replaceAll("(?<![a-zA-Z])Plaza ", "プラサ ")
+                .replaceAll("(?<![a-zA-Z])Plza\\. ", "プラサ ")
+                .replaceAll("(?<![a-zA-Z])Pza\\. ", "プラサ ")
+                .replaceAll("(?<![a-zA-Z])Pl\\. ", "プラサ ")
                 // ===== Glorieta (rotonda) =====
-                .replaceAll("\\bGlorieta ", "グロリエタ ")
-                .replaceAll("\\bGta\\. ", "グロリエタ ")
+                .replaceAll("(?<![a-zA-Z])Glorieta ", "グロリエタ ")
+                .replaceAll("(?<![a-zA-Z])Gta\\. ", "グロリエタ ")
                 // ===== Carretera =====
-                .replaceAll("\\bCarretera ", "カレテラ ")
-                .replaceAll("\\bCrta\\. ", "カレテラ ")
-                .replaceAll("\\bCtra\\. ", "カレテラ ")
+                .replaceAll("(?<![a-zA-Z])Carretera ", "カレテラ ")
+                .replaceAll("(?<![a-zA-Z])Crta\\. ", "カレテラ ")
+                .replaceAll("(?<![a-zA-Z])Ctra\\. ", "カレテラ ")
                 // ===== Paseo =====
-                .replaceAll("\\bPaseo ", "パセオ ")
-                .replaceAll("\\bPo\\. ", "パセオ ")
+                .replaceAll("(?<![a-zA-Z])Paseo ", "パセオ ")
+                .replaceAll("(?<![a-zA-Z])Po\\. ", "パセオ ")
                 // ===== Barriada =====
-                .replaceAll("\\bBarriada ", "バリアダ ")
-                .replaceAll("\\bBda\\. ", "バリアダ ");
+                .replaceAll("(?<![a-zA-Z])Barriada ", "バリアダ ")
+                .replaceAll("(?<![a-zA-Z])Bda\\. ", "バリアダ ");
     }
 
     // ---------- DEBUG ONLY ---------------------
