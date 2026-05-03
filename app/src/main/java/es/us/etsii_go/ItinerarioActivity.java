@@ -51,6 +51,33 @@ import com.google.android.gms.location.Priority;
 
 public class ItinerarioActivity extends AppCompatActivity {
 
+    // ============================================================
+    // CONSTANTES DE DEBUG
+    // ============================================================
+    /**
+     * Tag único para esta actividad. Filtra el Logcat con este string para ver
+     * SOLO los mensajes de Itinerario y no los de otras actividades del equipo.
+     * En Android Studio: Logcat > campo de búsqueda > "ETSII-Itinerario"
+     */
+    private static final String LOG_TAG = "ETSII-Itinerario";
+
+    /**
+     * Interruptor maestro de logs. Ponerlo a false antes de la entrega final
+     * para que la app no haga ningún Log.d/Log.e en producción.
+     */
+    private static final boolean DEBUG = true;
+
+    // Helpers de log: Solo escriben si DEBUG=true. Todos usan el mismo LOG_TAG.
+    private static void logD(String mensaje) {
+        if (DEBUG) Log.d(LOG_TAG, mensaje);
+    }
+    private static void logE(String mensaje) {
+        if (DEBUG) Log.e(LOG_TAG, mensaje);
+    }
+    private static void logE(String mensaje, Throwable t) {
+        if (DEBUG) Log.e(LOG_TAG, mensaje, t);
+    }
+
     // VARIABLES GLOBALES
     private EditText origen, destino;
     private ImageButton botonFavOrigen, botonFavDestino, botonListaOrigen, botonListaDestino, botonGpsOrigen, botonGpsDestino, botonIntercambiar;
@@ -330,6 +357,12 @@ public class ItinerarioActivity extends AppCompatActivity {
                 body.put("travelMode", modoViajeAPI);  // Le pasamos directamente el modo de viaje seleccionado en el RadioButtom
                 body.put("computeAlternativeRoutes", true); // Pedir todas las rutas disponibles
 
+                // Pedimos a la API que las instrucciones vengan en el idioma del dispositivo.
+                // La Routes API soporta ja, es, en, fr, de, it, pt, etc. Si el código no fuera soportado,
+                // la API hace fallback a su default (suele ser español por la región geográfica).
+                body.put("languageCode", Locale.getDefault().getLanguage());
+                logD("Pidiendo respuesta a Google en idioma: " + Locale.getDefault().getLanguage());
+
                 OutputStream os = connection.getOutputStream(); // "Abrimos la tubería" para enviar los datos a Google
                 os.write(body.toString().getBytes(StandardCharsets.UTF_8));    // Pasamos a bytes los datos del usuario y los mandamos con write()
                 os.close(); // Cerramos la tubería. Google ya puede procesar la solicitud
@@ -355,13 +388,13 @@ public class ItinerarioActivity extends AppCompatActivity {
 
                 // ------------ DEBUG ZONE --------------
                 String jsonCrudo = respuesta.toString();
-                logLargo("ItinerarioApp_JSON", "Respuesta HTTP " + responseCode + ": \n" + jsonCrudo);
+                logLargo("Respuesta HTTP " + responseCode + ":\n" + jsonCrudo);
 
                 // 4.- Parseamos la respuesta y actualizamos la UI SOLO si la respuesta fue exitosa:
                 if (responseCode == 200) {
                     parsearYMostrarResultados(jsonCrudo);
                 } else {
-                    Log.e("ItinerarioApp", "Google devolvió un error: " + jsonCrudo);
+                    logE("Google devolvió un error: " + jsonCrudo);
                     runOnUiThread(() -> Toast.makeText(ItinerarioActivity.this, getString(R.string.toast_error_peticion, responseCode), Toast.LENGTH_SHORT).show());
                 }
 
@@ -369,7 +402,7 @@ public class ItinerarioActivity extends AppCompatActivity {
             } catch (Exception e) {
                 String errorDetallado = e.toString();
 
-                Log.e("ItinerarioApp", "Error en la conexión API" + errorDetallado);
+                logE("Error en la conexión API: " + errorDetallado);
 
                 e.printStackTrace();
 
@@ -626,7 +659,7 @@ public class ItinerarioActivity extends AppCompatActivity {
 
                 }
             } catch (Exception e) {
-                Log.e("ItinerarioApp", "Error al parsear y mostrar los resultados", e);
+                logE("Error al parsear y mostrar los resultados", e);
                 Toast.makeText(ItinerarioActivity.this, R.string.toast_error_lectura_ruta, Toast.LENGTH_SHORT).show();
             }
 
@@ -687,12 +720,12 @@ public class ItinerarioActivity extends AppCompatActivity {
                 }
             }
             reader.close();
-            Log.d("ItinerarioApp", "Cargadas " + mapaParadasTussam.size() + " combinaciones de paradas de TUSSAM.");
+            logD("Cargadas " + mapaParadasTussam.size() + " combinaciones de paradas de TUSSAM.");
 
         } catch (Exception e) {
             String errorDetallado = e.toString();
 
-            Log.e("ItinerarioApp", "Error al cargar el CSV de las paradas" + errorDetallado);
+            logE("Error al cargar el CSV de las paradas: " + errorDetallado);
 
             e.printStackTrace();
 
@@ -1148,12 +1181,18 @@ public class ItinerarioActivity extends AppCompatActivity {
 
 
     // ---------- DEBUG ONLY ---------------------
-    private void logLargo(String tag, String mensaje) {
+    /**
+     * Logcat trunca los mensajes muy largos (~4000 chars). Este método los parte
+     * en bloques de 3000 caracteres y los emite secuencialmente.
+     * Usa siempre LOG_TAG y respeta el flag DEBUG.
+     */
+    private void logLargo(String mensaje) {
+        if (!DEBUG) return;
         if (mensaje.length() > 3000) {
-            Log.d(tag, mensaje.substring(0, 3000));
-            logLargo(tag, mensaje.substring(3000));
+            Log.d(LOG_TAG, mensaje.substring(0, 3000));
+            logLargo(mensaje.substring(3000));
         } else {
-            Log.d(tag, mensaje);
+            Log.d(LOG_TAG, mensaje);
         }
     }
 }
