@@ -62,5 +62,61 @@
     <string name="asignatura">Asignatura:</string>
     <string name="horario">Horario</string>
     <string name="ir_al_mapa">Ir al mapa</string>
+    <string name="consejo_de_hoy">Consejo de hoy</string>
+    <string name="descripcion_consejo">Consulta tu ruta antes de salir y revisa los servicios disponibles de la ETSII.</string>
+    <string name="actividad_itinerario">Itinerario</string>
+    <string name="descripcion_itinerario">Planifica tu ruta paso a paso.</string>
+    <string name="actividad_servicios">Servicios</string>
+    <string name="descripcion_servicios">Descubre los servicios disponibles.</string>
+    <string name="actividad_gps">GPS Facultad</string>
+    <string name="descripcion_gps">Localiza la ETSII en tiempo real.</string>
+    <string name="actividad_info">Información</string>
+    <string name="descripcion_info">Noticias, avisos y datos útiles.</string>
+
+    <!-- ====== ITINERARIO: Toasts ====== -->
+    <string name="toast_origen_destino_requerido">Por favor, indica un origen y un destino</string>
+    <string name="toast_buscando_ruta">Buscando la mejor ruta...</string>
+    <string name="toast_error_peticion">Error en la petición: HTTP %1$d</string>
+    <string name="toast_error_conexion">Error de conexión: %1$s</string>
+    <string name="toast_ruta_no_disponible">No se ha encontrado una ruta disponible</string>
+    <string name="toast_error_lectura_ruta">Error al leer los datos de la ruta</string>
+    <string name="toast_ubicacion_detectada">📍 Detectado: Ubicación guardada como \'%1$s\'</string>
+    <string name="toast_escribe_direccion">Escribe o detecta una dirección primero</string>
+    <string name="toast_favorito_eliminado">Favorito eliminado 🗑️</string>
+    <string name="toast_coordenadas_guardadas">Coordenadas guardadas ⭐</string>
+    <string name="toast_guardado_favoritos">Guardado en favoritos ⭐</string>
+    <string name="toast_no_favoritos">Aún no tienes favoritos guardados</string>
+    <string name="toast_buscando_ubicacion">Buscando su ubicación. Espere, por favor...</string>
+    <string name="toast_ubicacion_encontrada">¡Ubicación exacta encontrada!</string>
+    <string name="toast_gps_apagado">Asegúrate de tener el GPS encendido en los ajustes</string>
+
+    <!-- ====== ITINERARIO: Diálogos ====== -->
+    <string name="titulo_mis_favoritos">Mis Favoritos</string>
+    <string name="instrucciones_favoritos">Toca para elegir.\nMantén pulsado para borrar.</string>
+    <string name="hint_nombre_favorito">Ej. Casa, Trabajo, Gimnasio...</string>
+    <string name="titulo_nombrar_ubicacion">Ponle un nombre a esta ubicación</string>
+    <string name="mensaje_guardar_coordenadas">Vas a guardar tus coordenadas actuales. ¿Qué nombre le ponemos?</string>
+    <string name="titulo_renombrar_favorito">Renombrar Favorito</string>
+
+    <!-- ====== ITINERARIO: GPS ====== -->
+    <string name="texto_mi_ubicacion_actual">📍 Mi ubicación actual</string>
+
+    <!-- ====== ITINERARIO: Resultados de ruta ====== -->
+    <string name="texto_opcion_ruta">📍 Opción %1$d (%2$d min, %3$s km)</string>
+    <string name="texto_modo_desconocido">Desconocido</string>
+    <string name="texto_avanzar">Avanzar</string>
+    <string name="texto_caminar">Caminar</string>
+    <string name="texto_conducir">Conducir</string>
+    <string name="texto_pedalear">Pedalear</string>
+    <string name="texto_dirigete_parada">\n📍 Dirígete a la parada</string>
+    <string name="texto_transporte">Transporte</string>
+    <string name="texto_origen_default">Origen</string>
+    <string name="texto_destino_default">Destino</string>
+    <string name="texto_linea_transporte">🚌 %1$s (Línea %2$s)\n</string>
+    <string name="texto_parada_numero"> (Parada Nº %1$s)</string>
+    <string name="texto_subir_en">🟢 Sube en: %1$s (%2$s)\n</string>
+    <string name="texto_bajar_en">🔴 Baja en: %1$s (%2$s)</string>
+    <string name="texto_coger_transporte">🚌 Coger transporte público</string>
+    <string name="texto_paso_generico">▶️ Paso %1$d [%2$s]</string>
 
 </resources>

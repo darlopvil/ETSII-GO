@@ -1,0 +1,122 @@
+<resources>
+    <string name="app_name">ETSII-Go</string>
+    <string name="boton_gps_facultad">GPS / 学部時間割</string>
+    <string name="boton_servicios">サービス</string>
+    <string name="boton_itinerario">ルート</string>
+    <string name="boton_info">情報</string>
+    <string name="titulo_itinerario">ルートを設定</string>
+    <string name="campo_origen">出発地</string>
+    <string name="campo_destino">目的地</string>
+    <string name="boton_calcular_ruta">ルートを計算</string>
+    <string name="radio_coche">🚗</string>
+    <string name="radio_transporte_publico">🚌</string>
+    <string name="radio_andando">🚶</string>
+    <string name="texto_lugar_favorito">お気に入りの名前</string>
+    <string name="texto_info_titulo">アプリ情報</string>
+    <string name="texto_titulo_equipo">👨‍💻 開発チーム</string>
+    <string name="texto_integrantes"><![CDATA[開発者:<br>• Joaquín Ramón Pérez Rogerio<br>• Jiana Lin<br>• Darío López Villegas<br><br>---- 第15班 ----<br><br>ソースコードは<a href="https://github.com/darlopvil/ETSII-GO.git">GitHubリポジトリ</a>で公開しています。]]></string>
+    <string name="texto_titulo_asig">🎓 学術情報</string>
+    <string name="texto_asig_datos"><![CDATA[• 科目: モバイルコンピューティング<br>• 学年度: 2025–2026<br>• <a href="https://www.informatica.us.es">情報工学高等技術学校 (ETSII)</a><br>• <a href="https://www.us.es">セビリア大学<a/>]]></string>
+    <string name="texto_recursos_titulo">🔌 使用API・リソース</string>
+    <string name="texto_recursos_datos"><![CDATA[• <b><a href="https://developers.google.com/maps/documentation/routes/compute-route-over">Google Routes API v2</a></b>: ルート、距離、所要時間の高度な計算。\n<br><br>• <b><a href="https://developers.google.com/maps/documentation/places/android-sdk">Google Places API (Autocomplete)</a>:</b> オートコンプリート機能と正確な住所検証を備えた予測検索。<br><br>• <b><a href="https://developers.google.com/location-context/fused-location-provider">FusedLocationProviderClient</a></b>: GPS・Wi-Fi・Bluetoothを使用した高精度の位置情報取得。\n<br><br>• <b><a href="https://cda-idesevilla.opendata.arcgis.com/datasets/ideSEVILLA::tussam-paradas/explore?showTable=true">ParadasTussam.csv</a></b>: セビリア市役所都市計画・環境局によるTUSSAMバス停データセット]]></string>
+    <string name="texto_permisos_titulo">🛡️ 必要なシステム権限</string>
+    <string name="texto_permisos_datos"><![CDATA[• <b>INTERNET:</b> Googleサーバーへの接続およびルートのダウンロードに必要です。<br>• <b>ACCESS_FINE_LOCATION:</b> GPSハードウェアを使用して正確な位置を取得します。<br>• <b>ACCESS_COARSE_LOCATION:</b> 携帯電話のアンテナとWi-Fiを使用しておおよその位置を測位し、より高速かつ低消費電力で位置情報を取得します。]]></string>
+    <string name="radio_bici">🚲</string>
+    <string-array name="categorias_array">
+        <item>安く食べる</item>
+        <item>勉強する</item>
+        <item>日用品の購入</item>
+        <item>学生生活</item>
+    </string-array>
+
+    <string name="dia_lunes">月</string>
+    <string name="dia_martes">火</string>
+    <string name="dia_miercoles">水</string>
+    <string name="dia_jueves">木</string>
+    <string name="dia_viernes">金</string>
+    <string name="aula_no_asignada">教室が割り当てられていません</string>
+    <string name="selecciona_un_aula_primero">まず教室を選択してください</string>
+    <string name="navegando_a_detalles_de">"詳細を表示中: "</string>
+    <string name="colores_usados">使用中の色</string>
+    <string name="cerrar">閉じる</string>
+    <string name="editar">編集:</string>
+    <string name="guardar">保存</string>
+    <string name="cancelar">キャンセル</string>
+    <string name="borrar">削除</string>
+    <string name="confirmar_borrado">削除しますか?</string>
+    <string name="contenido_eliminado">内容を削除しました</string>
+    <string name="seleccionar_aula">教室を選択:</string>
+    <string name="aula_seleccionada">"選択された教室: "</string>
+    <string name="modulo_todos">棟: すべて</string>
+    <string name="planta_todas">階: すべて</string>
+    <string name="modulo">棟 </string>
+    <string name="detalles_aula">%1$s棟、%2$d階</string>
+    <string name="aula">教室:</string>
+    <string name="color">色:</string>
+    <string name="elegir_color">色を選択</string>
+    <string name="colores_recientes">最近使った色</string>
+    <string name="ver_aula_en_el_mapa">教室を地図で表示</string>
+    <string name="buscar_aula_por_nombre">教室名で検索...</string>
+    <string name="m_dulo">棟</string>
+    <string name="planta">階</string>
+    <string name="asignatura">科目:</string>
+    <string name="horario">時間割</string>
+    <string name="ir_al_mapa">地図へ移動</string>
+    <string name="consejo_de_hoy">今日のヒント</string>
+    <string name="descripcion_consejo">出発前にルートを確認し、ETSIIの利用可能なサービスをチェックしましょう。</string>
+    <string name="actividad_itinerario">ルート</string>
+    <string name="descripcion_itinerario">ルートを段階的に計画。</string>
+    <string name="actividad_servicios">サービス</string>
+    <string name="descripcion_servicios">利用可能なサービスを発見。</string>
+    <string name="actividad_gps">学部GPS</string>
+    <string name="descripcion_gps">ETSIIをリアルタイムで検索。</string>
+    <string name="actividad_info">情報</string>
+    <string name="descripcion_info">ニュース、お知らせ、お役立ち情報。</string>
+
+    <!-- ====== ITINERARIO: Toasts ====== -->
+    <string name="toast_origen_destino_requerido">出発地と目的地を入力してください</string>
+    <string name="toast_buscando_ruta">最適なルートを検索中...</string>
+    <string name="toast_error_peticion">リクエストエラー: HTTP %1$d</string>
+    <string name="toast_error_conexion">接続エラー: %1$s</string>
+    <string name="toast_ruta_no_disponible">利用可能なルートが見つかりませんでした</string>
+    <string name="toast_error_lectura_ruta">ルートデータの読み込みエラー</string>
+    <string name="toast_ubicacion_detectada">📍 検出: 「%1$s」として保存された場所</string>
+    <string name="toast_escribe_direccion">先に住所を入力するか、検出してください</string>
+    <string name="toast_favorito_eliminado">お気に入りを削除しました 🗑️</string>
+    <string name="toast_coordenadas_guardadas">座標を保存しました ⭐</string>
+    <string name="toast_guardado_favoritos">お気に入りに保存しました ⭐</string>
+    <string name="toast_no_favoritos">保存されたお気に入りはまだありません</string>
+    <string name="toast_buscando_ubicacion">現在地を検索中。お待ちください...</string>
+    <string name="toast_ubicacion_encontrada">正確な現在地が見つかりました!</string>
+    <string name="toast_gps_apagado">設定でGPSがオンになっているか確認してください</string>
+
+    <!-- ====== ITINERARIO: Diálogos ====== -->
+    <string name="titulo_mis_favoritos">お気に入り</string>
+    <string name="instrucciones_favoritos">タップで選択。\n長押しで削除。</string>
+    <string name="hint_nombre_favorito">例: 自宅、職場、ジムなど...</string>
+    <string name="titulo_nombrar_ubicacion">この場所に名前を付けてください</string>
+    <string name="mensaje_guardar_coordenadas">現在の座標を保存します。どのような名前にしますか?</string>
+    <string name="titulo_renombrar_favorito">お気に入りの名前を変更</string>
+
+    <!-- ====== ITINERARIO: GPS ====== -->
+    <string name="texto_mi_ubicacion_actual">📍 現在地</string>
+
+    <!-- ====== ITINERARIO: Resultados de ruta ====== -->
+    <string name="texto_opcion_ruta">📍 オプション%1$d (%2$d分、%3$s km)</string>
+    <string name="texto_modo_desconocido">不明</string>
+    <string name="texto_avanzar">進む</string>
+    <string name="texto_caminar">歩く</string>
+    <string name="texto_conducir">運転</string>
+    <string name="texto_pedalear">自転車</string>
+    <string name="texto_dirigete_parada">\n📍 停留所へ向かう</string>
+    <string name="texto_transporte">交通機関</string>
+    <string name="texto_origen_default">出発</string>
+    <string name="texto_destino_default">到着</string>
+    <string name="texto_linea_transporte">🚌 %1$s (%2$s系統)\n</string>
+    <string name="texto_parada_numero"> (停留所番号 %1$s)</string>
+    <string name="texto_subir_en">🟢 乗車: %1$s (%2$s)\n</string>
+    <string name="texto_bajar_en">🔴 降車: %1$s (%2$s)</string>
+    <string name="texto_coger_transporte">🚌 公共交通機関を利用</string>
+    <string name="texto_paso_generico">▶️ ステップ%1$d [%2$s]</string>
+
+</resources>

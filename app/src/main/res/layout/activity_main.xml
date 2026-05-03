@@ -52,7 +52,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Consejo de hoy"
+                    android:text="@string/consejo_de_hoy"
                     android:textColor="@color/textPrimary"
                     android:textSize="20sp"
                     android:textStyle="bold" />
@@ -61,7 +61,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="4dp"
-                    android:text="Consulta tu ruta antes de salir y revisa los servicios disponibles de la ETSII."
+                    android:text="@string/descripcion_consejo"
                     android:textColor="@color/textSecondary"
                     android:textSize="14sp" />
             </LinearLayout>
@@ -116,7 +116,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="12dp"
-                        android:text="Itinerario"
+                        android:text="@string/actividad_itinerario"
                         android:textColor="@android:color/white"
                         android:textSize="18sp"
                         android:textStyle="bold" />
@@ -126,7 +126,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="4dp"
                         android:gravity="center"
-                        android:text="Planifica tu ruta paso a paso."
+                        android:text="@string/descripcion_itinerario"
                         android:textColor="@android:color/white"
                         android:textSize="13sp" />
 
@@ -158,7 +158,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="12dp"
-                        android:text="Servicios"
+                        android:text="@string/actividad_servicios"
                         android:textColor="@android:color/white"
                         android:textSize="18sp"
                         android:textStyle="bold" />
@@ -168,7 +168,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="4dp"
                         android:gravity="center"
-                        android:text="Descubre los servicios disponibles."
+                        android:text="@string/descripcion_servicios"
                         android:textColor="@android:color/white"
                         android:textSize="13sp" />
 
@@ -208,7 +208,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="12dp"
-                        android:text="GPS Facultad"
+                        android:text="@string/actividad_gps"
                         android:textColor="@android:color/white"
                         android:textSize="18sp"
                         android:textStyle="bold" />
@@ -218,7 +218,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="4dp"
                         android:gravity="center"
-                        android:text="Localiza la ETSII en tiempo real."
+                        android:text="@string/descripcion_gps"
                         android:textColor="@android:color/white"
                         android:textSize="13sp" />
 
@@ -250,7 +250,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="12dp"
-                        android:text="Información"
+                        android:text="@string/actividad_info"
                         android:textColor="@android:color/white"
                         android:textSize="18sp"
                         android:textStyle="bold" />
@@ -260,7 +260,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="4dp"
                         android:gravity="center"
-                        android:text="Noticias, avisos y datos útiles."
+                        android:text="@string/descripcion_info"
                         android:textColor="@android:color/white"
                         android:textSize="13sp" />
 
