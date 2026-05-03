@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
     <string name="app_name">ETSII-Go</string>
     <string name="boton_gps_facultad">GPS / Horario Facultad</string>
     <string name="boton_servicios">Servicios</string>

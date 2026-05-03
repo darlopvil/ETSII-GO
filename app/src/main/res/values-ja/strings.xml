@@ -119,4 +119,23 @@
     <string name="texto_coger_transporte">🚌 公共交通機関を利用</string>
     <string name="texto_paso_generico">▶️ ステップ%1$d [%2$s]</string>
 
+    <!-- ====== GPS: Permisos, ubicación y Wi-Fi ====== -->
+    <string name="permiso_necesario">許可が必要です</string>
+    <string name="permisos_ubicacion">位置情報の許可を完全に無効にしています。地図上で現在地を表示するには、アプリの設定で許可を有効にしてください。</string>
+    <string name="ir_a_ajustes">設定を開く</string>
+    <string name="ubicacion_necesaria">位置情報が必要です</string>
+    <string name="mensaje_ubicacion">地図上での現在地表示や教室への案内のため、位置情報へのアクセスが必要です。</string>
+    <string name="entendido">了解</string>
+    <string name="ahora_no">後で</string>
+    <string name="funcionalidad_limitada_sin_gps">GPSなしでは一部機能が利用できません</string>
+    <string name="gps_listo_para_usarse">GPSの使用準備完了</string>
+    <string name="tu_dispositivo_no_soporta_los_ajustes_de_ubicaci_n">お使いのデバイスは位置情報の設定に対応していません</string>
+    <string name="wi_fi_necesario">Wi-Fiが必要です</string>
+    <string name="mensaje_wifi">建物内での正確な位置を計算するため、近くのWi-Fiネットワークをスキャンする必要があります。今すぐ有効にしますか?</string>
+    <string name="activar">有効にする</string>
+    <string name="activando_wi_fi">Wi-Fiを有効にしています...</string>
+    <string name="el_wi_fi_sigue_desactivado">Wi-Fiは無効のままです</string>
+    <string name="escaneo_ilimitado">スキャン制限を解除</string>
+    <string name="buscar_mi_ubicaci_n">現在地を検索</string>
+
 </resources>

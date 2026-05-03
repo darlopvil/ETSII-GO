@@ -504,23 +504,28 @@ public class ItinerarioActivity extends AppCompatActivity {
                                         instruccion = navInstruction.optString("instructions", instruccion);
                                     }
 
-                                    // TODO: La API de Google Routes devuelve estos textos en el idioma del Locale del dispositivo.
-                                    // Este filtro solo funciona si el Locale es español. En japonés u otros idiomas
-                                    // los textos no se filtrarán. Solución posible: forzar Accept-Language=es en la request,
-                                    // pero entonces el usuario japonés vería las instrucciones en español.
-                                    // Limpiamos el texto de destino ".\nVía de uso restringido\n". Esto es por que
-                                    // cuando pasas por calles peatonales, zonas de bajas emisiones o carreteras de peaje.
+                                    // Cuando el dispositivo está en japonés, traducimos las abreviaturas españolas
+                                    // que la API deja sin tocar (C., Av., Pl., Gta., ...) a su lectura en katakana.
+                                    // En cualquier otro idioma este método devuelve el texto sin cambios.
+                                    instruccion = traducirAbreviaturas(instruccion);
+
+                                    // Limpiamos textos auxiliares que la API devuelve en español.
+                                    // Esto solo afecta a respuestas en español; cuando el dispositivo está en japonés
+                                    // la API ya no añade estos avisos, así que el replace no encuentra nada (y no pasa nada).
+                                    // Ej: ".\nVía de uso restringido\n" aparece cuando pasas por calles peatonales,
+                                    // zonas de bajas emisiones o carreteras de peaje.
                                     instruccion = instruccion.replace(".\nVía de uso restringido\n", ".").replace("\nVía de uso restringido","").replace("Vía de uso restringido","");
 
-                                    // Limpieza de texto si el siguiente paso es TRANSIT (solo útil si se ha seleccionado "Andar")
-                                    // TODO: "\nEl destino" también viene en el idioma del Locale; este detector solo funciona en español.
+                                    // Limpieza de texto si el siguiente paso es TRANSIT (solo útil si se ha seleccionado "Andar"):
+                                    // recortamos "El destino está a la izquierda" y avisamos de dirigirse a la parada.
+                                    // Detectamos el patrón en español Y en japonés (la API cambia el idioma según el Locale).
                                     if (modoViaje.equals("WALK") && i < steps.length() - 1 ) { // Comprobamos además de que no sea el último paso
                                         JSONObject siguientePaso = steps.getJSONObject(i + 1);
                                         if (siguientePaso.optString("travelMode", "").equals("TRANSIT")) {
-                                            // Limpiamos el texto confuso. Ej: "Continúa por Av. Torneo El destino está a la izquierda."
-                                            // Nos quedamos solo con la primera parte antes del salto de línea
-                                            if (instruccion.contains("\nEl destino")) {
-                                                instruccion = instruccion.substring(0, instruccion.indexOf("\nEl destino"));
+                                            // Marcador del párrafo "El destino está a..." según idioma del dispositivo.
+                                            String marcadorDestino = Locale.getDefault().getLanguage().equals("ja") ? "\n目的地" : "\nEl destino";
+                                            if (instruccion.contains(marcadorDestino)) {
+                                                instruccion = instruccion.substring(0, instruccion.indexOf(marcadorDestino));
                                                 instruccion += getString(R.string.texto_dirigete_parada);
                                             }
                                         }
@@ -565,8 +570,10 @@ public class ItinerarioActivity extends AppCompatActivity {
                                         if (transit.has("stopDetails")) {
                                             JSONObject stops = transit.getJSONObject("stopDetails");
 
-                                            String origenName = stops.has("departureStop") ? stops.getJSONObject("departureStop").optString("name", getString(R.string.texto_origen_default)) : getString(R.string.texto_origen_default);
-                                            String destinoName = stops.has("arrivalStop") ? stops.getJSONObject("arrivalStop").optString("name", getString(R.string.texto_destino_default)) : getString(R.string.texto_destino_default);
+                                            // Aplicamos la misma traducción de abreviaturas a los nombres de paradas
+                                            // (en TUSSAM aparecen formas como "Av De La Palmera Hospital", "Avda. Bellavista", "Gta. Alc. Parias Merry"...)
+                                            String origenName = traducirAbreviaturas(stops.has("departureStop") ? stops.getJSONObject("departureStop").optString("name", getString(R.string.texto_origen_default)) : getString(R.string.texto_origen_default));
+                                            String destinoName = traducirAbreviaturas(stops.has("arrivalStop") ? stops.getJSONObject("arrivalStop").optString("name", getString(R.string.texto_destino_default)) : getString(R.string.texto_destino_default));
 
                                             // A. Rescatamos las coordenadas del origen
                                             double oriLat = 0, oriLon = 0;
@@ -1179,6 +1186,67 @@ public class ItinerarioActivity extends AppCompatActivity {
     }
 
 
+
+    // ============================================================
+    // HELPERS DE INTERNACIONALIZACIÓN (i18n)
+    // ============================================================
+
+    /**
+     * Cuando el dispositivo está en japonés, traduce las abreviaturas españolas más
+     * habituales (C., Cl., Av., Avda., Pl., Gta., Crta., Po., Bda., ...) Y también
+     * las palabras completas (Calle, Avenida, Plaza, Glorieta, Carretera, Paseo) a
+     * su lectura en katakana. Para cualquier otro idioma del dispositivo, devuelve
+     * el texto sin cambios.
+     *
+     * Necesario porque la API de Google Routes deja estos términos en español
+     * incluso cuando se le pide la respuesta en japonés. Un usuario japonés no los
+     * sabe leer; con la lectura en katakana al menos puede pronunciarlos y
+     * reconocer el tipo de vía.
+     *
+     * Las formas más largas se sustituyen ANTES que las cortas para evitar
+     * colisiones (p. ej., "Avda. " antes que "Av. ", "Avenida " antes que "Av ",
+     * "Calle " antes que "C. "). El \\b del regex es un word boundary, que en este
+     * contexto significa "carácter no alfanumérico latino o inicio de cadena", lo
+     * cual encaja perfectamente cuando la abreviatura va después de hiragana/kanji.
+     *
+     * El caso especial "Av " (sin punto) seguido de mayúscula recoge nombres de
+     * paradas TUSSAM como "Av De La Palmera Hospital".
+     */
+    private String traducirAbreviaturas(String texto) {
+        if (texto == null) return null;
+        if (!"ja".equals(Locale.getDefault().getLanguage())) return texto;
+
+        return texto
+                // ===== Avenida =====
+                // Palabra completa primero, luego abreviaturas de larga a corta
+                .replaceAll("\\bAvenida ", "アベニーダ ")
+                .replaceAll("\\bAvda\\. ", "アベニーダ ")
+                .replaceAll("\\bAv\\. ", "アベニーダ ")
+                .replaceAll("\\bAv (?=[A-Z])", "アベニーダ ")  // sin punto, ej. paradas TUSSAM
+                // ===== Calle =====
+                .replaceAll("\\bCalle ", "カジェ ")
+                .replaceAll("\\bCl\\. ", "カジェ ")           // variante con L minúscula
+                .replaceAll("\\bC\\. ", "カジェ ")
+                .replaceAll("\\bC.", "カジェ ")
+                // ===== Plaza =====
+                .replaceAll("\\bPlaza ", "プラサ ")
+                .replaceAll("\\bPlza\\. ", "プラサ ")
+                .replaceAll("\\bPza\\. ", "プラサ ")
+                .replaceAll("\\bPl\\. ", "プラサ ")
+                // ===== Glorieta (rotonda) =====
+                .replaceAll("\\bGlorieta ", "グロリエタ ")
+                .replaceAll("\\bGta\\. ", "グロリエタ ")
+                // ===== Carretera =====
+                .replaceAll("\\bCarretera ", "カレテラ ")
+                .replaceAll("\\bCrta\\. ", "カレテラ ")
+                .replaceAll("\\bCtra\\. ", "カレテラ ")
+                // ===== Paseo =====
+                .replaceAll("\\bPaseo ", "パセオ ")
+                .replaceAll("\\bPo\\. ", "パセオ ")
+                // ===== Barriada =====
+                .replaceAll("\\bBarriada ", "バリアダ ")
+                .replaceAll("\\bBda\\. ", "バリアダ ");
+    }
 
     // ---------- DEBUG ONLY ---------------------
     /**
