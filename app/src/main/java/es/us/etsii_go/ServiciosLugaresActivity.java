@@ -39,7 +39,8 @@ public class ServiciosLugaresActivity extends AppCompatActivity {
                     "Avenida de la Reina Mercedes, 31",
                     "Muy Barato",
                     "Ideal para bocadillos rápidos a precios económicos.",
-                    "BARATO"
+                    "BARATO",
+                    R.drawable.img_4
             ));
 
             listaLugares.add(new Lugar(
@@ -47,7 +48,8 @@ public class ServiciosLugaresActivity extends AppCompatActivity {
                     "Avenida Reina Mercedes, 43",
                     "Barato",
                     "Muy popular entre estudiantes. Comida rápida y económica.",
-                    "BARATO"
+                    "BARATO",
+                    R.drawable.img_1
             ));
 
             listaLugares.add(new Lugar(
@@ -55,7 +57,8 @@ public class ServiciosLugaresActivity extends AppCompatActivity {
                     "Avenida Reina Mercedes, 19",
                     "Barato",
                     "Tapas muy baratas e ideal para comer rápido.",
-                    "MUY BARATO"
+                    "MUY BARATO",
+                    R.drawable.img_2
             ));
 
             listaLugares.add(new Lugar(
@@ -63,7 +66,8 @@ public class ServiciosLugaresActivity extends AppCompatActivity {
                     "Calle Ensanche, 6",
                     "Muy barato",
                     "Bocadillos grandes y baratos, ideal para comer y llenarse bien.",
-                    "MUY BARATO"
+                    "MUY BARATO",
+                    R.drawable.img_3
             ));
 
             listaLugares.add(new Lugar(
@@ -71,7 +75,8 @@ public class ServiciosLugaresActivity extends AppCompatActivity {
                     "Avenida Reina Mercedes, 3",
                     "Muy barato",
                     "Ideal para los amantes de las hamburguesas.",
-                    "BARATO"
+                    "BARATO",
+                    R.drawable.img_5
             ));
 
         } else if ("Estudiar".equals(categoria)) {
@@ -80,7 +85,8 @@ public class ServiciosLugaresActivity extends AppCompatActivity {
                     "ETSII",
                     "Gratis",
                     "Situada en la misma Universidad ETSII.",
-                    "ESTUDIO"
+                    "ESTUDIO",
+                    R.drawable.img_6
             ));
 
             listaLugares.add(new Lugar(
@@ -88,7 +94,8 @@ public class ServiciosLugaresActivity extends AppCompatActivity {
                     "Avenida Reina Mercedes, s/n, 41012 Sevilla",
                     "Gratis",
                     "Estudio individual o grupal en salas de estudio separados.",
-                    "24H"
+                    "24H",
+                    R.drawable.img_7
             ));
 
             listaLugares.add(new Lugar(
@@ -96,7 +103,8 @@ public class ServiciosLugaresActivity extends AppCompatActivity {
                     "C. Tarfia, 41012 Sevilla",
                     "Gratis",
                     "Abierta hasta tarde para estudiantes.",
-                    "24H"
+                    "24H",
+                    R.drawable.img_8
             ));
 
         } else if ("Comprar básico".equals(categoria)) {
@@ -105,7 +113,8 @@ public class ServiciosLugaresActivity extends AppCompatActivity {
                     "Avenida de la Reina Mercedes, 45",
                     "Económico",
                     "Compra rápida de productos de primera necesidad.",
-                    "BÁSICO"
+                    "BÁSICO",
+                    R.drawable.img_9
             ));
 
             listaLugares.add(new Lugar(
@@ -113,7 +122,8 @@ public class ServiciosLugaresActivity extends AppCompatActivity {
                     "Avenida de la Reina Mercedes, 39",
                     "Económico",
                     "Compra de productos, alimentos y postres.",
-                    "BÁSICO"
+                    "BÁSICO",
+                    R.drawable.img
             ));
 
             listaLugares.add(new Lugar(
@@ -121,7 +131,8 @@ public class ServiciosLugaresActivity extends AppCompatActivity {
                     "Avenida de la Reina Mercedes, 17",
                     "***",
                     "Compra de medicamentos y productos para la salud, bienestar e higiene.",
-                    "BÁSICO"
+                    "BÁSICO",
+                    R.drawable.img_10
             ));
 
             listaLugares.add(new Lugar(
@@ -129,7 +140,8 @@ public class ServiciosLugaresActivity extends AppCompatActivity {
                     "Avenida de la Reina Mercedes, 33",
                     "***",
                     "Compra de medicamentos y productos básicos de farmacia.",
-                    "BÁSICO"
+                    "BÁSICO",
+                    R.drawable.img_10
             ));
 
             listaLugares.add(new Lugar(
@@ -137,7 +149,8 @@ public class ServiciosLugaresActivity extends AppCompatActivity {
                     "Avenida de la Reina Mercedes, 31",
                     "Económico",
                     "Compra de productos escolares.",
-                    "BÁSICO"
+                    "BÁSICO",
+                    R.drawable.img_11
             ));
 
             listaLugares.add(new Lugar(
@@ -145,7 +158,8 @@ public class ServiciosLugaresActivity extends AppCompatActivity {
                     "Avenida de la Reina Mercedes, 41",
                     "Económico",
                     "Copias baratas y productos escolares económicos.",
-                    "BÁSICO"
+                    "BÁSICO",
+                    R.drawable.img_11
             ));
 
         } else {
@@ -154,7 +168,8 @@ public class ServiciosLugaresActivity extends AppCompatActivity {
                     "C. Pirotecnia, s/n, 41013 Sevilla",
                     "Cuota mensual",
                     "Descuento para estudiantes.",
-                    "DEPORTE"
+                    "DEPORTE",
+                    R.drawable.img_12
             ));
         }
 

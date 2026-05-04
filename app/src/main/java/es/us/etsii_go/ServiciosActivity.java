@@ -11,8 +11,11 @@ import androidx.appcompat.app.AppCompatActivity;
 
 public class ServiciosActivity extends AppCompatActivity {
 
+    //Desplegable para escoger categoría
     private Spinner spinnerCategorias;
+    //Botón búsqueda
     private Button btnBuscar;
+    //Botón Información
     private View btnInformacion;
 
     @Override
@@ -33,6 +36,7 @@ public class ServiciosActivity extends AppCompatActivity {
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerCategorias.setAdapter(adapter);
 
+        //Acciones de los botones buscar/Información
         btnBuscar.setOnClickListener(v -> {
             String categoriaSeleccionada = spinnerCategorias.getSelectedItem().toString();
 

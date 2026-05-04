@@ -49,7 +49,7 @@ public class ServiciosLugaresAdapter extends RecyclerView.Adapter<ServiciosLugar
         holder.txtDireccionLugar.setText("📍 " + lugar.getDireccion());
         holder.txtEtiquetaLugar.setText(lugar.getEtiqueta());
         holder.txtDescripcionLugar.setText(lugar.getDescripcion());
-        holder.imgLugar.setImageResource(R.mipmap.ic_launcher);
+        holder.imgLugar.setImageResource(lugar.getImagen());
 
         holder.itemView.setOnClickListener(v -> {
             String consulta = lugar.getNombre() + ", " + lugar.getDireccion();

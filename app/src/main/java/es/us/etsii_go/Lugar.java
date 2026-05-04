@@ -8,23 +8,30 @@ public class Lugar {
     private String descripcion;
     private String etiqueta;
     private String enlace;
+    private int imagen;
 
-    public Lugar(String nombre, String direccion, String precio, String descripcion, String etiqueta) {
+    public Lugar(String nombre, String direccion, String precio, String descripcion, String etiqueta,int imagen) {
         this.nombre = nombre;
         this.direccion = direccion;
         this.precio = precio;
         this.descripcion = descripcion;
         this.etiqueta = etiqueta;
+        this.imagen = imagen;
         this.enlace = null;
     }
 
-    public Lugar(String nombre, String direccion, String precio, String descripcion, String etiqueta, String enlace) {
+    public Lugar(String nombre, String direccion, String precio, String descripcion, String etiqueta, String enlace, int imagen) {
         this.nombre = nombre;
         this.direccion = direccion;
         this.precio = precio;
         this.descripcion = descripcion;
         this.etiqueta = etiqueta;
         this.enlace = enlace;
+        this.imagen = imagen;
+    }
+
+    public int getImagen() {
+        return imagen;
     }
 
     public String getNombre() {

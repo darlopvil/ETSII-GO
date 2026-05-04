@@ -54,7 +54,7 @@ public class ServiciosInfoAdapter extends RecyclerView.Adapter<ServiciosInfoAdap
         holder.txtSubtitulo.setText(info.getSubtitulo());
         holder.txtTipo.setText(info.getTipo());
         holder.txtDescripcion.setText(info.getDescripcion());
-        holder.imgInfo.setImageResource(R.mipmap.ic_launcher);
+        holder.imgInfo.setImageResource(R.drawable.img_13);
 
         holder.itemView.setOnClickListener(v -> {
             if (info.getUrl() != null && !info.getUrl().isEmpty()) {
