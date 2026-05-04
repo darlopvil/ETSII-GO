@@ -51,6 +51,33 @@ import com.google.android.gms.location.Priority;
 
 public class ItinerarioActivity extends AppCompatActivity {
 
+    // ============================================================
+    // CONSTANTES DE DEBUG
+    // ============================================================
+    /**
+     * Tag único para esta actividad. Filtra el Logcat con este string para ver
+     * SOLO los mensajes de Itinerario y no los de otras actividades del equipo.
+     * En Android Studio: Logcat > campo de búsqueda > "ETSII-Itinerario"
+     */
+    private static final String LOG_TAG = "ETSII-Itinerario";
+
+    /**
+     * Interruptor maestro de logs. Ponerlo a false antes de la entrega final
+     * para que la app no haga ningún Log.d/Log.e en producción.
+     */
+    private static final boolean DEBUG = true;
+
+    // Helpers de log: Solo escriben si DEBUG=true. Todos usan el mismo LOG_TAG.
+    private static void logD(String mensaje) {
+        if (DEBUG) Log.d(LOG_TAG, mensaje);
+    }
+    private static void logE(String mensaje) {
+        if (DEBUG) Log.e(LOG_TAG, mensaje);
+    }
+    private static void logE(String mensaje, Throwable t) {
+        if (DEBUG) Log.e(LOG_TAG, mensaje, t);
+    }
+
     // VARIABLES GLOBALES
     private EditText origen, destino;
     private ImageButton botonFavOrigen, botonFavDestino, botonListaOrigen, botonListaDestino, botonGpsOrigen, botonGpsDestino, botonIntercambiar;
@@ -155,19 +182,19 @@ public class ItinerarioActivity extends AppCompatActivity {
         });
 
         // INSTANCIAMOS LAS VARIABLES
-     origen = findViewById(R.id.campo_origen);
-     destino = findViewById(R.id.campo_destino);
-     botonFavOrigen = findViewById(R.id.btn_fav_origen);
-     botonFavDestino = findViewById(R.id.btn_fav_destino);
-     botonListaOrigen = findViewById(R.id.btn_lista_origen);
-     botonListaDestino = findViewById(R.id.btn_lista_destino);
-     botonCalcularRuta = findViewById(R.id.boton_calcular_ruta);
-     scrollResultados = findViewById(R.id.scroll_resultados);
-     layoutResultados = findViewById(R.id.resultados_layout);
-     grupoModoViaje = findViewById(R.id.grupo_modo_viaje);
-     botonGpsOrigen = findViewById(R.id.btn_gps_origen);
-     botonGpsDestino = findViewById(R.id.btn_gps_destino);
-     botonIntercambiar = findViewById(R.id.btn_intercambiar);
+        origen = findViewById(R.id.campo_origen);
+        destino = findViewById(R.id.campo_destino);
+        botonFavOrigen = findViewById(R.id.btn_fav_origen);
+        botonFavDestino = findViewById(R.id.btn_fav_destino);
+        botonListaOrigen = findViewById(R.id.btn_lista_origen);
+        botonListaDestino = findViewById(R.id.btn_lista_destino);
+        botonCalcularRuta = findViewById(R.id.boton_calcular_ruta);
+        scrollResultados = findViewById(R.id.scroll_resultados);
+        layoutResultados = findViewById(R.id.resultados_layout);
+        grupoModoViaje = findViewById(R.id.grupo_modo_viaje);
+        botonGpsOrigen = findViewById(R.id.btn_gps_origen);
+        botonGpsDestino = findViewById(R.id.btn_gps_destino);
+        botonIntercambiar = findViewById(R.id.btn_intercambiar);
 
         /*
          * AUTOCOMPLETADO: INICIALIZACIÓN DE LA API DE PLACES
@@ -192,13 +219,13 @@ public class ItinerarioActivity extends AppCompatActivity {
         destino.setOnClickListener(v -> abrirBuscadorGoogle(launcherAutocompleteDestino));
 
 
-     // LISTENER DEL BOTÓN
+        // LISTENER DEL BOTÓN
         botonCalcularRuta.setOnClickListener(v -> {
             String origen_input = origen.getText().toString().trim();
             String destino_input = destino.getText().toString().trim();
 
             if (origen_input.isEmpty() || destino_input.isEmpty()) {
-                Toast.makeText(this, "Por favor, indica un origen y un destino", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, R.string.toast_origen_destino_requerido, Toast.LENGTH_SHORT).show();
                 return;
             }
             // Tras presionar el botón, ocultamos el teclado
@@ -206,7 +233,7 @@ public class ItinerarioActivity extends AppCompatActivity {
             miTeclado.hideSoftInputFromWindow(v.getWindowToken(), 0);
 
             // Mostramos un mensaje de "Cargando..." para indicar que se está calculando la ruta
-            Toast.makeText(this, "Buscando la mejor ruta...", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, R.string.toast_buscando_ruta, Toast.LENGTH_SHORT).show();
 
             // Averiguamos el botón que presionó el usuario del RadioButtom
             String modoViajeAPI = "TRANSIT"; // Opción por defecto
@@ -216,7 +243,7 @@ public class ItinerarioActivity extends AppCompatActivity {
                 modoViajeAPI = "DRIVE";
             } else if (idSeleccionado == R.id.radio_andar_solo) {
                 modoViajeAPI = "WALK";
-                
+
             } else if (idSeleccionado == R.id.radio_bici) {
                 modoViajeAPI = "BICYCLE";
             }
@@ -275,8 +302,8 @@ public class ItinerarioActivity extends AppCompatActivity {
                 JSONObject origenJSON = new JSONObject();
                 Favorito favOrigen = buscarFavoritoPorAlias(origen);
 
-                    // Caso 1: GPS normal (El usuario acaba de darle a la diana, aparece el texto ""📍 Mi ubicación actual")
-                if (origenEsGPS && origen.contains("ubicación")) {    // Si es GPS
+                // Caso 1: GPS normal (El usuario acaba de darle a la diana)
+                if (origenEsGPS) {    // Si es GPS — la flag es la fuente de verdad, no el texto
                     JSONObject latLng = new JSONObject();
                     latLng.put("latitude", latitudGPS);
                     latLng.put("longitude", longitudGPS);
@@ -293,12 +320,12 @@ public class ItinerarioActivity extends AppCompatActivity {
                     // Si es favorito mandamos su dirección real oculta, si no, mandamos lo que haya escrito.
                 } else {
                     String textoAEnviar;
-                   if (favOrigen != null) {
-                       textoAEnviar = favOrigen.direccion;
-                   } else {
-                       textoAEnviar = origen;
-                   }
-                   origenJSON.put("address", textoAEnviar);
+                    if (favOrigen != null) {
+                        textoAEnviar = favOrigen.direccion;
+                    } else {
+                        textoAEnviar = origen;
+                    }
+                    origenJSON.put("address", textoAEnviar);
                 }
                 body.put("origin", origenJSON);
 
@@ -306,7 +333,7 @@ public class ItinerarioActivity extends AppCompatActivity {
                 JSONObject destinoJSON = new JSONObject();
                 Favorito favDestino = buscarFavoritoPorAlias(destino);
 
-                if (destinoEsGPS && destino.contains("ubicación")) {  // Si es GPS
+                if (destinoEsGPS) {  // Si es GPS — la flag es la fuente de verdad, no el texto
                     JSONObject latLng = new JSONObject();
                     latLng.put("latitude", latitudGPS);
                     latLng.put("longitude", longitudGPS);
@@ -329,6 +356,12 @@ public class ItinerarioActivity extends AppCompatActivity {
 
                 body.put("travelMode", modoViajeAPI);  // Le pasamos directamente el modo de viaje seleccionado en el RadioButtom
                 body.put("computeAlternativeRoutes", true); // Pedir todas las rutas disponibles
+
+                // Pedimos a la API que las instrucciones vengan en el idioma del dispositivo.
+                // La Routes API soporta ja, es, en, fr, de, it, pt, etc. Si el código no fuera soportado,
+                // la API hace fallback a su default (suele ser español por la región geográfica).
+                body.put("languageCode", Locale.getDefault().getLanguage());
+                logD("Pidiendo respuesta a Google en idioma: " + Locale.getDefault().getLanguage());
 
                 OutputStream os = connection.getOutputStream(); // "Abrimos la tubería" para enviar los datos a Google
                 os.write(body.toString().getBytes(StandardCharsets.UTF_8));    // Pasamos a bytes los datos del usuario y los mandamos con write()
@@ -355,25 +388,25 @@ public class ItinerarioActivity extends AppCompatActivity {
 
                 // ------------ DEBUG ZONE --------------
                 String jsonCrudo = respuesta.toString();
-                logLargo("ItinerarioApp_JSON", "Respuesta HTTP " + responseCode + ": \n" + jsonCrudo);
+                logLargo("Respuesta HTTP " + responseCode + ":\n" + jsonCrudo);
 
                 // 4.- Parseamos la respuesta y actualizamos la UI SOLO si la respuesta fue exitosa:
                 if (responseCode == 200) {
                     parsearYMostrarResultados(jsonCrudo);
                 } else {
-                    Log.e("ItinerarioApp", "Google devolvió un error: " + jsonCrudo);
-                    runOnUiThread(() -> Toast.makeText(ItinerarioActivity.this, "Error en la petición: HTTP " + responseCode, Toast.LENGTH_SHORT).show());
+                    logE("Google devolvió un error: " + jsonCrudo);
+                    runOnUiThread(() -> Toast.makeText(ItinerarioActivity.this, getString(R.string.toast_error_peticion, responseCode), Toast.LENGTH_SHORT).show());
                 }
 
 
             } catch (Exception e) {
                 String errorDetallado = e.toString();
 
-                Log.e("ItinerarioApp", "Error en la conexión API" + errorDetallado);
+                logE("Error en la conexión API: " + errorDetallado);
 
                 e.printStackTrace();
 
-                runOnUiThread(() -> Toast.makeText(ItinerarioActivity.this, "Error de conexión" + e.getMessage(), Toast.LENGTH_SHORT).show());
+                runOnUiThread(() -> Toast.makeText(ItinerarioActivity.this, getString(R.string.toast_error_conexion, e.getMessage()), Toast.LENGTH_SHORT).show());
             }
         }).start(); // Arrancamos el hilo
 
@@ -394,7 +427,7 @@ public class ItinerarioActivity extends AppCompatActivity {
                 JSONArray rutas = jsonObject.optJSONArray("routes");
 
                 if (rutas == null || rutas.length() == 0) {
-                    Toast.makeText(this, "No se ha encontrado una ruta disponible", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, R.string.toast_ruta_no_disponible, Toast.LENGTH_SHORT).show();
                     return;
                 }
 
@@ -410,7 +443,7 @@ public class ItinerarioActivity extends AppCompatActivity {
                     int distanciaMetros = ruta.optInt("distanceMeters", 0);
                     String distanciaKm = String.format(Locale.getDefault(), "%.1f", distanciaMetros / 1000.0);
 
-                    String tituloRuta = "📍 Opción " + (r + 1) + " (" + durationMinutos + " min, " + distanciaKm + " km)";
+                    String tituloRuta = getString(R.string.texto_opcion_ruta, r + 1, durationMinutos, distanciaKm);
 
                     // --- B. Crear el Botón Desplegable ---
                     Button botonCabecera = new Button(this);
@@ -455,35 +488,45 @@ public class ItinerarioActivity extends AppCompatActivity {
                                 // Extraemos el modo de viaje (ej. WALK, TRANSIT)
                                 // Usamos optString para que no falle si algún dato no existe
                                 // Si no existe el dato, lo indicamos con "Desconocido"
-                                String modoViaje = step.optString("travelMode", "Desconocido");
+                                String modoViaje = step.optString("travelMode", getString(R.string.texto_modo_desconocido));
                                 String textoFinal = "";
 
                                 /* ------- CASO 1: CAMINANDO, COCHE, BICICLETA ------- */
                                 if (modoViaje.equals("WALK") || modoViaje.equals("DRIVE") || modoViaje.equals("BICYCLE")) {
                                     // Extraemos la instrucción de navegación si existe
-                                    String instruccion = "Avanzar";
-                                    if (modoViaje.equals("WALK")) instruccion = "Caminar";
-                                    else if (modoViaje.equals("DRIVE")) instruccion = "Conducir";
-                                    else if (modoViaje.equals("BICYCLE")) instruccion = "Pedalear";
+                                    String instruccion = getString(R.string.texto_avanzar);
+                                    if (modoViaje.equals("WALK")) instruccion = getString(R.string.texto_caminar);
+                                    else if (modoViaje.equals("DRIVE")) instruccion = getString(R.string.texto_conducir);
+                                    else if (modoViaje.equals("BICYCLE")) instruccion = getString(R.string.texto_pedalear);
 
                                     if (step.has("navigationInstruction")) {
                                         JSONObject navInstruction = step.getJSONObject("navigationInstruction");
                                         instruccion = navInstruction.optString("instructions", instruccion);
                                     }
 
-                                    // Limpiamos el texto de destino ".\nVía de uso restringido\n". Esto es por que
-                                    // cuando pasas por calles peatonales, zonas de bajas emisiones o carreteras de peaje.
+                                    // Cuando el dispositivo está en japonés, traducimos las abreviaturas españolas
+                                    // que la API deja sin tocar (C., Av., Pl., Gta., ...) a su lectura en katakana.
+                                    // En cualquier otro idioma este método devuelve el texto sin cambios.
+                                    instruccion = traducirAbreviaturas(instruccion);
+
+                                    // Limpiamos textos auxiliares que la API devuelve en español.
+                                    // Esto solo afecta a respuestas en español; cuando el dispositivo está en japonés
+                                    // la API ya no añade estos avisos, así que el replace no encuentra nada (y no pasa nada).
+                                    // Ej: ".\nVía de uso restringido\n" aparece cuando pasas por calles peatonales,
+                                    // zonas de bajas emisiones o carreteras de peaje.
                                     instruccion = instruccion.replace(".\nVía de uso restringido\n", ".").replace("\nVía de uso restringido","").replace("Vía de uso restringido","");
 
-                                    // Limpieza de texto si el siguiente paso es TRANSIT (solo útil si se ha seleccionado "Andar")
+                                    // Limpieza de texto si el siguiente paso es TRANSIT (solo útil si se ha seleccionado "Andar"):
+                                    // recortamos "El destino está a la izquierda" y avisamos de dirigirse a la parada.
+                                    // Detectamos el patrón en español Y en japonés (la API cambia el idioma según el Locale).
                                     if (modoViaje.equals("WALK") && i < steps.length() - 1 ) { // Comprobamos además de que no sea el último paso
                                         JSONObject siguientePaso = steps.getJSONObject(i + 1);
                                         if (siguientePaso.optString("travelMode", "").equals("TRANSIT")) {
-                                            // Limpiamos el texto confuso. Ej: "Continúa por Av. Torneo El destino está a la izquierda."
-                                            // Nos quedamos solo con la primera parte antes del salto de línea
-                                            if (instruccion.contains("\nEl destino")) {
-                                                instruccion = instruccion.substring(0, instruccion.indexOf("\nEl destino"));
-                                                instruccion += "\n📍 Dirígete a la parada";
+                                            // Marcador del párrafo "El destino está a..." según idioma del dispositivo.
+                                            String marcadorDestino = Locale.getDefault().getLanguage().equals("ja") ? "\n目的地" : "\nEl destino";
+                                            if (instruccion.contains(marcadorDestino)) {
+                                                instruccion = instruccion.substring(0, instruccion.indexOf(marcadorDestino));
+                                                instruccion += getString(R.string.texto_dirigete_parada);
                                             }
                                         }
                                     }
@@ -511,24 +554,26 @@ public class ItinerarioActivity extends AppCompatActivity {
                                         JSONObject transit = step.getJSONObject("transitDetails");
 
                                         // 1. Sacamos qué vehículo es y el número de línea (ej. Autobús 03)
-                                        String tipoVehiculo = "Transporte";
+                                        String tipoVehiculo = getString(R.string.texto_transporte);
                                         String numLinea = "";
                                         if (transit.has("transitLine")) {
                                             JSONObject lineaInfo = transit.getJSONObject("transitLine");
                                             numLinea = lineaInfo.optString("nameShort", lineaInfo.optString("name", ""));
                                             if (lineaInfo.has("vehicle") && lineaInfo.getJSONObject("vehicle").has("name")) {
-                                                tipoVehiculo = lineaInfo.getJSONObject("vehicle").getJSONObject("name").optString("text", "Transporte");
+                                                tipoVehiculo = lineaInfo.getJSONObject("vehicle").getJSONObject("name").optString("text", getString(R.string.texto_transporte));
                                             }
                                         }
 
-                                        textoFinal = "🚌 " + tipoVehiculo + " (Línea " + numLinea + ")\n";
+                                        textoFinal = getString(R.string.texto_linea_transporte, tipoVehiculo, numLinea);
 
                                         // 2. Sacamos paradas y horarios
                                         if (transit.has("stopDetails")) {
                                             JSONObject stops = transit.getJSONObject("stopDetails");
 
-                                            String origenName = stops.has("departureStop") ? stops.getJSONObject("departureStop").optString("name", "Origen") : "Origen";
-                                            String destinoName = stops.has("arrivalStop") ? stops.getJSONObject("arrivalStop").optString("name", "Destino") : "Destino";
+                                            // Aplicamos la misma traducción de abreviaturas a los nombres de paradas
+                                            // (en TUSSAM aparecen formas como "Av De La Palmera Hospital", "Avda. Bellavista", "Gta. Alc. Parias Merry"...)
+                                            String origenName = traducirAbreviaturas(stops.has("departureStop") ? stops.getJSONObject("departureStop").optString("name", getString(R.string.texto_origen_default)) : getString(R.string.texto_origen_default));
+                                            String destinoName = traducirAbreviaturas(stops.has("arrivalStop") ? stops.getJSONObject("arrivalStop").optString("name", getString(R.string.texto_destino_default)) : getString(R.string.texto_destino_default));
 
                                             // A. Rescatamos las coordenadas del origen
                                             double oriLat = 0, oriLon = 0;
@@ -559,13 +604,13 @@ public class ItinerarioActivity extends AppCompatActivity {
                                             String claveOrigen = origenName.toLowerCase() + "_" + lineaBus;
                                             String numeroOrigen = obtenerNodoMasCercano(lineaBus, oriLat, oriLon);
                                             if (numeroOrigen != null) {
-                                                origenName = origenName + " (Parada Nº " + numeroOrigen + ")";
+                                                origenName = origenName + getString(R.string.texto_parada_numero, numeroOrigen);
                                             }
 
-                                          //  String claveDestino = destinoName.toLowerCase() + "_" + lineaBus;
+                                            //  String claveDestino = destinoName.toLowerCase() + "_" + lineaBus;
                                             String numeroDestino = obtenerNodoMasCercano(lineaBus, destLat, destLon);
                                             if (numeroDestino != null) {
-                                                destinoName = destinoName + " (Parada Nº " + numeroDestino + ")";
+                                                destinoName = destinoName + getString(R.string.texto_parada_numero, numeroDestino);
                                             }
 
                                             String horaSalida = "";
@@ -581,16 +626,16 @@ public class ItinerarioActivity extends AppCompatActivity {
                                                 }
                                             }
 
-                                            textoFinal += "🟢 Sube en: " + origenName + " (" + horaSalida + ")\n";
-                                            textoFinal += "🔴 Baja en: " + destinoName + " (" + horaLlegada + ")";
+                                            textoFinal += getString(R.string.texto_subir_en, origenName, horaSalida);
+                                            textoFinal += getString(R.string.texto_bajar_en, destinoName, horaLlegada);
                                         }
                                     } else {
-                                        textoFinal = "🚌 Coger transporte público";
+                                        textoFinal = getString(R.string.texto_coger_transporte);
                                     }
                                 }
                                 // --- CASO 3: OTROS MODOS (Bici, coche, etc) ---
                                 else {
-                                    textoFinal = "▶️ Paso " + (i + 1) + " [" + modoViaje + "]";
+                                    textoFinal = getString(R.string.texto_paso_generico, i + 1, modoViaje);
                                 }
 
                                 // II.- Creamos el TextView para este paso
@@ -612,17 +657,17 @@ public class ItinerarioActivity extends AppCompatActivity {
 
 
                             }
+                        }
+
+
                     }
-
-
-                }
                     // --- F. Finalmente, añadimos el contenedor de pasos (oculto) al layout principal ---
                     layoutResultados.addView(contenedorPasos);
 
                 }
             } catch (Exception e) {
-                Log.e("ItinerarioApp", "Error al parsear y mostrar los resultados", e);
-                Toast.makeText(ItinerarioActivity.this, "Error al leer los datos de la ruta", Toast.LENGTH_SHORT).show();
+                logE("Error al parsear y mostrar los resultados", e);
+                Toast.makeText(ItinerarioActivity.this, R.string.toast_error_lectura_ruta, Toast.LENGTH_SHORT).show();
             }
 
 
@@ -663,7 +708,7 @@ public class ItinerarioActivity extends AppCompatActivity {
 
                         String labelLinea = columnas[3].trim().toLowerCase(); // (ej. 03)
                         String nodo = columnas[5].trim(); // Número de la parada (ej. 879)
-                       // String nombre = columnas[6].trim().toLowerCase(); // Nombre de la parada
+                        // String nombre = columnas[6].trim().toLowerCase(); // Nombre de la parada
 
                         // La clave es solo el número de la línea (ej. "03")
                         String claveSoloLinea = labelLinea;
@@ -682,12 +727,12 @@ public class ItinerarioActivity extends AppCompatActivity {
                 }
             }
             reader.close();
-            Log.d("ItinerarioApp", "Cargadas " + mapaParadasTussam.size() + " combinaciones de paradas de TUSSAM.");
+            logD("Cargadas " + mapaParadasTussam.size() + " combinaciones de paradas de TUSSAM.");
 
         } catch (Exception e) {
             String errorDetallado = e.toString();
 
-            Log.e("ItinerarioApp", "Error al cargar el CSV de las paradas" + errorDetallado);
+            logE("Error al cargar el CSV de las paradas: " + errorDetallado);
 
             e.printStackTrace();
 
@@ -724,13 +769,13 @@ public class ItinerarioActivity extends AppCompatActivity {
 
 
         // 2.- Listeners para guardar/quitar favorito (la estrella)
-       botonFavOrigen.setOnClickListener(v -> {
-           toggleFavorito(origen, botonFavOrigen, true);
-       });
+        botonFavOrigen.setOnClickListener(v -> {
+            toggleFavorito(origen, botonFavOrigen, true);
+        });
 
-       botonFavDestino.setOnClickListener(v -> {
-           toggleFavorito(destino, botonFavDestino, false);
-       });
+        botonFavDestino.setOnClickListener(v -> {
+            toggleFavorito(destino, botonFavDestino, false);
+        });
 
         // 3.- Listeners para abrir la lista de favoritos
         botonListaOrigen.setOnClickListener(v -> {
@@ -758,7 +803,7 @@ public class ItinerarioActivity extends AppCompatActivity {
                 if (favOrigen != null && !origen.getText().toString().trim().equals(favOrigen.alias)) {
                     origen.setText(favOrigen.alias);
                     origen.setSelection(favOrigen.alias.length());  // Ponemos el cursor parpadeando al final de la palabra
-                    Toast.makeText(ItinerarioActivity.this, "📍 Detectado: Ubicación guardada como '"+ favOrigen.alias + "'", Toast.LENGTH_SHORT ).show();
+                    Toast.makeText(ItinerarioActivity.this, getString(R.string.toast_ubicacion_detectada, favOrigen.alias), Toast.LENGTH_SHORT ).show();
                 }
 
                 // ---- COMPROBAMOS DESTINO ----
@@ -768,13 +813,16 @@ public class ItinerarioActivity extends AppCompatActivity {
                 if (favDestino != null && !destino.getText().toString().trim().equals(favDestino.alias)) {
                     destino.setText(favDestino.alias);
                     destino.setSelection(favDestino.alias.length());  // Ponemos el cursor parpadeando al final de la palabra
-                    Toast.makeText(ItinerarioActivity.this, "📍 Detectado: Ubicación guardada como '"+ favDestino.alias + "'", Toast.LENGTH_SHORT ).show();
+                    Toast.makeText(ItinerarioActivity.this, getString(R.string.toast_ubicacion_detectada, favDestino.alias), Toast.LENGTH_SHORT ).show();
                 }
 
 
-                // GPS: Si el usuario altera el texto y ya no aparece el texto por defecto con la palabra "ubicación", desactivamos el GPS
-                if (!origen.getText().toString().contains("ubicación")) origenEsGPS = false;
-                if (!destino.getText().toString().contains("ubicación")) destinoEsGPS = false;
+                // GPS: Si el usuario altera el texto y ya no coincide exactamente con "📍 Mi ubicación actual",
+                // desactivamos el GPS. Comparamos con el recurso (no con un literal en español) para que
+                // la lógica funcione en cualquier idioma del dispositivo.
+                String textoUbicacionActual = getString(R.string.texto_mi_ubicacion_actual);
+                if (!origen.getText().toString().equals(textoUbicacionActual)) origenEsGPS = false;
+                if (!destino.getText().toString().equals(textoUbicacionActual)) destinoEsGPS = false;
 
                 modificandoTextoAutomatico = false; // Ya hemos terminado de hacer las comprobaciones, abrimos el paso.
             }
@@ -800,7 +848,7 @@ public class ItinerarioActivity extends AppCompatActivity {
 
         // Si el campo está vacío, avisamos y cortamos la ejecución. No podemos guardar "Nada" como favorito
         if (texto.isEmpty()) {
-            Toast.makeText(this, "Escribe o detecta una dirección primero", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, R.string.toast_escribe_direccion, Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -810,7 +858,7 @@ public class ItinerarioActivity extends AppCompatActivity {
                 listaFavoritos.remove(i);
                 guardarFavoritosEnMemoria();
                 actualizarIconoEstrella(campo, boton, esCampoOrigen);
-                Toast.makeText(this, "Favorito eliminado 🗑️", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, R.string.toast_favorito_eliminado, Toast.LENGTH_SHORT).show();
                 return;
             }
         }
@@ -834,27 +882,27 @@ public class ItinerarioActivity extends AppCompatActivity {
             // Obligamos al usuario a ponerle un nombre (ej. "Gimnasio")
             // De esta manera, evitamos que en otro sitio distinto al de las coordenadas guardadas, se piense que son sus coordenadas reales (de su nuevo sitio).
             EditText input = new EditText(this);
-            input.setHint("Ej. Casa, Trabajo, Gimnasio...");
+            input.setHint(R.string.hint_nombre_favorito);
             new AlertDialog.Builder(this)
-                    .setTitle("Ponle un nombre a esta ubicación")
-                    .setMessage("Vas a guardar tus coordenadas actuales. ¿Qué nombre le ponemos?")
+                    .setTitle(R.string.titulo_nombrar_ubicacion)
+                    .setMessage(R.string.mensaje_guardar_coordenadas)
                     .setView(input)
-                    .setPositiveButton("Guardar", (dialog, which) -> {
+                    .setPositiveButton(R.string.guardar, (dialog, which) -> {
                         String alias = input.getText().toString().trim();
                         if (!alias.isEmpty()) {
                             listaFavoritos.add(new Favorito(alias, texto, true, lat, lon));
                             guardarFavoritosEnMemoria();
                             campo.setText(alias);   // Ponemos el nombre corto en el campo
                             actualizarIconoEstrella(campo, boton, esCampoOrigen);
-                            Toast.makeText(this, "Coordenadas guardadas ⭐", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(this, R.string.toast_coordenadas_guardadas, Toast.LENGTH_SHORT).show();
                         }
-                    }).setNegativeButton("Cancelar", null).show();
+                    }).setNegativeButton(R.string.cancelar, null).show();
         } else {
             // Si es texto normal, lo guardamos directamente, usando la calle como Alias por defecto
             listaFavoritos.add(new Favorito(texto, texto, false, 0,0));
             guardarFavoritosEnMemoria();
             actualizarIconoEstrella(campo, boton, esCampoOrigen);
-            Toast.makeText(this, "Guardado en favoritos ⭐", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, R.string.toast_guardado_favoritos, Toast.LENGTH_SHORT).show();
         }
 
     }
@@ -921,7 +969,7 @@ public class ItinerarioActivity extends AppCompatActivity {
 
     private void mostrarDialogoFavoritos(EditText campo, ImageButton botonEstrella, boolean esCampoOrigen) {
         if (listaFavoritos.isEmpty()) {
-            Toast.makeText(this, "Aún no tienes favoritos guardados", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, R.string.toast_no_favoritos, Toast.LENGTH_SHORT).show();
             return; // Corta la ejecución de este método, no sigue leyendo las líneas de abajo. Es como un break; pero para los if-else
         }
 
@@ -930,10 +978,10 @@ public class ItinerarioActivity extends AppCompatActivity {
 
         // Creamos la ventana emergente
         AlertDialog dialogo = new AlertDialog.Builder(this)
-                .setTitle("Mis Favoritos")
-                .setMessage("Toca para elegir.\nMantén pulsado para borrar.")
+                .setTitle(R.string.titulo_mis_favoritos)
+                .setMessage(R.string.instrucciones_favoritos)
                 .setView(listView)
-                .setNegativeButton("Cerrar", null)
+                .setNegativeButton(R.string.cerrar, null)
                 .create();
 
         // Creamos un adaptador personalizado para separar los items de la listview del botón de editar
@@ -958,9 +1006,9 @@ public class ItinerarioActivity extends AppCompatActivity {
                     String aliasAntiguo = fav.alias;
 
                     new AlertDialog.Builder(getContext())
-                            .setTitle("Renombrar Favorito")
+                            .setTitle(R.string.titulo_renombrar_favorito)
                             .setView(inputEditar)
-                            .setPositiveButton("Guardar", (d, w) -> {
+                            .setPositiveButton(R.string.guardar, (d, w) -> {
                                 fav.alias = inputEditar.getText().toString().trim();
                                 guardarFavoritosEnMemoria();
                                 notifyDataSetChanged(); // Refresca la lista de los favoritos
@@ -974,7 +1022,7 @@ public class ItinerarioActivity extends AppCompatActivity {
                                     campo.setSelection(fav.alias.length()); // Ponemos el cursor al final
                                 }
 
-                            }).setNegativeButton("Cancelar", null).show();
+                            }).setNegativeButton(R.string.cancelar, null).show();
                 });
 
                 // ACCIÓN 1: Click corto -> Elegir un favorito de la lista y ponerlo en el EditText
@@ -1007,7 +1055,7 @@ public class ItinerarioActivity extends AppCompatActivity {
                     actualizarIconoEstrella(origen, botonFavOrigen, esCampoOrigen);
                     actualizarIconoEstrella(destino, botonFavDestino, esCampoOrigen);
 
-                    Toast.makeText(ItinerarioActivity.this, "Favorito eliminado 🗑️", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(ItinerarioActivity.this, R.string.toast_favorito_eliminado, Toast.LENGTH_SHORT).show();
 
                     // Si borramos el único favorito que existe en la listview, cerramos automáticamente la ventana AlertDialog
                     if (listaFavoritos.isEmpty()) {
@@ -1040,7 +1088,7 @@ public class ItinerarioActivity extends AppCompatActivity {
             return;
         }
 
-        Toast.makeText(this, "Buscando su ubicación. Espere, por favor...", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, R.string.toast_buscando_ubicacion, Toast.LENGTH_SHORT).show();
 
         // 1.- Instanciamos el cliente de Google:
         FusedLocationProviderClient fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
@@ -1057,15 +1105,15 @@ public class ItinerarioActivity extends AppCompatActivity {
                         // Decidimos a qué campo se lo asignamos
                         if (esParaOrigen) {
                             origenEsGPS = true;
-                            origen.setText("📍 Mi ubicación actual");     // Actualizamos la caja de texto
+                            origen.setText(R.string.texto_mi_ubicacion_actual);     // Actualizamos la caja de texto
                         } else {
                             destinoEsGPS = true;
-                            destino.setText("📍 Mi ubicación actual");    // Actualizamos la caja de texto
+                            destino.setText(R.string.texto_mi_ubicacion_actual);    // Actualizamos la caja de texto
                         }
 
-                        Toast.makeText(ItinerarioActivity.this, "¡Ubicación exacta encontrada!", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(ItinerarioActivity.this, R.string.toast_ubicacion_encontrada, Toast.LENGTH_SHORT).show();
                     } else {
-                        Toast.makeText(ItinerarioActivity.this, "Asegúrate de tener el GPS encendido en los ajustes", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(ItinerarioActivity.this, R.string.toast_gps_apagado, Toast.LENGTH_SHORT).show();
                     }
                 });
     }
@@ -1139,13 +1187,84 @@ public class ItinerarioActivity extends AppCompatActivity {
 
 
 
+    // ============================================================
+    // HELPERS DE INTERNACIONALIZACIÓN (i18n)
+    // ============================================================
+
+    /**
+     * Cuando el dispositivo está en japonés, traduce las abreviaturas españolas más
+     * habituales (C., Cl., Av., Avda., Pl., Gta., Crta., Po., Bda., ...) Y también
+     * las palabras completas (Calle, Avenida, Plaza, Glorieta, Carretera, Paseo) a
+     * su lectura en katakana. Para cualquier otro idioma del dispositivo, devuelve
+     * el texto sin cambios.
+     *
+     * Necesario porque la API de Google Routes deja estos términos en español
+     * incluso cuando se le pide la respuesta en japonés. Un usuario japonés no los
+     * sabe leer; con la lectura en katakana al menos puede pronunciarlos y
+     * reconocer el tipo de vía.
+     *
+     * IMPORTANTE: Usamos (?<![a-zA-Z]) en lugar de \b porque Android usa el motor
+     * de regex ICU, que trata los caracteres CJK (hiragana, katakana, kanji) como
+     * letras Unicode. Eso hace que \b NO matchee entre un hiragana y una letra
+     * latina (ICU dice "ambos son letras, no hay límite"). En cambio,
+     * (?<![a-zA-Z]) es explícito: "no me preceda una letra ASCII", y funciona
+     * igual al inicio de cadena (no hay nada que sea ASCII), después de un
+     * espacio (espacio no es ASCII letter) y después de un hiragana/kanji
+     * (tampoco es ASCII letter).
+     *
+     * Las formas más largas se sustituyen ANTES que las cortas para evitar
+     * colisiones (p. ej., "Avda. " antes que "Av. ", "Avenida " antes que "Av ",
+     * "Calle " antes que "C. "). El caso especial "Av " (sin punto) seguido de
+     * mayúscula recoge nombres de paradas TUSSAM como "Av De La Palmera Hospital".
+     */
+    private String traducirAbreviaturas(String texto) {
+        if (texto == null) return null;
+        if (!"ja".equals(Locale.getDefault().getLanguage())) return texto;
+
+        return texto
+                // ===== Avenida =====
+                // Palabra completa primero, luego abreviaturas de larga a corta
+                .replaceAll("(?<![a-zA-Z])Avenida ", "アベニーダ ")
+                .replaceAll("(?<![a-zA-Z])Avda\\. ", "アベニーダ ")
+                .replaceAll("(?<![a-zA-Z])Av\\. ", "アベニーダ ")
+                .replaceAll("(?<![a-zA-Z])Av (?=[A-Z])", "アベニーダ ")  // sin punto, ej. paradas TUSSAM
+                // ===== Calle =====
+                .replaceAll("(?<![a-zA-Z])Calle ", "カジェ ")
+                .replaceAll("(?<![a-zA-Z])Cl\\. ", "カジェ ")           // variante con L minúscula
+                .replaceAll("(?<![a-zA-Z])C\\. ", "カジェ ")
+                // ===== Plaza =====
+                .replaceAll("(?<![a-zA-Z])Plaza ", "プラサ ")
+                .replaceAll("(?<![a-zA-Z])Plza\\. ", "プラサ ")
+                .replaceAll("(?<![a-zA-Z])Pza\\. ", "プラサ ")
+                .replaceAll("(?<![a-zA-Z])Pl\\. ", "プラサ ")
+                // ===== Glorieta (rotonda) =====
+                .replaceAll("(?<![a-zA-Z])Glorieta ", "グロリエタ ")
+                .replaceAll("(?<![a-zA-Z])Gta\\. ", "グロリエタ ")
+                // ===== Carretera =====
+                .replaceAll("(?<![a-zA-Z])Carretera ", "カレテラ ")
+                .replaceAll("(?<![a-zA-Z])Crta\\. ", "カレテラ ")
+                .replaceAll("(?<![a-zA-Z])Ctra\\. ", "カレテラ ")
+                // ===== Paseo =====
+                .replaceAll("(?<![a-zA-Z])Paseo ", "パセオ ")
+                .replaceAll("(?<![a-zA-Z])Po\\. ", "パセオ ")
+                // ===== Barriada =====
+                .replaceAll("(?<![a-zA-Z])Barriada ", "バリアダ ")
+                .replaceAll("(?<![a-zA-Z])Bda\\. ", "バリアダ ");
+    }
+
     // ---------- DEBUG ONLY ---------------------
-    private void logLargo(String tag, String mensaje) {
+    /**
+     * Logcat trunca los mensajes muy largos (~4000 chars). Este método los parte
+     * en bloques de 3000 caracteres y los emite secuencialmente.
+     * Usa siempre LOG_TAG y respeta el flag DEBUG.
+     */
+    private void logLargo(String mensaje) {
+        if (!DEBUG) return;
         if (mensaje.length() > 3000) {
-            Log.d(tag, mensaje.substring(0, 3000));
-            logLargo(tag, mensaje.substring(3000));
+            Log.d(LOG_TAG, mensaje.substring(0, 3000));
+            logLargo(mensaje.substring(3000));
         } else {
-            Log.d(tag, mensaje);
+            Log.d(LOG_TAG, mensaje);
         }
     }
 }

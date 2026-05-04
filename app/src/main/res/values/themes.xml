@@ -10,4 +10,5 @@
 
     <color name="fondo_mapa">#FFFFFF</color>
     <color name="color_cabecera">#FFFFFF</color>
+    <color name="color_textos_cambiados">#1C1B1F</color>
 </resources>

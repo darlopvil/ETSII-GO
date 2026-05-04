@@ -1,6 +1,6 @@
 package es.us.etsii_go.horariogps.mapa.ubicacion;
-
 import android.net.wifi.ScanResult;
+import android.os.Environment;
 import android.util.Log;
 
 import es.us.etsii_go.horariogps.mapa.models.ModeloDatosEscaneo;
@@ -9,8 +9,14 @@ import es.us.etsii_go.horariogps.mapa.models.ModeloDatosWifi;
 import org.json.JSONArray;
 import org.json.JSONException;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 
@@ -58,11 +64,13 @@ public class LocalizadorKernelRidge {
         // a partir del algoritmo de KernelRidge
 
         // 1. Preparamos el vector del escaneo en tiempo real (ScanResult de Android)
+
         double[] xActual = prepararVectorEscaner(escaneoActual);
 
         // Mensajes auxiliares, seran borrados
         Log.d("xact", "Estas son las kvector:"+ Arrays.toString(xActual));
-        Log.d("ventreno", "Estas son las kvector:"+ Arrays.toString(this.vectoresEntrenamiento.get(2)));
+        writeLogToFile("Esto es el vector x actual :"+ Arrays.toString(xActual));
+        Log.d("ventreno", "Estas son las kvector:"+ Arrays.toString(this.vectoresEntrenamiento.get(0)));
 
         // 2. Calcular Vector Kernel
         double[] kVector = new double[baseDatos.size()];
@@ -73,6 +81,7 @@ public class LocalizadorKernelRidge {
 
         // Otro mensaje
         Log.d("kvector", "Estas son las kvector:"+ Arrays.toString(kVector));
+        writeLogToFile("Esto es el vector k vector que ha calculado con el x actual :"+ Arrays.toString(kVector));
 
         // 3. Proyección a 2D
         double posX = 0.0;
@@ -82,10 +91,12 @@ public class LocalizadorKernelRidge {
             // Calculo de la posicion a partir del algoritmo
             posX += kVector[i] * alphas[i][0];
             posY += kVector[i] * alphas[i][1];
-            Log.d("Posiciones", "Estas son las pos"+posX+posY);
         }
+        Log.d("Posiciones", "Estas son las pos"+posX+posY);
+        writeLogToFile("Estas son las pos"+posX+posY);
         return new float[]{(float) posX, (float) posY};
     }
+
 
     //MÉTODOS DE PREPARACIÓN DE VECTORES
     private double[] prepararVectorEscaner(List<ScanResult> resultados) {
@@ -96,7 +107,7 @@ public class LocalizadorKernelRidge {
         // con los que empiezan por eduroam o digi.
         if (resultados != null) {
             for (ScanResult sr : resultados) {
-                if (sr.SSID != null && sr.SSID.toLowerCase().startsWith("digi")) {
+                if (sr.SSID != null && sr.SSID.toLowerCase().startsWith("edu")) {
                     int index = bssidsMaestros.indexOf(sr.BSSID);
                     if (index != -1) {
                         vector[index] = sr.level;
@@ -172,5 +183,30 @@ public class LocalizadorKernelRidge {
         }
 
         return vectorNormalizado;
+    }
+
+    public void writeLogToFile(String log) {
+        // 1. Apuntamos directamente a la carpeta pública de Descargas
+        File downloadsDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
+        File logFile = new File(downloadsDir, "log_localizacion.txt");
+
+        try {
+            // 2. Si el archivo no existe, lo creamos
+            if (!logFile.exists()) {
+                logFile.createNewFile();
+            }
+
+            // 3. BufferedWriter con 'true' para añadir texto al final sin borrar lo anterior
+            BufferedWriter writer = new BufferedWriter(new FileWriter(logFile, true));
+            String timeStamp = DateFormat.getDateTimeInstance().format(new Date());
+
+            writer.append(timeStamp).append(": ").append(log);
+            writer.newLine();
+            writer.close();
+
+        } catch (IOException e) {
+            Log.e("ERROR_LOG", "No se pudo escribir el archivo: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 }

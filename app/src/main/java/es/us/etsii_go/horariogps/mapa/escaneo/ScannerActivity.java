@@ -79,7 +79,7 @@ public class ScannerActivity extends AppCompatActivity {
             List<ScanResult> resultadosfiltrados = new ArrayList<>();
 
             for (ScanResult res : resultados) {
-                if (res.SSID != null && res.SSID.toLowerCase().startsWith("digi")) {
+                if (res.SSID != null && res.SSID.toLowerCase().startsWith("edu")) {
                     resultadosfiltrados.add(res);
                 }
             }
@@ -248,6 +248,11 @@ public class ScannerActivity extends AppCompatActivity {
 
                 Toast.makeText(this, "Guardado correctamente. Puntos totales: " + baseDatosArray.length(), Toast.LENGTH_SHORT).show();
                 Log.d("WIFI_DB", "Guardado punto ID: " + id);
+
+                // Aqui me gustaria mostrarlo
+
+                jsonOutput.setText(nuevoPunto.toString());
+                Log.d("WIFI_JSON", nuevoPunto.toString());
 
             } catch (Exception e) {
                 e.printStackTrace();

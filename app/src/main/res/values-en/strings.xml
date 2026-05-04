@@ -1,2 +1,141 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources></resources>
+<resources>
+    <string name="app_name">ETSII-Go</string>
+    <string name="boton_gps_facultad">GPS / Faculty Schedule</string>
+    <string name="boton_servicios">Services</string>
+    <string name="boton_itinerario">Itinerary</string>
+    <string name="boton_info">Information</string>
+    <string name="titulo_itinerario">Configure your route</string>
+    <string name="campo_origen">Origin address</string>
+    <string name="campo_destino">Destination address</string>
+    <string name="boton_calcular_ruta">Calculate Itinerary</string>
+    <string name="radio_coche">🚗</string>
+    <string name="radio_transporte_publico">🚌</string>
+    <string name="radio_andando">🚶</string>
+    <string name="texto_lugar_favorito">Favorite Name</string>
+    <string name="texto_info_titulo">App Information</string>
+    <string name="texto_titulo_equipo">👨‍💻 Development Team</string>
+    <string name="texto_integrantes"><![CDATA[Developed by:<br>•Joaquín Ramón Pérez Rogerio<br>• Jiana Lin<br>• Darío López Villegas<br><br>---- Group 15 ----<br><br>Source code available in <a href="https://github.com/darlopvil/ETSII-GO.git">our GitHub repository</a>.]]></string>
+    <string name="texto_titulo_asig">🎓 Academic Information</string>
+    <string name="texto_asig_datos"><![CDATA[• Subject: Mobile Computing<br>• Academic Year: 2025–2026<br>• <a href="https://www.informatica.us.es">Higher Technical School of Computer Engineering (ETSII)</a><br>• <a href="https://www.us.es">University of Seville<a/>]]></string>
+    <string name="texto_recursos_titulo">🔌 Consumed APIs and Used Resources</string>
+    <string name="texto_recursos_datos"><![CDATA[• <b><a href="https://developers.google.com/maps/documentation/routes/compute-route-over">Google Routes API v2</a></b>: Advanced calculation of routes, distances, and travel times.\n<br><br>• <b><a href="https://developers.google.com/maps/documentation/places/android-sdk">Google Places API (Autocomplete)</a>:</b> Predictive smart search engine with autocomplete and precise address validation.<br><br>• <b><a href="https://developers.google.com/location-context/fused-location-provider">FusedLocationProviderClient</a></b>: High-precision geolocation using GPS, WiFi, and Bluetooth.\n<br><br>• <b><a href="https://cda-idesevilla.opendata.arcgis.com/datasets/ideSEVILLA::tussam-paradas/explore?showTable=true">ParadasTussam.csv</a></b>: Dataset of TUSSAM bus stops from the Urban Planning and Environment Department of the Seville City Council.]]></string>
+    <string name="texto_permisos_titulo">🛡️ Required System Permissions</string>
+    <string name="texto_permisos_datos"><![CDATA[• <b>INTERNET:</b> Required to connect to Google servers and download routes.<br>• <b>ACCESS_FINE_LOCATION:</b> Allows using the GPS hardware to get your exact location.<br>• <b>ACCESS_COARSE_LOCATION:</b> Allows triangulating your approximate location using cell towers and Wi-Fi for faster positioning with lower battery consumption.]]></string>
+    <string name="radio_bici">🚲</string>
+    <string-array name="categorias_array">
+        <item>Cheap eats</item>
+        <item>Study</item>
+        <item>Basic shopping</item>
+        <item>Campus life</item>
+    </string-array>
+
+    <string name="dia_lunes">Monday</string>
+    <string name="dia_martes">Tuesday</string>
+    <string name="dia_miercoles">Wednesday</string>
+    <string name="dia_jueves">Thursday</string>
+    <string name="dia_viernes">Friday</string>
+    <string name="aula_no_asignada">Classroom not assigned</string>
+    <string name="selecciona_un_aula_primero">Select a classroom first</string>
+    <string name="navegando_a_detalles_de">"Navigating to details of: "</string>
+    <string name="colores_usados">Colors used</string>
+    <string name="cerrar">Close</string>
+    <string name="editar">Edit:</string>
+    <string name="guardar">Save</string>
+    <string name="cancelar">Cancel</string>
+    <string name="borrar">Delete</string>
+    <string name="confirmar_borrado">Confirm deletion?</string>
+    <string name="contenido_eliminado">Content deleted</string>
+    <string name="seleccionar_aula">Select Classroom:</string>
+    <string name="aula_seleccionada">"Selected classroom: "</string>
+    <string name="modulo_todos">Module: All</string>
+    <string name="planta_todas">Floor: All</string>
+    <string name="modulo">Module </string>
+    <string name="detalles_aula">Module %1$s, Floor %2$d</string>
+    <string name="aula">Classroom:</string>
+    <string name="color">Color:</string>
+    <string name="elegir_color">Choose Color</string>
+    <string name="colores_recientes">Recent Colors</string>
+    <string name="ver_aula_en_el_mapa">View classroom on map</string>
+    <string name="buscar_aula_por_nombre">Search classroom by name...</string>
+    <string name="m_dulo">Module</string>
+    <string name="planta">Floor</string>
+    <string name="asignatura">Subject:</string>
+    <string name="horario">Schedule</string>
+    <string name="ir_al_mapa">Go to map</string>
+
+
+    <string name="consejo_de_hoy">Today\'s Tip</string>
+    <string name="descripcion_consejo">Check your route before leaving and review the available ETSII services.</string>
+    <string name="actividad_itinerario">Itinerary</string>
+    <string name="descripcion_itinerario">Plan your route step by step.</string>
+    <string name="actividad_servicios">Services</string>
+    <string name="descripcion_servicios">Discover available services.</string>
+    <string name="actividad_gps">Faculty GPS</string>
+    <string name="descripcion_gps">Locate the ETSII in real time.</string>
+    <string name="actividad_info">Information</string>
+    <string name="descripcion_info">News, notices, and useful data.</string>
+
+    <string name="toast_origen_destino_requerido">Please specify an origin and a destination</string>
+    <string name="toast_buscando_ruta">Searching for the best route...</string>
+    <string name="toast_error_peticion">Request error: HTTP %1$d</string>
+    <string name="toast_error_conexion">Connection error: %1$s</string>
+    <string name="toast_ruta_no_disponible">No available route found</string>
+    <string name="toast_error_lectura_ruta">Error reading route data</string>
+    <string name="toast_ubicacion_detectada">📍 Detected: Location saved as \'%1$s\'</string>
+    <string name="toast_escribe_direccion">Type or detect an address first</string>
+    <string name="toast_favorito_eliminado">Favorite deleted 🗑️</string>
+    <string name="toast_coordenadas_guardadas">Coordinates saved ⭐</string>
+    <string name="toast_guardado_favoritos">Saved to favorites ⭐</string>
+    <string name="toast_no_favoritos">You don\'t have any saved favorites yet</string>
+    <string name="toast_buscando_ubicacion">Finding your location. Please wait...</string>
+    <string name="toast_ubicacion_encontrada">Exact location found!</string>
+    <string name="toast_gps_apagado">Make sure GPS is turned on in settings</string>
+
+    <string name="titulo_mis_favoritos">My Favorites</string>
+    <string name="instrucciones_favoritos">Tap to choose.\nHold to delete.</string>
+    <string name="hint_nombre_favorito">e.g. Home, Work, Gym...</string>
+    <string name="titulo_nombrar_ubicacion">Name this location</string>
+    <string name="mensaje_guardar_coordenadas">You are about to save your current coordinates. What name should we give it?</string>
+    <string name="titulo_renombrar_favorito">Rename Favorite</string>
+
+    <string name="texto_mi_ubicacion_actual">📍 My current location</string>
+
+    <string name="texto_opcion_ruta">📍 Option %1$d (%2$d min, %3$s km)</string>
+    <string name="texto_modo_desconocido">Unknown</string>
+    <string name="texto_avanzar">Go ahead</string>
+    <string name="texto_caminar">Walk</string>
+    <string name="texto_conducir">Drive</string>
+    <string name="texto_pedalear">Cycle</string>
+    <string name="texto_dirigete_parada">\n📍 Head to the stop</string>
+    <string name="texto_transporte">Transport</string>
+    <string name="texto_origen_default">Origin</string>
+    <string name="texto_destino_default">Destination</string>
+    <string name="texto_linea_transporte">🚌 %1$s (Line %2$s)\n</string>
+    <string name="texto_parada_numero"> (Stop No. %1$s)</string>
+    <string name="texto_subir_en">🟢 Board at: %1$s (%2$s)\n</string>
+    <string name="texto_bajar_en">🔴 Get off at: %1$s (%2$s)</string>
+    <string name="texto_coger_transporte">🚌 Take public transport</string>
+    <string name="texto_paso_generico">▶️ Step %1$d [%2$s]</string>
+
+
+
+    <!-- ====== GPS: Nuevos textos que habia olvidado y que hay que traducir ====== -->
+    <string name="permiso_necesario">Permission required</string>
+    <string name="permisos_ubicacion">You have permanently disabled location permissions. To see your location on the map, enable them in the app settings.</string>
+    <string name="ir_a_ajustes">Go to Settings</string>
+    <string name="ubicacion_necesaria">Location required</string>
+    <string name="mensaje_ubicacion">To show you where you are on the map and guide you to your classroom, we need access to your location.</string>
+    <string name="entendido">Got it</string>
+    <string name="ahora_no">Not now</string>
+    <string name="funcionalidad_limitada_sin_gps">Limited functionality without GPS</string>
+    <string name="gps_listo_para_usarse">GPS ready to use</string>
+    <string name="tu_dispositivo_no_soporta_los_ajustes_de_ubicaci_n">Your device does not support location settings</string>
+    <string name="wi_fi_necesario">Wi-Fi Required</string>
+    <string name="mensaje_wifi">To calculate your exact position inside the building, we need to scan nearby Wi-Fi networks. Do you want to enable it now?</string>
+    <string name="activar">Enable</string>
+    <string name="activando_wi_fi">Enabling Wi-Fi…</string>
+    <string name="el_wi_fi_sigue_desactivado">Wi-Fi is still disabled</string>
+    <string name="escaneo_ilimitado">Unlimited Scan</string>
+    <string name="buscar_mi_ubicaci_n">Find my location</string>
+
+</resources>

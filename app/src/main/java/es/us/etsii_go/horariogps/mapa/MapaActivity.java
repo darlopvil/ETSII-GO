@@ -124,11 +124,6 @@ public class MapaActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-
-        // Esto pone el modo noche:
-        //AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
-
-
         setContentView(R.layout.view_mapa_main);
 
         checkAndRequestPermissions();
@@ -138,22 +133,65 @@ public class MapaActivity extends AppCompatActivity {
 
         // 1. Cargar Datos WiFi del json, e instanciamos el objeto WifiPositioningManager que
         // se encargara de aplicar los algoritmos correspondientes.
-        String json = loadJSONFromAsset("datos_entrenamiento_wifi_casa.json");
+        String json = loadJSONFromAsset("datos_entrenamiento_wifi_version1.json");
         List<ModeloDatosWifi> db = new Gson().fromJson(json, new TypeToken<List<ModeloDatosWifi>>() {
         }.getType());
 
         // DATOS GENERADOS Por mi modelo (la verdad es qeu no se donde ponerlo)
 
         List<String> bssidsmaestros = Arrays.asList(
-                "08:w5:33:6c:a8:65",
-                "05:f5:71:4c:a8:69"
+                "38:91:b7:10:f5:8f",
+                "38:91:b7:11:1a:cf",
+                "38:91:b7:10:a5:40",
+                "38:91:b7:11:1a:c0",
+                "38:91:b7:10:a5:4f",
+                "38:91:b7:10:ef:ef",
+                "38:91:b7:10:f5:80",
+                "38:91:b7:11:6e:ef",
+                "38:91:b7:11:6e:e0",
+                "38:91:b7:11:59:80",
+                "38:91:b7:11:59:8f",
+                "38:91:b7:11:61:6f",
+                "38:91:b7:11:61:60",
+                "38:91:b7:11:11:00",
+                "38:91:b7:11:5c:cf",
+                "14:84:73:df:f5:4f",
+                "38:91:b7:11:5d:60",
+                "38:91:b7:11:b1:c0",
+                "38:91:b7:11:5c:c0",
+                "38:91:b7:11:51:2f",
+                "38:91:b7:11:67:2f",
+                "38:91:b7:11:cb:8f",
+                "38:91:b7:11:49:c0",
+                "14:84:73:df:f5:40",
+                "38:91:b7:11:3e:2f",
+                "38:91:b7:10:9f:a0",
+                "38:91:b7:11:3e:20",
+                "38:91:b7:11:cc:e0",
+                "38:91:b7:11:7e:c0",
+                "38:91:b7:11:64:e0",
+                "38:91:b7:11:7e:cf",
+                "38:91:b7:11:3b:4f",
+                "38:91:b7:11:3e:cf",
+                "38:91:b7:11:64:ef",
+                "38:91:b7:11:3f:8f",
+                "38:91:b7:11:d1:cf",
+                "14:84:73:df:f5:e0",
+                "38:91:b7:10:ef:e0",
+                "38:91:b7:11:5b:0f",
+                "38:91:b7:11:3f:80",
+                "14:84:73:e3:47:ef",
+                "14:84:73:e3:47:e0",
+                "14:84:73:df:f5:ef",
+                "38:91:b7:11:cb:a0"
         );
-        double gamma = 0.0037;
+        double gamma = 0.02;
 
-        String jsonAlphas = "[[0.2423171577151562, -0.1352972435705378], [-0.5406121958864899, 0.8741582766628895], [0.7761107080255402, 0.7690381881791973], [0.6333926155635143, -0.3150353638147772], [-0.26508669258260664, -0.36423912132142827]]";
+        String jsonAlphas = "[[0.09895973329461774, 0.4972831553163167], [-0.05887626072494593, -0.022400618147182947], [-0.06047072342995497, 0.38377231492288105], [0.22719799024036277, 0.10207798334142366], [0.35054578110423995, 0.6553568014762591], [0.3041927141999372, 0.31292663440246726], [0.12212245017778554, 0.34634692073118617], [-0.0628329936474241, -0.14615528171101377], [0.22428763438320998, -0.145893157953956], [0.47568376392381456, 0.1406931320183186], [0.21099281903340275, 0.24096979332858204], [0.0017245838908504744, 0.21338730894894953]]";
 
-        double[] medias = {-79.0, -68.8, -67.8, -94.4, -90.2, -82.4, -79.8, -70.6, -80.2, -90.4, -97.2, -92.8, -78.2, -70.8, -87.6, -74.0, -79.6, -97.2, -91.6, -95.2, -85.4, -54.4, -56.8, -75.6, -97.2, -88.8, -71.4, -78.0, -83.2, -97.2, -75.4, -88.8, -79.4, -84.4, -91.6, -94.4, -97.2, -95.2, -77.8, -83.6, -87.4, -87.6, -83.6, -84.8, -85.6, -97.6, -89.2, -81.0, -87.6, -90.0, -81.4, -84.0, -97.2, -61.6, -94.4, -68.6, -92.0, -94.4, -94.4, -89.0, -93.2, -89.6, -91.6, -94.4, -88.8, -94.4, -97.6, -91.4, -97.2, -97.2, -97.2, -94.4, -78.0, -95.2, -89.2, -97.0, -94.0, -91.0, -95.2, -96.0, -94.4, -97.2, -97.6, -94.4, -97.2, -97.6, -97.4, -97.2, -95.0, -97.6, -97.2, -97.2, -97.2, -97.0, -97.6, -97.6, -97.6, -97.2, -97.6, -95.2};
-        double[] scales = {5.865151319446072, 15.66397139936102, 9.927738916792686, 6.858571279792899, 19.6, 2.9393876913398134, 11.973303637676612, 11.146299834474219, 8.908422980528034, 8.138795979750322, 5.6, 5.878775382679627, 7.782030583337487, 10.870142593360953, 11.056219968868202, 18.121810064118872, 12.7216351150314, 5.6, 6.8585712797928995, 5.878775382679627, 10.650821564555478, 5.0039984012787215, 6.554387843269575, 14.051334456200237, 5.6, 5.6000000000000005, 4.586937976471886, 7.5099933422074345, 15.065191668213185, 5.6, 2.8, 5.6000000000000005, 7.2, 4.586937976471886, 6.8585712797928995, 6.858571279792899, 5.6, 9.6, 7.652450587883597, 2.9393876913398134, 6.740919818541086, 6.6211781428987395, 15.60256389187367, 10.244998779892558, 8.138795979750322, 4.800000000000001, 9.086253353280437, 5.059644256269407, 6.6211781428987395, 5.059644256269407, 15.856859714331838, 4.33589667773576, 5.6, 10.68831137270991, 6.858571279792899, 15.43502510525979, 6.6932802122726045, 6.858571279792899, 6.858571279792899, 10.469001862641921, 8.541662601625049, 9.00222194794152, 6.974238309665077, 6.8585712797928995, 9.907572861200668, 6.8585712797928995, 4.800000000000001, 7.08801805866774, 5.6, 5.6, 5.6, 6.974238309665077, 18.033302526159762, 5.878775382679627, 9.239047569960876, 6.0, 7.58946638440411, 7.536577472566709, 5.878775382679627, 8.0, 6.8585712797928995, 5.6000000000000005, 4.800000000000001, 6.8585712797928995, 5.6000000000000005, 4.8, 5.2, 5.6000000000000005, 10.0, 4.8, 5.6000000000000005, 5.6000000000000005, 5.6000000000000005, 6.0, 4.8, 4.8, 4.8, 5.6000000000000005, 4.8, 9.6};
+        double[] medias = {-82.0, -98.25, -90.91666666666667, -97.83333333333333, -81.75, -80.58333333333333, -84.33333333333333, -87.25, -87.83333333333333, -89.16666666666667, -93.08333333333333, -88.66666666666667, -88.33333333333333, -97.83333333333333, -96.16666666666667, -85.08333333333333, -95.33333333333333, -97.83333333333333, -98.0, -98.08333333333333, -98.08333333333333, -98.25, -97.83333333333333, -95.83333333333333, -89.5, -98.08333333333333, -98.08333333333333, -97.83333333333333, -97.33333333333333, -95.25, -98.0, -98.25, -98.0, -94.58333333333333, -97.75, -98.08333333333333, -98.83333333333333, -93.58333333333333, -98.0, -97.83333333333333, -97.33333333333333, -97.41666666666667, -98.08333333333333, -96.91666666666667};
+
+        double[] scales = {19.087517736293876, 5.80409338312195, 15.8506484269747, 7.1860203791033666, 22.69774217846348, 17.14865560004308, 19.690663326110226, 19.604952605570528, 18.26122181624828, 15.608936186969592, 12.023992219262656, 13.822284744410222, 17.084756038319334, 7.1860203791033666, 8.581310441237335, 12.932248665856823, 10.561986345169906, 7.1860203791033666, 6.6332495807108, 6.356864181514517, 6.356864181514517, 5.80409338312195, 7.1860203791033666, 9.325889889025188, 16.152915113584505, 6.356864181514516, 6.356864181514516, 7.1860203791033666, 8.844332774281066, 10.670246795021503, 6.6332495807108, 5.80409338312195, 6.6332495807108, 12.12750546851614, 7.46240577829965, 6.356864181514516, 3.8693955887479663, 14.974747261825677, 6.6332495807108, 7.1860203791033666, 8.844332774281066, 8.567947375084783, 6.356864181514516, 10.226259770262482};
 
 
         positioningManager = WifiPositioningManager.createWithKLDA(db,jsonAlphas,gamma,bssidsmaestros,medias,scales);
@@ -458,31 +496,31 @@ public class MapaActivity extends AppCompatActivity {
     }
     private void showPermissionDeniedMessage() {
         new AlertDialog.Builder(this)
-                .setTitle("Permiso necesario")
-                .setMessage("Has desactivado los permisos de ubicación de forma permanente. Para ver tu ubicación el mapa, actívalos en los ajustes de la aplicación.")
-                .setPositiveButton("Ir a Ajustes", (dialog, which) -> {
+                .setTitle(R.string.permiso_necesario)
+                .setMessage(R.string.permisos_ubicacion)
+                .setPositiveButton(R.string.ir_a_ajustes, (dialog, which) -> {
                     Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
                     Uri uri = Uri.fromParts("package", getPackageName(), null);
                     intent.setData(uri);
                     startActivity(intent);
                 })
-                .setNegativeButton("Cancelar", null)
+                .setNegativeButton(R.string.cancelar, null)
                 .show();
     }
     private void showCustomExplanationDialog() {
         new AlertDialog.Builder(this)
-                .setTitle("Ubicación necesaria")
-                .setMessage("Para mostrarte dónde estás en el mapa y guiarte a tu aula, necesitamos acceder a tu ubicación.")
-                .setPositiveButton("Entendido", (dialog, which) -> {
+                .setTitle(R.string.ubicacion_necesaria)
+                .setMessage(R.string.mensaje_ubicacion)
+                .setPositiveButton(R.string.entendido, (dialog, which) -> {
                     // Volvemos a pedir el permiso tras la explicación
                     requestPermissionLauncher.launch(new String[]{
                             Manifest.permission.ACCESS_FINE_LOCATION,
                             Manifest.permission.ACCESS_COARSE_LOCATION
                     });
                 })
-                .setNegativeButton("Ahora no", (dialog, which) -> {
+                .setNegativeButton(R.string.ahora_no, (dialog, which) -> {
                     // Opcional: mostrar el mapa pero sin el punto azul de usuario
-                    Toast.makeText(this, "Funcionalidad limitada sin GPS", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, R.string.funcionalidad_limitada_sin_gps, Toast.LENGTH_SHORT).show();
                 })
                 .show();
     }
@@ -517,7 +555,7 @@ public class MapaActivity extends AppCompatActivity {
         // 4. Caso de éxito: El GPS ya está encendido o la configuración es correcta
         task.addOnSuccessListener(this, locationSettingsResponse -> {
             // Aquí ya puedes iniciar tu lógica de posicionamiento (mostrar el punto azul, etc.)
-            Toast.makeText(MapaActivity.this, "GPS listo para usarse", Toast.LENGTH_SHORT).show();
+            Toast.makeText(MapaActivity.this, R.string.gps_listo_para_usarse, Toast.LENGTH_SHORT).show();
         });
 
         // 5. Caso de fallo: El GPS está apagado o en modo "Ahorro de batería"
@@ -534,7 +572,7 @@ public class MapaActivity extends AppCompatActivity {
                 }
             } else {
                 // El error no se puede resolver (el móvil no tiene GPS, por ejemplo)
-                Toast.makeText(this, "Tu dispositivo no soporta los ajustes de ubicación", Toast.LENGTH_LONG).show();
+                Toast.makeText(this, R.string.tu_dispositivo_no_soporta_los_ajustes_de_ubicaci_n, Toast.LENGTH_LONG).show();
             }
         });
     }
@@ -544,13 +582,13 @@ public class MapaActivity extends AppCompatActivity {
         WifiManager wifiManager = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
         if (wifiManager != null && !wifiManager.isWifiEnabled()){
             new AlertDialog.Builder(this)
-                .setTitle("Wi-Fi Necesario")
-                .setMessage("Para poder calcular tu posición exacta dentro del edificio, necesitamos escanear las redes Wi-Fi cercanas. ¿Quieres activarlo ahora?")
-                .setPositiveButton("Activar", (dialog, which) -> {
+                .setTitle(R.string.wi_fi_necesario)
+                .setMessage(R.string.mensaje_wifi)
+                .setPositiveButton(R.string.activar, (dialog, which) -> {
                     // Ahora sí, lanzamos el panel del sistema
                     showWifiPanel();
                 })
-                .setNegativeButton("Ahora no", null)
+                .setNegativeButton(R.string.ahora_no, null)
                 .show();
         }
     }
@@ -562,7 +600,7 @@ public class MapaActivity extends AppCompatActivity {
         } else {
             // Android 9 o inferior: Podemos encenderlo directamente (si tienes el permiso en el Manifest)
             wifiManager.setWifiEnabled(true);
-            Toast.makeText(this, "Activando Wi-Fi...", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, R.string.activando_wi_fi, Toast.LENGTH_SHORT).show();
         }
 
     }
@@ -577,7 +615,7 @@ public class MapaActivity extends AppCompatActivity {
 
             } else {
                 // El usuario cerró el panel pero NO activó el interruptor
-                Toast.makeText(this, "El Wi-Fi sigue desactivado", Toast.LENGTH_LONG).show();
+                Toast.makeText(this, R.string.el_wi_fi_sigue_desactivado, Toast.LENGTH_LONG).show();
             }
         }
     }
