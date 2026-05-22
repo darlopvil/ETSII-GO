@@ -21,202 +21,238 @@
         android:orientation="vertical"
         app:layout_constraintGuide_percent="0.95" />
 
-    <TextView
-        android:id="@+id/texto_titulo"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:text="@string/titulo_itinerario"
-        android:textSize="20sp"
-        android:textStyle="bold"
-        app:layout_constraintEnd_toStartOf="@+id/guia_2"
-        app:layout_constraintStart_toStartOf="@+id/guia_1"
-        app:layout_constraintTop_toTopOf="parent" />
-
-
+    <!-- ============================================================
+         HEADER MORADO CON GRADIENTE (estilo banner del horario)
+         ============================================================ -->
     <LinearLayout
-        android:id="@+id/layout_origen"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_marginTop="16dp"
-        app:layout_constraintEnd_toStartOf="@+id/guia_2"
-        app:layout_constraintStart_toStartOf="@+id/guia_1"
-        app:layout_constraintTop_toBottomOf="@id/texto_titulo">
+        android:id="@+id/header_titulo"
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        android:background="@drawable/fondo_degradado"
+        android:elevation="6dp"
+        android:gravity="center"
+        android:orientation="vertical"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
-        <com.google.android.material.textfield.TextInputLayout
-            android:layout_width="0dp"
+        <TextView
+            android:id="@+id/texto_titulo"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            app:endIconMode="clear_text">
-
-            <EditText
-                android:id="@+id/campo_origen"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="@string/campo_origen"
-                android:inputType="textPostalAddress"
-                android:maxLines="1" />
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <ImageButton
-            android:id="@+id/btn_gps_origen"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:layout_gravity="center_vertical"
-            android:layout_marginStart="4dp"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:src="@android:drawable/ic_menu_mylocation" />
-
-        <ImageButton
-            android:id="@+id/btn_lista_origen"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:layout_gravity="center_vertical"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:src="@android:drawable/ic_menu_myplaces" />
-
-        <ImageButton
-            android:id="@+id/btn_fav_origen"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:layout_gravity="center_vertical"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:src="@android:drawable/btn_star_big_off" />
+            android:text="@string/titulo_itinerario"
+            android:textColor="@android:color/white"
+            android:textSize="22sp"
+            android:textStyle="bold" />
     </LinearLayout>
 
-    <ImageButton
-        android:id="@+id/btn_intercambiar"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:layout_marginEnd="8dp"
-        android:background="?attr/selectableItemBackgroundBorderless"
-        android:src="@android:drawable/ic_popup_sync"
-        android:rotation="90"
-        app:layout_constraintEnd_toStartOf="@+id/guia_2"
-        app:layout_constraintTop_toBottomOf="@id/layout_origen"
-        app:layout_constraintBottom_toTopOf="@id/layout_destino" />
-
+    <!-- ============================================================
+         TARJETA: ORIGEN, DESTINO Y BOTÓN INTERCAMBIAR
+         ============================================================ -->
     <LinearLayout
-        android:id="@+id/layout_destino"
+        android:id="@+id/tarjeta_direcciones"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="20dp"
+        android:background="@drawable/bg_card"
+        android:elevation="4dp"
+        android:orientation="vertical"
+        android:padding="16dp"
         app:layout_constraintEnd_toStartOf="@+id/guia_2"
         app:layout_constraintStart_toStartOf="@+id/guia_1"
-        app:layout_constraintTop_toBottomOf="@id/layout_origen">
+        app:layout_constraintTop_toBottomOf="@+id/header_titulo">
 
-        <com.google.android.material.textfield.TextInputLayout
-            android:layout_width="0dp"
+        <!-- ORIGEN -->
+        <LinearLayout
+            android:id="@+id/layout_origen"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            app:endIconMode="clear_text">
+            android:orientation="horizontal">
 
-            <EditText
-                android:id="@+id/campo_destino"
-                android:layout_width="match_parent"
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:hint="@string/campo_destino"
-                android:inputType="textPostalAddress"
-                android:maxLines="1" />
-        </com.google.android.material.textfield.TextInputLayout>
-        <ImageButton
-            android:id="@+id/btn_gps_destino"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:layout_gravity="center_vertical"
-            android:layout_marginStart="4dp"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:src="@android:drawable/ic_menu_mylocation" />
+                android:layout_weight="1"
+                app:endIconMode="clear_text">
 
-        <ImageButton
-            android:id="@+id/btn_lista_destino"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:layout_gravity="center_vertical"
-            android:layout_marginStart="4dp"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:src="@android:drawable/ic_menu_myplaces" />
+                <EditText
+                    android:id="@+id/campo_origen"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/campo_origen"
+                    android:inputType="textPostalAddress"
+                    android:maxLines="1" />
+            </com.google.android.material.textfield.TextInputLayout>
 
+            <ImageButton
+                android:id="@+id/btn_gps_origen"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_gravity="center_vertical"
+                android:layout_marginStart="4dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:src="@android:drawable/ic_menu_mylocation" />
+
+            <ImageButton
+                android:id="@+id/btn_lista_origen"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_gravity="center_vertical"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:src="@android:drawable/ic_menu_myplaces" />
+
+            <ImageButton
+                android:id="@+id/btn_fav_origen"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_gravity="center_vertical"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:src="@android:drawable/btn_star_big_off" />
+        </LinearLayout>
+
+        <!-- BOTÓN INTERCAMBIAR (alineado a la derecha, entre origen y destino) -->
         <ImageButton
-            android:id="@+id/btn_fav_destino"
+            android:id="@+id/btn_intercambiar"
             android:layout_width="40dp"
             android:layout_height="40dp"
-            android:layout_gravity="center_vertical"
+            android:layout_gravity="end"
+            android:layout_marginEnd="48dp"
             android:background="?attr/selectableItemBackgroundBorderless"
-            android:src="@android:drawable/btn_star_big_off" />
+            android:rotation="90"
+            android:src="@android:drawable/ic_popup_sync" />
+
+        <!-- DESTINO -->
+        <LinearLayout
+            android:id="@+id/layout_destino"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                app:endIconMode="clear_text">
+
+                <EditText
+                    android:id="@+id/campo_destino"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/campo_destino"
+                    android:inputType="textPostalAddress"
+                    android:maxLines="1" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <ImageButton
+                android:id="@+id/btn_gps_destino"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_gravity="center_vertical"
+                android:layout_marginStart="4dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:src="@android:drawable/ic_menu_mylocation" />
+
+            <ImageButton
+                android:id="@+id/btn_lista_destino"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_gravity="center_vertical"
+                android:layout_marginStart="4dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:src="@android:drawable/ic_menu_myplaces" />
+
+            <ImageButton
+                android:id="@+id/btn_fav_destino"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_gravity="center_vertical"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:src="@android:drawable/btn_star_big_off" />
+        </LinearLayout>
     </LinearLayout>
 
-
+    <!-- ============================================================
+         TARJETA: SELECTOR DE MODO DE VIAJE (RadioGroup)
+         ============================================================ -->
     <RadioGroup
         android:id="@+id/grupo_modo_viaje"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:background="@drawable/bg_card"
+        android:elevation="4dp"
         android:orientation="horizontal"
-        android:layout_marginTop="16dp"
+        android:padding="12dp"
         app:layout_constraintEnd_toStartOf="@id/guia_2"
         app:layout_constraintStart_toStartOf="@id/guia_1"
-        app:layout_constraintTop_toBottomOf="@id/layout_destino"
-
-        >
+        app:layout_constraintTop_toBottomOf="@id/tarjeta_direcciones">
 
         <RadioButton
             android:id="@+id/radio_coche"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:drawableStart="@drawable/ic_coche"
             android:gravity="center"
-            app:drawableTint="?attr/colorControlNormal"
-            android:drawableStart="@drawable/ic_coche" />
+            app:drawableTint="?attr/colorControlNormal" />
 
         <RadioButton
             android:id="@+id/radio_transporte_publico"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:gravity="center"
-            app:drawableTint="?attr/colorControlNormal"
+            android:checked="true"
             android:drawableStart="@drawable/ic_transporte_publico"
-            android:checked="true"/>
+            android:gravity="center"
+            app:drawableTint="?attr/colorControlNormal" />
 
         <RadioButton
             android:id="@+id/radio_andar_solo"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:drawableStart="@drawable/ic_andando"
             android:gravity="center"
-            app:drawableTint="?attr/colorControlNormal"
-            android:drawableStart="@drawable/ic_andando" />
+            app:drawableTint="?attr/colorControlNormal" />
 
         <RadioButton
             android:id="@+id/radio_bici"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:drawableStart="@drawable/ic_bicicleta"
             android:gravity="center"
-            app:drawableTint="?attr/colorControlNormal"
-            android:drawableStart="@drawable/ic_bicicleta" />
+            app:drawableTint="?attr/colorControlNormal" />
     </RadioGroup>
 
+    <!-- ============================================================
+         BOTÓN CALCULAR RUTA (morado con gradiente)
+         ============================================================ -->
     <Button
         android:id="@+id/boton_calcular_ruta"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
+        android:layout_height="56dp"
+        android:layout_marginTop="16dp"
+        android:background="@drawable/bg_button"
         android:text="@string/boton_calcular_ruta"
+        android:textAllCaps="false"
+        android:textColor="@android:color/white"
+        android:textSize="16sp"
+        android:textStyle="bold"
         app:layout_constraintEnd_toStartOf="@+id/guia_2"
         app:layout_constraintStart_toStartOf="@+id/guia_1"
         app:layout_constraintTop_toBottomOf="@+id/grupo_modo_viaje" />
-    <!-- ATENCIÓN
-     con android:visibility="gone" ocultamos el campo del resultado hasta que los tengamos.-->
+
+    <!-- ============================================================
+         RESULTADOS DE LA RUTA (oculto hasta que haya datos)
+         ============================================================ -->
     <ScrollView
         android:id="@+id/scroll_resultados"
-        android:visibility="gone"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginTop="24dp"
+        android:layout_marginTop="16dp"
         android:layout_marginBottom="16dp"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="@id/guia_2"
         app:layout_constraintStart_toStartOf="@id/guia_1"

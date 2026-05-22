@@ -7,62 +7,74 @@
     android:layout_height="match_parent"
     tools:context=".InformacionActivity">
 
+    <!-- ============================================================
+         HEADER MORADO CON GRADIENTE (estilo banner del horario)
+         ============================================================ -->
+    <LinearLayout
+        android:id="@+id/header_titulo"
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        android:background="@drawable/fondo_degradado"
+        android:elevation="6dp"
+        android:gravity="center"
+        android:orientation="vertical"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:id="@+id/info_texto_titulo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/texto_info_titulo"
+            android:textColor="@android:color/white"
+            android:textSize="22sp"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+    <!-- ============================================================
+         SCROLL CON LAS CARDVIEWS DE INFORMACIÓN
+         ============================================================ -->
     <ScrollView
         android:id="@+id/scrollview_layout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:layout_constraintTop_toTopOf="parent"
+        android:layout_height="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
+        app:layout_constraintTop_toBottomOf="@id/header_titulo">
 
         <LinearLayout
             android:id="@+id/linearlayout_scrollview"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical" >
+            android:orientation="vertical"
+            android:padding="16dp">
 
-            <TextView
-                android:id="@+id/info_texto_titulo"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:layout_marginBottom="24dp"
-                android:text="@string/texto_info_titulo"
-                android:textAlignment="center"
-                android:textSize="24sp"
-                android:textStyle="bold" />
-            <!-- Información de algunos atributos del CardView:
-                 app:cardCornerRadius="12dp" determina el contorno de las esquinas de las tarjetas
-                 Cuanto mayor es el número, más redondeadas será. 0dp nos da una esquina afilada.
-
-                 app:cardElevation="4dp" determina la altura a la que flota la tarjeta del LinearLayout que tiene por debajo
-                 Cuanto mayor sea el número, más alta estará la tarjeta y mayor sombra mostrará por los laterales
-
-                 app:contentPadding="16dp" determina el espacio interior que separa el contenido de los bordes de la tarjeta.
-                 Parecido al padding en CSS: Es un campo de fuerza que separa los textos en este caso del exterior.
-                 -->
+            <!-- ====== TARJETA: EQUIPO DESARROLLADOR ====== -->
             <androidx.cardview.widget.CardView
                 android:id="@+id/info_cardview_equipo"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_marginBottom="16dp"
-                app:cardCornerRadius="12dp"
+                app:cardBackgroundColor="@color/color_cabecera"
+                app:cardCornerRadius="20dp"
                 app:cardElevation="4dp"
-                app:contentPadding="16dp" >
+                app:contentPadding="20dp">
 
                 <LinearLayout
                     android:id="@+id/info_linearlayout_cardview_equipo"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
+                    android:layout_height="wrap_content"
                     android:orientation="vertical">
 
                     <TextView
                         android:id="@+id/info_texto_equipo_desarrollador"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginBottom="8dp"
+                        android:layout_marginBottom="10dp"
                         android:text="@string/texto_titulo_equipo"
+                        android:textColor="@color/color_textos_cambiados"
                         android:textSize="18sp"
                         android:textStyle="bold" />
 
@@ -70,31 +82,36 @@
                         android:id="@+id/info_texto_integrantes"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="@string/texto_integrantes" />
+                        android:lineSpacingExtra="2dp"
+                        android:text="@string/texto_integrantes"
+                        android:textColor="@color/color_textos_cambiados" />
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
 
+            <!-- ====== TARJETA: INFORMACIÓN ACADÉMICA ====== -->
             <androidx.cardview.widget.CardView
                 android:id="@+id/info_cardview_asignatura"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_marginBottom="16dp"
-                app:cardCornerRadius="12dp"
+                app:cardBackgroundColor="@color/color_cabecera"
+                app:cardCornerRadius="20dp"
                 app:cardElevation="4dp"
-                app:contentPadding="16dp" >
+                app:contentPadding="20dp">
 
                 <LinearLayout
                     android:id="@+id/info_linearlayout_carview_asig"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
+                    android:layout_height="wrap_content"
                     android:orientation="vertical">
 
                     <TextView
                         android:id="@+id/info_texto_titulo_asig"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginBottom="8dp"
+                        android:layout_marginBottom="10dp"
                         android:text="@string/texto_titulo_asig"
+                        android:textColor="@color/color_textos_cambiados"
                         android:textSize="18sp"
                         android:textStyle="bold" />
 
@@ -102,32 +119,36 @@
                         android:id="@+id/info_texto_asig_datos"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@string/texto_asig_datos" />
+                        android:lineSpacingExtra="2dp"
+                        android:text="@string/texto_asig_datos"
+                        android:textColor="@color/color_textos_cambiados" />
                 </LinearLayout>
-
             </androidx.cardview.widget.CardView>
 
+            <!-- ====== TARJETA: APIS Y RECURSOS ====== -->
             <androidx.cardview.widget.CardView
                 android:id="@+id/info_cardview_recursos"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_marginBottom="16dp"
-                app:cardCornerRadius="12dp"
+                app:cardBackgroundColor="@color/color_cabecera"
+                app:cardCornerRadius="20dp"
                 app:cardElevation="4dp"
-                app:contentPadding="16dp">
+                app:contentPadding="20dp">
 
                 <LinearLayout
                     android:id="@+id/info_linearlayout_cardview_recursos"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
+                    android:layout_height="wrap_content"
                     android:orientation="vertical">
 
                     <TextView
                         android:id="@+id/info_texto_titulo_recursos"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginBottom="8dp"
+                        android:layout_marginBottom="10dp"
                         android:text="@string/texto_recursos_titulo"
+                        android:textColor="@color/color_textos_cambiados"
                         android:textSize="18sp"
                         android:textStyle="bold" />
 
@@ -135,31 +156,36 @@
                         android:id="@+id/info_texto_recursos_datos"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="@string/texto_recursos_datos" />
+                        android:lineSpacingExtra="2dp"
+                        android:text="@string/texto_recursos_datos"
+                        android:textColor="@color/color_textos_cambiados" />
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
 
+            <!-- ====== TARJETA: PERMISOS ====== -->
             <androidx.cardview.widget.CardView
                 android:id="@+id/info_cardview_permisos"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginBottom="24dp"
-                app:cardCornerRadius="12dp"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                app:cardBackgroundColor="@color/color_cabecera"
+                app:cardCornerRadius="20dp"
                 app:cardElevation="4dp"
-                app:contentPadding="16dp">
+                app:contentPadding="20dp">
 
                 <LinearLayout
                     android:id="@+id/info_linearlayout_cardview_permisos"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
+                    android:layout_height="wrap_content"
                     android:orientation="vertical">
 
                     <TextView
                         android:id="@+id/info_texto_titulo_permisos"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginBottom="8dp"
+                        android:layout_marginBottom="10dp"
                         android:text="@string/texto_permisos_titulo"
+                        android:textColor="@color/color_textos_cambiados"
                         android:textSize="18sp"
                         android:textStyle="bold" />
 
@@ -167,9 +193,10 @@
                         android:id="@+id/info_texto_permisos_datos"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@string/texto_permisos_datos" />
+                        android:lineSpacingExtra="2dp"
+                        android:text="@string/texto_permisos_datos"
+                        android:textColor="@color/color_textos_cambiados" />
                 </LinearLayout>
-
             </androidx.cardview.widget.CardView>
         </LinearLayout>
     </ScrollView>
